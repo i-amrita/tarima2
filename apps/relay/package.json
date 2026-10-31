@@ -1,0 +1,16 @@
+{
+  "name": "@dealrelay/relay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/server.ts"
+  },
+  "dependencies": {
+    "@dealrelay/actors": "workspace:*",
+    "@dealrelay/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4"
+  }
+}
