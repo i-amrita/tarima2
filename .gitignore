@@ -17,3 +17,4 @@ tmp/
 !/.agents/plans/
 !/.agents/plans/**
 
+.vercel/

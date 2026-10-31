@@ -15,7 +15,7 @@ export default defineConfig({
   plugins: [
     tanstackStart(),
     viteReact(),
-    nitro({ preset: "node-server" }),
+    nitro({ preset: process.env.VERCEL ? "vercel" : "node-server" }),
     tailwindcss(),
   ],
 })
