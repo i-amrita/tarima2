@@ -8,11 +8,11 @@ Status: decided 2026-10-31. Applies to `apps/web` and any future UI surface.
 
 Not daisyUI. daisyUI ships semantic class names (`btn`, `card`) but keeps a closed component set with its own theme layer; shadcn/ui copies source into the repo, which is what a hackathon codebase with several agents working in parallel needs: components are readable, editable, and versioned with the code.
 
-## Theme: Geist / Vercel style
+## Theme: light editorial (Geist-style structure)
 
 - Font: Plus Jakarta Sans (variable) for UI, Fraunces for display, mono stack (Berkeley Mono, then ui-monospace) for the agent trace, IDs, and any tabular data. Matches dits.
-- Look: near-black canvas in dark mode (`#0a0a0a`), neutral grays with a single accent, 1px borders (`border-border`), small radii, subtle shadows, dense spacing. Status color is earned, not decorative: red only for constraint violations, amber only for awaiting approval, green only for met/approved.
-- Tokens come from Tailwind CSS variables in the shadcn theme block (`--background`, `--foreground`, `--card`, `--primary`, `--muted`, `--destructive`, ...). Dark mode is the default; the demo is recorded in dark.
+- Look: light bone canvas, flat white cards with 1px hairline borders, pastel status chips, generous spacing. Status color is earned, not decorative: red only for constraint violations, amber only for awaiting approval, green only for met/approved. Exact values live in `ui-screen-spec.md` section 2.
+- Tokens come from Tailwind CSS variables in the shadcn theme block (`--background`, `--foreground`, `--card`, `--primary`, `--muted`, `--destructive`, ...). Light is the default; a `.dark` override block exists but is not the demo theme.
 - No hardcoded hex values in components. If a color is not a token, add the token first.
 
 ## Component sourcing rules

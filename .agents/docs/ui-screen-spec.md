@@ -16,8 +16,7 @@ A light, quiet deal room where a judge reads the story in under five seconds: th
 needs a decision, how each venue scores, what the agents did. Chrome is nearly absent;
 color is scarce and semantic.
 
-Baseline evidence (current UI, to be replaced): `screens/baseline/before-agency-1440.png`,
-`before-agency-populated-1440.png`, `before-client-populated-1440.png`, plus 1024/390 variants.
+Baseline evidence (approved UILOOP iteration 4, 2026-10-31): `screens/baseline/{agency-empty,agency-populated,client-populated}-{1440,1024,390}.png`. Trace items wrap to two lines with the full text in `title`; the agent activity panel is slated to become a chat-style log (see the follow-up plan).
 
 ## 2. Tokens (styles.css)
 
