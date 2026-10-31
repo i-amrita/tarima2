@@ -4,7 +4,12 @@ Plan: replace the dark all-mono dashboard at `/room/$roomId` with the light edit
 direction defined in `.agents/docs/ui-screen-spec.md`. Implementation is delegated to
 separate agents; this document is the contract they work from.
 
-Status: ready to delegate. No code changed by the planner.
+Status: ready to delegate, aligned with screen spec v2 (minimal information load). No code
+changed by the planner.
+
+Design intent in one line: information is embedded in components (color-coded chips, icon
+callouts, collapsibles), never delivered as paragraphs; first view carries the story and
+details are one click away. Off-white canvas, pastel spot colors, one serif display voice.
 
 ## Context for the delegate
 
@@ -26,9 +31,11 @@ Status: ready to delegate. No code changed by the planner.
 
 1. `AGENTS.md` (repo root): conventions, commit format, validation.
 2. `~/UILOOP.md`: the UI anti-drift loop. It governs this work and is not optional.
-3. `.agents/docs/ui-screen-spec.md`: the screen spec, tokens, layout, invariants, rubric.
-4. `.agents/docs/ui-references.md`: the five reference sites with local screenshot paths.
-5. `.agents/docs/design-system.md`: component sourcing rules (ui -> ai-elements ->
+3. `.agents/docs/ui-screen-spec.md`: the screen spec (v2), tokens, layout, invariants, rubric.
+4. `.agents/docs/ui-layout-mock.md`: ASCII screens for the target layout (desktop agency,
+   client, empty, disclosure states, mobile, palette). Read this before touching markup.
+5. `.agents/docs/ui-references.md`: the five reference sites with local screenshot paths.
+6. `.agents/docs/design-system.md`: component sourcing rules (ui -> ai-elements ->
    dealroom). Update it to the new visual direction as part of this work.
 
 ## Work breakdown
@@ -42,9 +49,12 @@ others touch different files and can run in parallel by different agents once T1
 Files: `apps/web/src/styles.css`, `apps/web/src/routes/__root.tsx`,
 `apps/web/package.json`, `apps/web/public/favicon.svg` (new).
 
-- Implement spec S2 exactly: light `:root`, keep the `.dark` block, drop `className="dark"`
-  from `<html>`, add `--font-display` with `@fontsource/instrument-serif` (add the
-  dependency with bun, no npm).
+- Implement spec S2 exactly: light `:root` with the warm monochrome neutrals and the four
+  pastel spot pairs (bg + fg + border), keep the `.dark` block, drop `className="dark"` from
+  `<html>`, add `--font-display` with `@fontsource/instrument-serif` (add the dependency with
+  bun, no npm).
+- Pastel colors are small accents only (chip fills, callout tint, dots); never large
+  surfaces. Color is scarce and semantic.
 - Add the favicon and reference it from `__root.tsx` so the console has zero errors.
 - No component changes in this task.
 
@@ -56,13 +66,13 @@ Files: `apps/web/src/routes/room.$roomId.tsx`, new `apps/web/src/components/deal
 components for the top bar and the editorial header (suggest `RoomTopBar.tsx`,
 `RoomHeader.tsx`), `apps/web/src/components/dealroom/ConstraintHeader.tsx` (rewrite).
 
-- Implement spec S3.1 and S3.2: one top bar, no stacked bars, editorial display heading with
-  the event name in Instrument Serif, quiet inline specs row (not boxed chips), ghost
-  "Set demo specs" / "Reset demo specs" button, quiet empty state.
+- Implement spec S3.1 and S3.2: one top bar, no stacked bars, eyebrow pill + Instrument Serif
+  event name, spec chips (neutral pills with a small icon + mono value, no labels, no boxed
+  stat cards), ghost "Set demo specs" / "Reset demo specs" button, quiet empty state.
 - Keep `room-header`, `switch-role-agency`, `switch-role-client`, `connection-status`,
   `constraint-header`, `set-demo-specs-button` testids.
-- Connection state as a dot plus text, colored by status (green/red), never a badge-looking
-  pill competing with the role switcher.
+- Connection state is a 6px dot only (green/red/amber), status word in the tooltip and
+  aria-label, never visible text, never a pill competing with the role switcher.
 
 Acceptance: 1440/1024/390 screenshots show the intended hierarchy; no layout collapse.
 
@@ -72,14 +82,16 @@ Files: `apps/web/src/components/dealroom/ComparisonCanvas.tsx`,
 `VenueCard.tsx`, `ConstraintBadge.tsx`, `ApprovalBar.tsx`; new `ProposalToolbar.tsx` if
 the demo controls move here.
 
-- Implement spec S3.3, S3.4, S3.5: single amber approval panel above the proposals list
-  (not one card per proposal), per-row approve button for client and waiting state for
-  agency; white venue cards with sans name, tinted status badge, sans italic quote, 4-up
-  constraint cells with mono details, sans agent strategy.
+- Implement spec S3.3, S3.4, S3.5: one slim pastel-yellow approval callout above the proposals
+  list (icon + one sentence + one line per venue, no counters, no deltas, no timestamps), ink
+  "Approve" button per row for client and a muted waiting state for agency.
+- Venue cards: white, flat, hairline border, name + pastel status chip, four color-coded
+  constraint chips whose hue alone carries met/violated/pending (full detail in the title
+  attribute, not on screen), one clamped line of agent strategy, vendor email behind a
+  collapsed "Vendor email" disclosure.
 - Keep `approval-bar`, `approve-button`, `approval-waiting-state`, `comparison-canvas`,
   `proposal-card-*`, `proposal-status-*`, `constraint-badge-*` testids.
-- Status text becomes sentence case ("Requires approval"), still uppercase-friendly for
-  the trace.
+- Status text becomes sentence case ("Requires approval").
 
 Acceptance: client screenshot shows the approve affordance; agency screenshot shows the
 waiting state; e2e smoke passes.
@@ -90,18 +102,20 @@ Files: `apps/web/src/components/dealroom/TraceFeed.tsx`,
 `SimulationDrawer.tsx`, new `DemoControls.tsx` or reuse, `apps/web/src/components/ui/`
 primitives if a popover/dropdown is needed (shadcn CLI, not hand-rolled).
 
-- Implement spec S3.6 and S3.7: agent activity rail with sans messages, mono timestamps,
-  dot instead of rainbow actor badges; demo actions as an inline ghost-button toolbar in the
-  proposals column with one ink primary CTA; "Kill actor" moved into a top-bar popover with
-  destructive styling only in the confirmation, behavior and env gating unchanged
-  (`DEMO_ALLOW_KILL`).
+- Implement spec S3.6: agent activity rail on the muted bone background (no border, no white
+  card), sans messages, mono timestamps, pastel actor dots instead of text badges, runs as
+  collapsibles with the latest expanded and older runs collapsed by default.
+- Implement spec S3.7 / mobile: demo actions as an inline ghost-button toolbar in the
+  proposals column head (no borders until hover, no red kill button on screen); "Kill
+  actor" inside a top-bar "Demo" disclosure, destructive only in the confirmation, behavior
+  and env gating unchanged (`DEMO_ALLOW_KILL`).
 - Keep `trace-feed`, `trace-run`, `trace-item`, `simulation-drawer`, `inject-grand-loft`,
   `inject-warehouse-9`, `vendor-accepts`, `kill-actor` testids. The kill button may move
   into the popover but must remain clickable by testid.
 - Mobile: single column, rail below proposals, toolbar wraps.
 
 Acceptance: e2e smoke passes with the moved kill button; 390px screenshot has no horizontal
-scroll.
+scroll; the first view shows no paragraph-length text without expansion.
 
 ### T5. Docs and reference updates (after the UI lands)
 
@@ -139,6 +153,11 @@ the layout description changed).
   import added to `styles.css`; a missing font file breaks the build silently.
 - The favicon 404 is currently the only console error. Fixing it is a hard-gate
   requirement, not a nicety.
+- Minimalism is a scored rubric item, not a taste call: if a first-view screenshot contains
+  a sentence that could be replaced by a chip, a dot, or a collapsed disclosure, it fails
+  rubric items 4 and 7.
+- Colors: four pastels may coexist on screen only because each is low-saturation and used
+  at chip scale. Do not introduce a fifth hue, and do not tint the venue cards themselves.
 - Do not touch `packages/shared`, the actor, or the relay pipeline. Visual work only.
 - Do not commit `.env`, `.durable-actors/`, `.agent-relay/`.
 
