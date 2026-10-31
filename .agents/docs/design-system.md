@@ -10,7 +10,7 @@ Not daisyUI. daisyUI ships semantic class names (`btn`, `card`) but keeps a clos
 
 ## Theme: Geist / Vercel style
 
-- Font: Geist Sans for UI, Geist Mono for the agent trace, IDs, and any tabular data.
+- Font: Plus Jakarta Sans (variable) for UI, Fraunces for display, mono stack (Berkeley Mono, then ui-monospace) for the agent trace, IDs, and any tabular data. Matches dits.
 - Look: near-black canvas in dark mode (`#0a0a0a`), neutral grays with a single accent, 1px borders (`border-border`), small radii, subtle shadows, dense spacing. Status color is earned, not decorative: red only for constraint violations, amber only for awaiting approval, green only for met/approved.
 - Tokens come from Tailwind CSS variables in the shadcn theme block (`--background`, `--foreground`, `--card`, `--primary`, `--muted`, `--destructive`, ...). Dark mode is the default; the demo is recorded in dark.
 - No hardcoded hex values in components. If a color is not a token, add the token first.
