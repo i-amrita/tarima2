@@ -73,7 +73,7 @@ describe("evaluateConstraints", () => {
     expect(av?.status).toBe("met")
   })
 
-  it("shows amber pending status when awaiting approval", () => {
+  it("shows violated status for audited violations even while awaiting approval", () => {
     const proposal: VenueProposal = {
       id: "p1",
       name: "Grand Loft",
@@ -96,7 +96,7 @@ describe("evaluateConstraints", () => {
     const budget = evaluated.find((c) => c.id === "budget")
     const curfew = evaluated.find((c) => c.id === "curfew")
 
-    expect(budget?.status).toBe("pending")
-    expect(curfew?.status).toBe("pending")
+    expect(budget?.status).toBe("violated")
+    expect(curfew?.status).toBe("violated")
   })
 })

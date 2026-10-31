@@ -39,7 +39,6 @@ export function evaluateConstraints(
     ]
   }
 
-  const isRequiresApproval = proposal.status === "REQUIRES_APPROVAL"
   const isPendingAudit = proposal.status === "PENDING_AUDIT"
   const auditViolations = proposal.audit?.violations ?? []
 
@@ -52,7 +51,7 @@ export function evaluateConstraints(
     budgetStatus = "pending"
     budgetDetail = `$${proposal.quotedCost.toLocaleString()}`
   } else if (budgetViolated) {
-    budgetStatus = isRequiresApproval ? "pending" : "violated"
+    budgetStatus = "violated"
     const diff = proposal.quotedCost - specs.maxBudget
     budgetDetail = `$${proposal.quotedCost.toLocaleString()} (+$${diff.toLocaleString()} over)`
   } else {
@@ -69,7 +68,7 @@ export function evaluateConstraints(
     capacityStatus = "pending"
     capacityDetail = `${proposal.quotedCapacity} guests`
   } else if (capacityViolated) {
-    capacityStatus = isRequiresApproval ? "pending" : "violated"
+    capacityStatus = "violated"
     const diff = specs.guestCount - proposal.quotedCapacity
     capacityDetail = `${proposal.quotedCapacity} (${diff} short of ${specs.guestCount})`
   } else {
@@ -86,7 +85,7 @@ export function evaluateConstraints(
     curfewStatus = "pending"
     curfewDetail = proposal.quotedCurfew
   } else if (curfewViolated) {
-    curfewStatus = isRequiresApproval ? "pending" : "violated"
+    curfewStatus = "violated"
     curfewDetail = `${proposal.quotedCurfew} (req: ${specs.requiredCurfew})`
   } else {
     curfewStatus = "met"
@@ -102,7 +101,7 @@ export function evaluateConstraints(
     avStatus = "pending"
     avDetail = proposal.avIncluded ? "Included" : "Not included"
   } else if (avViolated) {
-    avStatus = isRequiresApproval ? "pending" : "violated"
+    avStatus = "violated"
     avDetail = "Required but missing"
   } else {
     avStatus = "met"
