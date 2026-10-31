@@ -24,6 +24,7 @@ describe("proposal transitions", () => {
     expect(start[0]?.status).toBe("PENDING_AUDIT")
     const audited = applyAudit(start, "p1", audit)
     expect(audited[0]?.status).toBe("REQUIRES_APPROVAL")
+    expect(audited[0]?.actedBy).toBe("negotiator")
     expect(start[0]?.status).toBe("PENDING_AUDIT")
     const approved = applyApproval(audited, "p1", "client")
     expect(approved[0]).toMatchObject({ status: "COUNTER_PROPOSED", approvedBy: "client" })

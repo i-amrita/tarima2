@@ -1,6 +1,7 @@
 import { actors } from "@dealrelay/actors"
 import type { EventSpecs } from "@dealrelay/shared"
 import { RelayPipeline } from "./pipeline.js"
+import { getRelayCoordinator, type RelayCoordinator } from "./relay.js"
 
 export type RunRequestBody = {
   roomId: string
@@ -11,6 +12,17 @@ export type RunRequestBody = {
 
 export function createRelayServer(port = Number(process.env.RELAY_PORT ?? 7200)) {
   const mode = (process.env.DEMO_MODE === "live" ? "live" : "fixtures") as "fixtures" | "live"
+  let coordinator: RelayCoordinator | null = null
+
+  // Eagerly initiate coordinator connection in background
+  getRelayCoordinator()
+    .then((c) => {
+      coordinator = c
+      console.log(`[RelayServer] Relay coordinator connected (ready: ${c.isReady()})`)
+    })
+    .catch((err) => {
+      console.warn("[RelayServer] Relay coordinator could not be initialized:", err)
+    })
 
   const server = Bun.serve({
     port,
@@ -18,7 +30,7 @@ export function createRelayServer(port = Number(process.env.RELAY_PORT ?? 7200))
       const url = new URL(req.url)
 
       if (req.method === "GET" && url.pathname === "/health") {
-        return Response.json({ ok: true, mode })
+        return Response.json({ ok: true, mode, relayConnected: coordinator?.isReady() ?? false })
       }
 
       if (req.method === "POST" && url.pathname === "/run") {
@@ -35,7 +47,7 @@ export function createRelayServer(port = Number(process.env.RELAY_PORT ?? 7200))
         }
 
         const room = actors.RoomActor.get(roomId)
-        const pipeline = new RelayPipeline({ room, mode })
+        const pipeline = new RelayPipeline({ room, mode, coordinator })
         pipeline.runProposal(proposalId, rawText, specs).catch((err) => {
           console.error(`Pipeline execution failed for room ${roomId}, proposal ${proposalId}:`, err)
         })

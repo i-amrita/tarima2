@@ -1,13 +1,22 @@
-import type { ActivityActor, AuditResult, EventSpecs } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution, AuditResult, EventSpecs } from "@dealrelay/shared"
+import { createModelClient, type ModelClient } from "./llm/index.js"
+import type { RelayCoordinator } from "./relay.js"
 
 export type RoomClient = {
-  appendActivity(actor: ActivityActor, message: string): Promise<void>
+  appendActivity(
+    actor: ActivityActor,
+    message: string,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
+  ): Promise<void>
   submitAudit(proposalId: string, audit: AuditResult): Promise<void>
 }
 
 export type RelayPipelineOptions = {
   room: RoomClient
   mode: "fixtures" | "live"
+  modelClient?: ModelClient
+  coordinator?: RelayCoordinator | null
   sleep?: (ms: number) => Promise<void>
 }
 
@@ -126,32 +135,74 @@ export function generateNegotiation(
 export class RelayPipeline {
   private room: RoomClient
   private mode: "fixtures" | "live"
+  private modelClient: ModelClient
+  private coordinator: RelayCoordinator | null
   private sleep: (ms: number) => Promise<void>
 
   constructor(options: RelayPipelineOptions) {
     this.room = options.room
     this.mode = options.mode
+    this.modelClient = options.modelClient ?? createModelClient(options.mode)
+    this.coordinator = options.coordinator ?? null
     this.sleep = options.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)))
   }
 
-  async runProposal(proposalId: string, rawText: string, specs: EventSpecs): Promise<void> {
-    if (this.mode === "live") {
-      throw new Error("DEMO_MODE=live not implemented yet")
+  private async emitActivity(
+    actor: ActivityActor,
+    message: string,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
+  ): Promise<void> {
+    if (this.coordinator?.isReady()) {
+      if (actor === "scout") await this.coordinator.postAsScout(message)
+      else if (actor === "finance") await this.coordinator.postAsFinance(message)
+      else if (actor === "negotiator") await this.coordinator.postAsNegotiator(message)
+
+      await this.coordinator.mirrorActivity(this.room, actor, message, attribution, actedBy)
+    } else {
+      await this.room.appendActivity(actor, message, attribution, actedBy)
     }
+  }
+
+  async runProposal(proposalId: string, rawText: string, specs: EventSpecs): Promise<void> {
+    const viaRelay = Boolean(this.coordinator?.isReady())
 
     // 1. Scout step
-    await this.room.appendActivity("scout", "Scanning inbound proposal text and extracting venue specifications...")
-    await this.sleep(80)
-
-    const facts = parseProposalText(rawText)
-    await this.room.appendActivity(
+    await this.emitActivity(
       "scout",
-      `Extracted facts: cost $${facts.cost.toLocaleString()}, capacity ${facts.capacity}, curfew ${facts.curfew}, AV ${facts.avIncluded ? "included" : "not included"}`,
+      "Scanning inbound proposal text and extracting venue specifications...",
+      { agent: "scout", verb: "scan", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+      "scout",
     )
     await this.sleep(80)
 
-    // 2. Finance step
-    await this.room.appendActivity("finance", "Evaluating proposal against event constraints and budget...")
+    const extraction = await this.modelClient.extractFacts(rawText)
+    const facts = extraction.facts
+    await this.emitActivity(
+      "scout",
+      `Extracted facts: cost $${facts.cost.toLocaleString()}, capacity ${facts.capacity}, curfew ${facts.curfew}, AV ${facts.avIncluded ? "included" : "not included"}`,
+      {
+        agent: "scout",
+        verb: "extracted",
+        model: extraction.attribution.model,
+        latencyMs: extraction.attribution.latencyMs,
+        tokens: extraction.attribution.tokens,
+        viaRelay,
+      },
+      "scout",
+    )
+    await this.sleep(80)
+
+    // 2. Finance step (reads from #procurement and calculates deltas/violations deterministically)
+    if (this.coordinator?.isReady()) {
+      await this.coordinator.readAsFinance()
+    }
+    await this.emitActivity(
+      "finance",
+      "Evaluating proposal against event constraints and budget...",
+      { agent: "finance", verb: "evaluated", model: "deterministic", latencyMs: 0, viaRelay },
+      "finance",
+    )
     await this.sleep(80)
 
     const budgetDelta = specs.maxBudget - facts.cost
@@ -171,21 +222,42 @@ export class RelayPipeline {
       violations.push("AV missing when required")
     }
 
-    await this.room.appendActivity(
+    await this.emitActivity(
       "finance",
       `Audit complete: budget delta $${budgetDelta.toLocaleString()}, capacity delta ${capacityDelta}. Violations: ${violations.length > 0 ? violations.join(", ") : "none"}`,
+      { agent: "finance", verb: "audited", model: "deterministic", latencyMs: 0, viaRelay },
+      "finance",
     )
     await this.sleep(80)
 
-    // 3. Negotiator step
-    await this.room.appendActivity("negotiator", "Reviewing audit findings and formulating counter-proposal strategy...")
+    // 3. Negotiator step (reads from #procurement and drafts counter strategy)
+    if (this.coordinator?.isReady()) {
+      await this.coordinator.readAsNegotiator()
+    }
+    await this.emitActivity(
+      "negotiator",
+      "Reviewing audit findings and formulating counter-proposal strategy...",
+      { agent: "negotiator", verb: "reviewed", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+      "negotiator",
+    )
     await this.sleep(80)
 
-    const { counterStrategy, draftCounterProposal } = generateNegotiation(violations, specs, facts)
+    const counterResult = await this.modelClient.draftCounter(violations, specs, facts)
+    const counterStrategy = counterResult.counterStrategy
+    const draftCounterProposal = counterResult.draftCounterProposal
 
-    await this.room.appendActivity(
+    await this.emitActivity(
       "negotiator",
       `Counter strategy: ${counterStrategy}. Drafted proposal: "${draftCounterProposal}"`,
+      {
+        agent: "negotiator",
+        verb: "countered",
+        model: counterResult.attribution.model,
+        latencyMs: counterResult.attribution.latencyMs,
+        tokens: counterResult.attribution.tokens,
+        viaRelay,
+      },
+      "negotiator",
     )
     await this.sleep(80)
 
@@ -195,6 +267,7 @@ export class RelayPipeline {
       violations,
       counterStrategy,
       draftCounterProposal,
+      actedBy: "negotiator",
     }
 
     await this.room.submitAudit(proposalId, audit)

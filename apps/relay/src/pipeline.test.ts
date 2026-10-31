@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import type { ActivityActor, AuditResult } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution, AuditResult } from "@dealrelay/shared"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 import {
   isCurfewEarlier,
@@ -10,13 +10,25 @@ import {
 } from "./pipeline.js"
 
 function createFakeRoomClient() {
-  const activities: Array<{ actor: ActivityActor; message: string }> = []
+  const activities: Array<{
+    actor: ActivityActor
+    message: string
+    attribution?: AgentAttribution
+    actedBy?: ActivityActor
+  }> = []
   const audits: Array<{ proposalId: string; audit: AuditResult }> = []
 
   const room: RoomClient = {
-    appendActivity: vi.fn(async (actor: ActivityActor, message: string) => {
-      activities.push({ actor, message })
-    }),
+    appendActivity: vi.fn(
+      async (
+        actor: ActivityActor,
+        message: string,
+        attribution?: AgentAttribution,
+        actedBy?: ActivityActor,
+      ) => {
+        activities.push({ actor, message, attribution, actedBy })
+      },
+    ),
     submitAudit: vi.fn(async (proposalId: string, audit: AuditResult) => {
       audits.push({ proposalId, audit })
     }),
@@ -89,6 +101,7 @@ describe("RelayPipeline - Grand Loft run", () => {
     // Counter proposal derived from violations
     expect(audit.counterStrategy).toMatch(/curfew/i)
     expect(audit.draftCounterProposal).toMatch(/02:00/)
+    expect(audit.actedBy).toBe("negotiator")
 
     // Activity events order: scout -> finance -> negotiator
     const actors = activities.map((a) => a.actor)
@@ -99,6 +112,15 @@ describe("RelayPipeline - Grand Loft run", () => {
     expect(scoutIndices.length).toBeGreaterThan(0)
     expect(financeIndices.length).toBeGreaterThan(0)
     expect(negotiatorIndices.length).toBeGreaterThan(0)
+
+    // Verify attribution and actedBy on every activity
+    for (const act of activities) {
+      expect(act.actedBy).toBe(act.actor)
+      expect(act.attribution).toBeDefined()
+      expect(act.attribution?.agent).toBe(act.actor)
+      expect(act.attribution?.verb).toBeDefined()
+      expect(act.attribution?.model).toBeDefined()
+    }
 
     const lastScout = Math.max(...scoutIndices)
     const firstFinance = Math.min(...financeIndices)
@@ -148,12 +170,65 @@ describe("RelayPipeline - Warehouse 9 run", () => {
   })
 })
 
-describe("RelayPipeline - Live mode stub", () => {
-  it("throws clear error when DEMO_MODE=live", async () => {
-    const { room } = createFakeRoomClient()
-    const pipeline = new RelayPipeline({ room, mode: "live", sleep: instantSleep })
-    await expect(pipeline.runProposal("p1", "some text", DEFAULT_SPECS)).rejects.toThrow(
-      "DEMO_MODE=live not implemented yet",
-    )
+describe("RelayPipeline - Live mode execution", () => {
+  it("executes successfully in live mode with ModelClient", async () => {
+    const { room, activities, audits } = createFakeRoomClient()
+    const mockModelClient = {
+      extractFacts: vi.fn(async () => ({
+        facts: { cost: 26000, capacity: 550, curfew: "00:00", avIncluded: true },
+        attribution: { model: "mock-model", latencyMs: 100, tokens: { total: 150 }, fallbackUsed: false },
+      })),
+      draftCounter: vi.fn(async () => ({
+        counterStrategy: "Counter with curfew extension",
+        draftCounterProposal: "Please extend curfew to 02:00",
+        attribution: { model: "mock-model", latencyMs: 120, tokens: { total: 200 }, fallbackUsed: false },
+      })),
+    }
+
+    const pipeline = new RelayPipeline({
+      room,
+      mode: "live",
+      modelClient: mockModelClient,
+      sleep: instantSleep,
+    })
+
+    await pipeline.runProposal("p1", "Proposal text", DEFAULT_SPECS)
+    expect(mockModelClient.extractFacts).toHaveBeenCalledTimes(1)
+    expect(mockModelClient.draftCounter).toHaveBeenCalledTimes(1)
+    expect(audits).toHaveLength(1)
+    expect(activities.length).toBeGreaterThan(0)
+  })
+
+  it("coordinates steps through Agent Relay when coordinator is provided", async () => {
+    const { room, activities } = createFakeRoomClient()
+    const mockCoordinator = {
+      isReady: vi.fn(() => true),
+      postAsScout: vi.fn(async () => {}),
+      readAsFinance: vi.fn(async () => "Scout posted facts"),
+      postAsFinance: vi.fn(async () => {}),
+      readAsNegotiator: vi.fn(async () => "Finance posted audit"),
+      postAsNegotiator: vi.fn(async () => {}),
+      mirrorActivity: vi.fn(async (_room: RoomClient, actor: ActivityActor, message: string) => {
+        activities.push({ actor, message })
+      }),
+    }
+
+    const pipeline = new RelayPipeline({
+      room,
+      mode: "fixtures",
+      coordinator: mockCoordinator as unknown as import("./relay.js").RelayCoordinator,
+      sleep: instantSleep,
+    })
+
+    const grandLoft = VENUE_FIXTURES.find((v) => v.name === "The Grand Loft")!
+    await pipeline.runProposal("p1", grandLoft.rawText, DEFAULT_SPECS)
+
+    expect(mockCoordinator.postAsScout).toHaveBeenCalled()
+    expect(mockCoordinator.readAsFinance).toHaveBeenCalled()
+    expect(mockCoordinator.postAsFinance).toHaveBeenCalled()
+    expect(mockCoordinator.readAsNegotiator).toHaveBeenCalled()
+    expect(mockCoordinator.postAsNegotiator).toHaveBeenCalled()
+    expect(mockCoordinator.mirrorActivity).toHaveBeenCalled()
+    expect(activities.length).toBeGreaterThan(0)
   })
 })

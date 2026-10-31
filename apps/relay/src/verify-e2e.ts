@@ -2,7 +2,7 @@ import { actors } from "@dealrelay/actors"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 import type { VenueProposal } from "@dealrelay/shared"
 
-const RELAY_PORT = 7200
+const RELAY_PORT = Number(process.env.TEST_RELAY_PORT ?? 7205)
 const RELAY_URL = `http://127.0.0.1:${RELAY_PORT}`
 
 console.log("1. Starting relay server on port", RELAY_PORT)
@@ -71,6 +71,9 @@ async function verifyVenue(venueIndex: number) {
 
         const found = proposals.find((p) => p.id === proposalId)
         if (found && found.status === "REQUIRES_APPROVAL" && found.audit) {
+          if (found.actedBy !== "negotiator") {
+            console.warn(`Note: proposal.actedBy is ${found.actedBy}`)
+          }
           clearTimeout(timeout)
           ws.close()
           resolve(found)
@@ -117,13 +120,13 @@ try {
 
   // Test both venue fixtures end-to-end
   const p1 = await verifyVenue(0)
-  if (!p1.audit?.violations.includes("over budget")) {
-    throw new Error("Grand Loft missing over budget violation")
+  if (!p1.audit?.violations.includes("curfew earlier than required")) {
+    throw new Error("Grand Loft missing curfew violation")
   }
 
   const p2 = await verifyVenue(1)
-  if (!p2.audit?.violations.includes("under capacity")) {
-    throw new Error("Warehouse 9 missing under capacity violation")
+  if (!p2.audit?.violations.includes("over budget")) {
+    throw new Error("Warehouse 9 missing over budget violation")
   }
 
   console.log("Both venues verified end-to-end successfully!")

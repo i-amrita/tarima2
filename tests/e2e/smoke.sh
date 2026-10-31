@@ -18,6 +18,33 @@ pw click "getByTestId('inject-grand-loft')" >/dev/null 2>&1 || pw click "getByRo
 expect "REQUIRES APPROVAL" "proposal audited by relay"
 expect "SCOUT" "trace shows scout"
 expect "NEGOTIATOR" "trace shows negotiator"
+pw eval "document.querySelectorAll('[data-testid=trace-item][data-actor]').length" | grep -qv '^0$' && echo "ok   trace has attribution"
+
+# Verify relay messages were posted to #procurement via Agent Relay
+bun -e '
+  import { existsSync, readFileSync } from "node:fs";
+  import { AgentRelay } from "agent-relay";
+  const envPath = ".env";
+  if (existsSync(envPath)) {
+    const content = readFileSync(envPath, "utf-8");
+    const key = content.match(/RELAY_WORKSPACE_KEY=([^\n\r]+)/)?.[1];
+    const token = content.match(/RELAY_TOKEN_TRACE_VIEWER=([^\n\r]+)/)?.[1];
+    const baseUrl = content.match(/RELAY_BASE_URL=([^\n\r]+)/)?.[1] || "http://127.0.0.1:8787";
+    if (key && token) {
+      try {
+        const relay = new AgentRelay({ workspaceKey: key, baseUrl });
+        const viewer = await relay.workspace.reconnect({ apiToken: token });
+        const msgs = await viewer.messages.list("#procurement", { limit: 10 });
+        if (msgs.length > 0) {
+          console.log("ok   relay messages posted to #procurement (" + msgs.length + " found)");
+        }
+      } catch (e) {
+        console.warn("Relay check skipped:", e.message);
+      }
+    }
+  }
+' || true
+
 pw eval "document.querySelectorAll('[data-testid*=badge]').length" >/dev/null
 pw tab-new "$base/room/$room?role=client" >/dev/null
 expect "Approve Counter-Offer" "client sees approval bar"

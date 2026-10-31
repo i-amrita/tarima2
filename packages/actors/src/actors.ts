@@ -2,6 +2,7 @@ import { Actor, Emittable, Persisted } from "durable-actors"
 import type {
   ActivityActor,
   ActivityEvent,
+  AgentAttribution,
   AuditResult,
   EventSpecs,
   NewVenueProposal,
@@ -33,8 +34,14 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
   }
 
   async submitAudit(proposalId: string, audit: AuditResult): Promise<void> {
-    this.proposals = applyAudit(this.proposals, proposalId, audit)
-    await this.log("negotiator", `Audit complete for ${proposalId}: ${audit.violations.length} violation(s)`)
+    const actedBy = audit.actedBy ?? "negotiator"
+    this.proposals = applyAudit(this.proposals, proposalId, audit, actedBy)
+    await this.log(
+      "negotiator",
+      `Audit complete for ${proposalId}: ${audit.violations.length} violation(s)`,
+      { agent: "negotiator", verb: "audited" },
+      actedBy,
+    )
   }
 
   async recordApproval(proposalId: string, role: Role): Promise<void> {
@@ -47,8 +54,13 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
     await this.log("system", `Vendor accepted counter for ${proposalId}`)
   }
 
-  async appendActivity(actor: ActivityActor, message: string): Promise<void> {
-    await this.log(actor, message)
+  async appendActivity(
+    actor: ActivityActor,
+    message: string,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
+  ): Promise<void> {
+    await this.log(actor, message, attribution, actedBy)
   }
 
   async onMessage(
@@ -65,7 +77,19 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
     }
   }
 
-  private async log(actor: ActivityActor, message: string): Promise<void> {
-    this.activity = pushActivity(this.activity, { id: `a${this.nextActivityId++}`, at: Date.now(), actor, message })
+  private async log(
+    actor: ActivityActor,
+    message: string,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
+  ): Promise<void> {
+    this.activity = pushActivity(this.activity, {
+      id: `a${this.nextActivityId++}`,
+      at: Date.now(),
+      actor,
+      message,
+      attribution: attribution ?? { agent: actor, verb: "announced" },
+      actedBy: actedBy ?? actor,
+    })
   }
 }

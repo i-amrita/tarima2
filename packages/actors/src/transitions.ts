@@ -26,10 +26,15 @@ export function addProposal(proposals: VenueProposal[], id: string, input: NewVe
   return [...proposals, { ...input, id, status: "PENDING_AUDIT" }]
 }
 
-export function applyAudit(proposals: VenueProposal[], id: string, audit: AuditResult): VenueProposal[] {
+export function applyAudit(
+  proposals: VenueProposal[],
+  id: string,
+  audit: AuditResult,
+  actedBy: ActivityActor = audit.actedBy ?? "negotiator",
+): VenueProposal[] {
   return mapProposal(proposals, id, (p) => {
     requireStatus(p, "PENDING_AUDIT")
-    return { ...p, audit, status: "REQUIRES_APPROVAL" }
+    return { ...p, audit: { ...audit, actedBy }, status: "REQUIRES_APPROVAL", actedBy }
   })
 }
 
@@ -49,7 +54,7 @@ export function applyVendorAcceptance(proposals: VenueProposal[], id: string): V
 
 export function pushActivity(
   activity: ActivityEvent[],
-  event: { id: string; at: number; actor: ActivityActor; message: string },
+  event: ActivityEvent,
 ): ActivityEvent[] {
   return [...activity, event].slice(-ACTIVITY_CAP)
 }
