@@ -53,7 +53,7 @@ pair; add `-foreground` and `-border` companions:
 
 Typography:
 
-- `--font-display`: `@fontsource/instrument-serif` (npm 5.3.0, add with bun) for the event
+- `--font-display`: Fraunces (self-hosted woff2 in `apps/web/public/fonts`, declared in `apps/web/src/fonts.css`, same files as dits) for the event
   name and the approval callout's count figure only.
 - Plus Jakarta Sans (variable): all body, UI, buttons. Mono stack (Berkeley Mono, then ui-monospace): room id, timestamps, chip values, eyebrow. Same type system as dits.
   Mono never for headings or body sentences.
