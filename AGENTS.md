@@ -29,6 +29,7 @@
 
 - TS strict, no `any` at seams. Use `type-fest` where it sharpens intent.
 - Seams (actor methods, server functions, relay payloads) are defined in `packages/shared` and imported everywhere else. Never redefine a seam type in a consumer.
+- UI: shadcn/ui design system with Geist-style theme. Base components from `components/ui/*`, AI surfaces from `components/ai-elements/*` (shadcn-native registry), supplements from `components/prompt-kit/*`. Deal-room components compose those layers; see `.agents/docs/design-system.md` for the sourcing order. No hardcoded colors; tokens only.
 - No `useEffect` for data sync; state comes from the actor over WebSocket and React renders from the latest snapshot.
 - No emdashes in prose or UI copy.
 - Prefer editing over creating files. Prefer single-responsibility packages over one big app.

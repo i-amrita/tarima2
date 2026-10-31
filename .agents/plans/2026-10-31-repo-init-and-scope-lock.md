@@ -31,7 +31,9 @@ Three workspaces with linear dependencies. Bun workspaces plus two root scripts 
 
 ### C. apps/web (M)
 
-- TanStack Start + Nitro (node-server preset), Tailwind.
+- TanStack Start + Nitro (node-server preset), Tailwind v4.
+- Design system: **shadcn/ui with a Geist-style theme** (see `.agents/docs/design-system.md`). Every component is built from shadcn/ui base components (`components/ui/*`); complex components compose base components or libraries layered on shadcn/ui (`components/ai-elements/*`, `components/prompt-kit/*`). No ad-hoc styled divs where a base component exists.
+- shadcn AI Elements (`@ai-elements/*` registry, shadcn-native version — NOT the deprecated `elements.ai-sdk.dev` package) for the agent surfaces: Trace for the agent feed, Reasoning for streamed thinking, Confirmation for the approval bar, Task/Subagent for per-agent work units.
 - Routes per ARCHITECTURE.md. Socket grant server function. Trace feed, comparison canvas, approval bar, simulation drawer.
 - Reads room state over WebSocket; mutations go through server functions (typed RPC).
 - Playwright smoke via `playwright-cli` skill for the happy path (per global rule, not raw @playwright/test in-repo).

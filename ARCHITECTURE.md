@@ -105,6 +105,8 @@ Socket contract:
 
 ### Web app (apps/web)
 
+Design system: shadcn/ui + Geist-style theme, semantic tokens only. See `.agents/docs/design-system.md`.
+
 Routes (TanStack Router):
 
 - `/` — redirects to `/room/$roomId?role=agency` (agency is the default entry)
@@ -112,6 +114,15 @@ Routes (TanStack Router):
   - Left: constraint header + comparison canvas (one card per proposal, badges per constraint)
   - Right: agent trace feed + approval bar
   - Bottom drawer (agency only): simulation triggers + "kill actor" demo button
+
+Component layering:
+
+- `components/ui/*` — shadcn/ui base components (CLI-installed). Only source of raw primitives.
+- `components/ai-elements/*` — shadcn-native AI Elements (`@ai-elements/*`): Trace, Reasoning, Confirmation, Task, Terminal.
+- `components/prompt-kit/*` — prompt-kit supplements where ai-elements has no equivalent.
+- `components/dealroom/*` — our compositions (VenueCard, ConstraintBadge, ApprovalBar, SimulationDrawer, TraceFeed). Built only from the layers above.
+
+Rejected: daisyUI (closed component set, own theme layer), assistant-ui (runtime-coupled chat state machine; our state comes from the actor socket), Vercel ai-elements package (deprecated Nov 2026 in favor of the shadcn-native version).
 - Server functions:
   - `getRoomState(roomId)` — typed passthrough to actor
   - `triggerSimulation(roomId, kind)` — injects pre-authored proposals and kicks the relay pipeline
@@ -146,3 +157,4 @@ Aim: `--quick` under ~45s warm so coding agents can loop without babysitting.
 - Agent messaging runs on hosted Relaycast (free `rk_live_` workspace key). Truly offline mode is CLI-broker-only and not worth it for the hackathon.
 - Three agents, not two: multi-agent coordination is the pitch.
 - TanStack Start + Nitro (node-server preset), mirroring brioso's proven setup.
+- UI: shadcn/ui with Geist-style theme, semantic tokens, AI Elements patterns for agent surfaces. Detail in .agents/docs/design-system.md.

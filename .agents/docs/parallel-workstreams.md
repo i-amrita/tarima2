@@ -8,7 +8,7 @@ How to split DealRelay across sessions (local + VPS `own-agents`) without steppi
 | --- | --- | --- |
 | A. Actors + shared types | `packages/actors`, `packages/shared` | nothing |
 | B. Relay pipeline | `apps/relay` | A (generated client, shared types) |
-| C. Web app | `apps/web` | A, B contracts (not implementations) |
+| C. Web app | `apps/web` | A, B contracts (not implementations); design system in `.agents/docs/design-system.md` |
 | D. Validation + tooling | `scripts/validate.ts`, `.mise.toml`, root package.json | nothing |
 | E. Demo video assets | `.agents/docs/demo-video-plan.md`, fixtures copy | B fixtures script |
 
