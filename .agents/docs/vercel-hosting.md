@@ -20,3 +20,7 @@ Vercel hosts `apps/web` only. The actor server (SQLite on disk, long-lived WebSo
 ## Open
 
 User picks A or B. Verify the Nitro vercel build (`VERCEL=1 bun run build` in apps/web) before the first deploy.
+
+## Decision (2026-10-31)
+
+User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a cloudflared port comes later. `scripts/demo/sandbox.ts` boots actor and relay in a sandbox and prints `ACTOR_URL` / `RELAY_URL`. It is untested: it needs Vercel auth (`vercel link`, `vercel env pull`) and the repo pushed to origin. Known risk: `durable-actors dev` has no `--host` flag and may bind localhost only, in which case the sandbox's public port will not reach it; the fallback is the cloudflared route on the VPS. The relay's `RELAY_URL` also needs to be reachable from Vercel Functions.
