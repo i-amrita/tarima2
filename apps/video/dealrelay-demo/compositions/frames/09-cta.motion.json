@@ -1,0 +1,7 @@
+{
+  "scene": "09-cta",
+  "duration_s": 4.0,
+  "rules": ["gradient-text-sweep", "titlecard-reveal"],
+  "exit": { "vector": "none (holds at rest, scale 1.0 at the final frame; scale tween completes at t=4.0 with ~0 px/s residual)", "still_moving": false },
+  "entry": { "vector": "up + fade + scale 0.95->1.0, ~90 px/s (28px rise over 0.85s ease power3.out, wordmark arrives from below center)", "from_rest": true }
+}

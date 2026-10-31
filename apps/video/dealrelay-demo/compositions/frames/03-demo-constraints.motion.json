@@ -1,0 +1,7 @@
+{
+  "scene": "03-demo-constraints",
+  "duration_s": 8,
+  "rules": ["dynamic-content-sequencing", "spring-pop-entrance"],
+  "exit": { "vector": "outward, 2 px/s", "still_moving": true },
+  "entry": { "vector": "up, 47 px/s", "from_rest": false }
+}

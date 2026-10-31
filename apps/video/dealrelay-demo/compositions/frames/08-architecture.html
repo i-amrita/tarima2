@@ -1,0 +1,424 @@
+<template>
+  <div id="root" data-composition-id="08-architecture" data-duration="6" data-fps="30">
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      #root {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        color: #f5f5f7;
+        font-family: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+        pointer-events: none;
+      }
+
+      .arch-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #0a0a14;
+      }
+
+      .arch-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(130px);
+      }
+
+      .arch-stage {
+        position: absolute;
+        inset: 0;
+      }
+
+      .arch-lockup {
+        position: relative;
+        width: 100cqw;
+        height: 100cqh;
+      }
+
+      .arch-orbit {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50cqw 40cqh;
+        will-change: transform;
+      }
+
+      .arch-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100cqw;
+        height: 100cqh;
+        overflow: visible;
+      }
+
+      .arch-connector {
+        fill: none;
+        stroke-width: 0.55;
+        stroke-linecap: round;
+        opacity: 0.6;
+      }
+
+      .arch-node-pos {
+        position: absolute;
+        width: 19cqw;
+        transform: translate(-50%, -50%);
+      }
+
+      .arch-node {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.9cqh;
+        width: 100%;
+        padding: 1.4cqh 1.6cqw;
+        border-radius: 1.6cqw;
+        border: 0.12cqw solid rgba(245, 245, 247, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        color: #f5f5f7;
+        font-size: 2.2cqw;
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        text-align: center;
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+
+      .arch-dot {
+        width: 1.25cqh;
+        height: 1.25cqh;
+        border-radius: 50%;
+        background: var(--node-color, #1f6c9f);
+      }
+
+      .arch-hub-wrap {
+        position: absolute;
+        left: 50cqw;
+        top: 40cqh;
+        z-index: 2;
+        transform: translate(-50%, -50%);
+        will-change: transform, opacity;
+      }
+
+      .arch-hub-glow {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 78cqw;
+        height: 62cqh;
+        margin-left: -39cqw;
+        margin-top: -31cqh;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(96, 128, 214, 0.4) 0%,
+          rgba(122, 63, 184, 0.15) 46%,
+          rgba(10, 10, 20, 0) 74%
+        );
+        opacity: 0;
+        transform: scale(0.8);
+        will-change: transform, opacity;
+      }
+
+      .arch-hub {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 21cqw;
+        min-height: 14cqh;
+        padding: 1.8cqh 2cqw;
+        border-radius: 1.6cqw;
+        border: 0.2cqw solid rgba(245, 245, 247, 0.85);
+        background: rgba(255, 255, 255, 0.07);
+        color: #f5f5f7;
+        font-size: 2.9cqw;
+        font-weight: 700;
+        line-height: 1.06;
+        letter-spacing: -0.02em;
+        text-align: center;
+        will-change: transform, opacity;
+      }
+
+      .arch-captions {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 72cqh;
+        z-index: 3;
+        text-align: center;
+      }
+
+      .arch-caption {
+        display: block;
+        color: rgba(245, 245, 247, 0.6);
+        font-size: 2.2cqh;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        line-height: 1.55;
+        text-transform: uppercase;
+        will-change: opacity, transform;
+      }
+    </style>
+
+    <div class="arch-bg clip" data-start="0" data-duration="6" data-track-index="0">
+      <div class="arch-orb" id="arch-orb-a"></div>
+      <div class="arch-orb" id="arch-orb-b"></div>
+    </div>
+
+    <div class="arch-stage clip" data-start="0" data-duration="6" data-track-index="1">
+      <div class="arch-lockup" id="arch-lockup">
+        <div class="arch-orbit" id="arch-orbit">
+          <svg
+            class="arch-svg"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <ellipse
+              class="arch-connector"
+              id="arch-orbit-ring"
+              cx="50"
+              cy="40"
+              rx="37"
+              ry="26"
+              style="stroke: rgba(245, 245, 247, 0.24); opacity: 0.42"
+            ></ellipse>
+          </svg>
+          <svg
+            class="arch-svg"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            id="arch-connector-layer"
+          ></svg>
+          <div id="arch-node-layer"></div>
+        </div>
+        <div class="arch-hub-wrap" id="arch-hub-wrap">
+          <div class="arch-hub-glow" id="arch-hub-glow"></div>
+          <div class="arch-hub" id="arch-hub">DealRelay Room</div>
+        </div>
+        <div class="arch-captions" id="arch-captions">
+          <span class="arch-caption" id="arch-cap-1"
+            >durable actors: state that survives restarts</span
+          >
+          <span class="arch-caption" id="arch-cap-2"
+            >agent relay: coordination between agents</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        var root = document.getElementById("root");
+        var orbit = document.getElementById("arch-orbit");
+        var hubWrap = document.getElementById("arch-hub-wrap");
+        var hub = document.getElementById("arch-hub");
+        var hubGlow = document.getElementById("arch-hub-glow");
+        var connectorLayer = document.getElementById("arch-connector-layer");
+        var nodeLayer = document.getElementById("arch-node-layer");
+        var orbA = document.getElementById("arch-orb-a");
+        var orbB = document.getElementById("arch-orb-b");
+        var orbitRing = document.getElementById("arch-orbit-ring");
+        var cap1 = document.getElementById("arch-cap-1");
+        var cap2 = document.getElementById("arch-cap-2");
+
+        var HUB_X = 50;
+        var HUB_Y = 40;
+        var RX = 37;
+        var RY = 26;
+
+        var nodes = [
+          { label: "Scout", color: "#1f6c9f", angle: 200, cue: 0.55 },
+          { label: "Finance", color: "#7a3fb8", angle: 340, cue: 1.25 },
+          { label: "Negotiator", color: "#956400", angle: 270, cue: 1.95 },
+        ];
+
+        orbA.style.width = "44cqw";
+        orbA.style.height = "44cqw";
+        orbA.style.left = "-8cqw";
+        orbA.style.top = "0cqh";
+        orbA.style.background = "rgba(31, 108, 159, 0.28)";
+        orbB.style.width = "40cqw";
+        orbB.style.height = "40cqw";
+        orbB.style.left = "66cqw";
+        orbB.style.top = "40cqh";
+        orbB.style.background = "rgba(122, 63, 184, 0.24)";
+
+        var connectors = [];
+        var nodeEls = [];
+        var svgNS = "http://www.w3.org/2000/svg";
+
+        nodes.forEach(function (def) {
+          var rad = (def.angle * Math.PI) / 180;
+          var x = HUB_X + Math.cos(rad) * RX;
+          var y = HUB_Y + Math.sin(rad) * RY;
+
+          var connector = document.createElementNS(svgNS, "path");
+          connector.setAttribute("class", "arch-connector");
+          connector.setAttribute(
+            "d",
+            "M " + HUB_X + " " + HUB_Y + " L " + x.toFixed(3) + " " + y.toFixed(3),
+          );
+          connector.setAttribute("style", "stroke: " + def.color);
+          connectorLayer.appendChild(connector);
+          connectors.push(connector);
+
+          var pos = document.createElement("div");
+          pos.className = "arch-node-pos";
+          pos.style.left = x.toFixed(3) + "cqw";
+          pos.style.top = y.toFixed(3) + "cqh";
+
+          var node = document.createElement("div");
+          node.className = "arch-node";
+          node.style.setProperty("--node-color", def.color);
+          node.style.borderColor = def.color;
+
+          var dot = document.createElement("span");
+          dot.className = "arch-dot";
+          node.appendChild(dot);
+          node.appendChild(document.createTextNode(def.label));
+
+          pos.appendChild(node);
+          nodeLayer.appendChild(pos);
+          nodeEls.push(node);
+        });
+
+        // Draw contract: each connector owns its real path length so the
+        // dash offset tween lands exactly at zero.
+        connectors.forEach(function (connector) {
+          var length = connector.getTotalLength();
+          connector.style.strokeDasharray = length + " " + length;
+          connector.style.strokeDashoffset = String(length);
+        });
+        var ringLength = orbitRing.getTotalLength();
+        orbitRing.style.strokeDasharray = ringLength + " " + ringLength;
+        orbitRing.style.strokeDashoffset = String(ringLength);
+
+        var tl = gsap.timeline({ paused: true });
+
+        // ground drift
+        tl.fromTo(orbA, { y: 0 }, { y: 26, duration: 6, ease: "sine.inOut" }, 0);
+        tl.fromTo(orbB, { y: 0 }, { y: -24, duration: 6, ease: "sine.inOut" }, 0);
+
+        // hub blooms in and stays lit
+        tl.fromTo(
+          hubGlow,
+          { opacity: 0, scale: 0.8 },
+          { opacity: 0.3, scale: 1, duration: 1.0, ease: "power2.out" },
+          0,
+        );
+        var hubPhase = { p: 0 };
+        tl.to(
+          hubPhase,
+          {
+            p: Math.PI * 2,
+            duration: 3.4,
+            ease: "none",
+            onUpdate: function () {
+              var s = Math.sin(hubPhase.p);
+              hubGlow.style.opacity = String(0.3 + s * 0.025);
+              hubGlow.style.transform = "scale(" + (1 + s * 0.02) + ")";
+            },
+          },
+          1.0,
+        );
+        tl.fromTo(
+          hubWrap,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.6, ease: "power2.out" },
+          0.05,
+        );
+        tl.fromTo(
+          hub,
+          { opacity: 0, scale: 0.82 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" },
+          0.05,
+        );
+        tl.fromTo(
+          orbit,
+          { rotation: -3 },
+          { rotation: 0, duration: 1.6, ease: "power3.out" },
+          0,
+        );
+
+        // orbit ring draws on softly behind the nodes
+        tl.to(
+          orbitRing,
+          { strokeDashoffset: 0, duration: 1.5, ease: "power2.inOut" },
+          0.35,
+        );
+
+        // nodes spring in, connectors draw in narration order
+        var lastCue = 1.95;
+        nodes.forEach(function (def, i) {
+          var node = nodeEls[i];
+          var connector = connectors[i];
+          var cue = def.cue;
+
+          tl.fromTo(
+            node,
+            { opacity: 0, scale: 0 },
+            { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.55)" },
+            cue,
+          );
+          tl.fromTo(
+            connector,
+            { strokeDashoffset: 100 },
+            { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" },
+            cue,
+          );
+          if (i === nodes.length - 1) lastCue = cue;
+        });
+
+        // settle all nodes + connectors
+        tl.to(
+          nodeEls,
+          { opacity: 0.9, duration: 0.4, ease: "power2.out" },
+          lastCue + 0.55,
+        );
+        tl.to(
+          connectors,
+          { opacity: 0.5, duration: 0.4, ease: "power2.out" },
+          lastCue + 0.55,
+        );
+
+        // bounded orbital drift during the hold (direction flips, no loop)
+        tl.to(
+          orbit,
+          { rotation: 1.1, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: 1 },
+          2.9,
+        );
+
+        // quiet captions fade in
+        tl.fromTo(
+          cap1,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+          3.4,
+        );
+        tl.fromTo(
+          cap2,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+          4.1,
+        );
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["08-architecture"] = tl;
+      })();
+    </script>
+  </div>
+</template>

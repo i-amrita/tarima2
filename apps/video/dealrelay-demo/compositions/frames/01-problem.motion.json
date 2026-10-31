@@ -1,0 +1,7 @@
+{
+  "scene": "01-problem",
+  "duration_s": 8,
+  "rules": ["discrete-text-sequence", "multi-phase-camera", "gsap-effects"],
+  "exit": { "vector": "right, 4941 px/s", "still_moving": true },
+  "entry": { "vector": "up, 67 px/s", "from_rest": false }
+}

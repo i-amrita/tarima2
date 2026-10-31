@@ -1,0 +1,7 @@
+{
+  "scene": "05-demo-agents",
+  "duration_s": 14.0,
+  "rules": ["typewriter-reveal", "discrete-text-sequence"],
+  "exit": { "vector": "room holds static; rail stream settled at rest (0 px/s)", "still_moving": false },
+  "entry": { "vector": "room enters at rest, rail runs rise +14px to 0 on pop", "from_rest": true }
+}

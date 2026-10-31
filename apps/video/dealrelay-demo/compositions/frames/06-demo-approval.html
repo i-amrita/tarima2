@@ -1,0 +1,307 @@
+<template>
+<style>
+  #root {
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    color: #111111;
+    font-family: "Helvetica Neue", Arial, Inter, 'Helvetica Neue', Arial, sans-serif;
+  }
+  #root * { box-sizing: border-box; margin: 0; padding: 0; }
+  .d6-ground { position: absolute; inset: 0; background: #FBFBFA; }
+  .d6-room { position: absolute; inset: 0; }
+  .d6-topbar {
+    position: absolute; left: 0; right: 0; top: 0; height: 60px;
+    border-bottom: 1px solid #EAEAEA; background: #FBFBFA;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 56px;
+  }
+  .d6-brand { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .d6-roomid { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 14px; color: #787774; margin-left: 14px; }
+  .d6-topright { display: flex; align-items: center; }
+  .d6-seg { display: flex; border: 1px solid #EAEAEA; border-radius: 9999px; overflow: hidden; font-size: 13px; }
+  .d6-seg-on { background: #111111; color: #FFFFFF; padding: 6px 18px; }
+  .d6-seg-off { padding: 6px 18px; color: #787774; }
+  .d6-condot { width: 8px; height: 8px; border-radius: 50%; background: #346538; margin-left: 18px; }
+  .d6-header { position: absolute; left: 56px; right: 56px; top: 86px; }
+  .d6-eyebrow {
+    display: inline-block; font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace;
+    font-size: 11px; letter-spacing: 0.2em; background: #F7F6F3; color: #787774;
+    padding: 5px 12px; border-radius: 9999px;
+  }
+  .d6-event {
+    font-family: Georgia, "Times New Roman", Georgia, 'Times New Roman', serif;
+    font-weight: 400; font-size: 52px; line-height: 1; letter-spacing: -0.02em;
+    margin: 12px 0 14px; color: #111111;
+  }
+  .d6-specs { display: flex; gap: 10px; }
+  .d6-spec {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 13px;
+    background: #F7F6F3; border: 1px solid #EAEAEA; color: #111111;
+    padding: 6px 13px; border-radius: 9999px;
+  }
+  .d6-spec svg { width: 13px; height: 13px; stroke: #787774; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-body { position: absolute; left: 56px; top: 246px; width: 1808px; height: 630px; display: flex; gap: 24px; }
+  .d6-col { width: 1180px; display: flex; flex-direction: column; gap: 16px; }
+  .d6-calloutslot { height: 110px; }
+  .d6-card {
+    background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 10px;
+    padding: 24px 28px; height: 244px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .d6-cardrow { display: flex; align-items: center; }
+  .d6-name { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .d6-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    border-radius: 9999px; padding: 7px 15px; font-size: 13px; color: #787774;
+    background: #F7F6F3; border: 1px solid #EAEAEA;
+  }
+  .d6-chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-chip b { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-weight: 500; }
+  .d6-chips { gap: 10px; margin-top: 16px; }
+  .d6-status { margin-left: auto; font-size: 13px; }
+  .d6-met { background: #EDF3EC; color: #346538; }
+  .d6-violated { background: #FDEBEC; color: #9F2F2D; }
+  .d6-pending { background: #FBF3DB; color: #956400; }
+  .d6-strategy { font-size: 13px; color: #787774; gap: 8px; margin-top: 14px; }
+  .d6-ndot { width: 6px; height: 6px; border-radius: 50%; background: #956400; display: inline-block; }
+  .d6-disclosure { font-size: 12px; color: #787774; gap: 6px; margin-top: 12px; opacity: 0.7; }
+  .d6-disclosure svg { width: 12px; height: 12px; stroke: #787774; fill: none; stroke-width: 1.4; }
+  .d6-callout {
+    background: #FBF3DB; border: 1px solid rgba(149, 100, 0, 0.25); border-radius: 10px;
+    padding: 16px 22px; height: 110px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .d6-callouttop { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 600; }
+  .d6-bell { width: 17px; height: 17px; stroke: #956400; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-count {
+    font-family: Georgia, "Times New Roman", Georgia, 'Times New Roman', serif;
+    font-weight: 400; font-size: 30px; color: #956400; display: inline-block;
+  }
+  .d6-approw {
+    display: flex; align-items: center; gap: 16px; font-size: 13px;
+    border-top: 1px solid rgba(149, 100, 0, 0.18); padding-top: 12px;
+  }
+  .d6-appvenue { font-weight: 600; }
+  .d6-appessence { color: #787774; }
+  .d6-appright { margin-left: auto; display: flex; align-items: center; }
+  .d6-apbtn {
+    position: relative; transform-origin: 50% 50%;
+    background: #111111; color: #FFFFFF; font-size: 13px; font-weight: 500;
+    border: none; border-radius: 6px; padding: 8px 22px; cursor: pointer;
+    box-shadow: 0 8px 22px rgba(17, 17, 17, 0.14);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .d6-apbtn svg { width: 13px; height: 13px; stroke: #FFFFFF; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-approved { position: relative; transform-origin: 50% 50%; display: none; }
+  .d6-approvedchip {
+    background: #EDF3EC; color: #346538; font-size: 13px; font-weight: 500;
+    border-radius: 9999px; padding: 8px 18px; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .d6-approvedchip svg { width: 13px; height: 13px; stroke: #346538; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-burst { position: absolute; inset: -300px; opacity: 0; pointer-events: none; }
+  .d6-burstcore {
+    position: absolute; left: 50%; top: 50%; width: 120px; height: 60px;
+    margin-left: -60px; margin-top: -30px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(52, 101, 56, 0.6), rgba(52, 101, 56, 0));
+    filter: blur(40px);
+  }
+  .d6-rail {
+    width: 604px; height: 630px; background: #F7F6F3; border-radius: 10px;
+    padding: 24px 26px; overflow: hidden;
+  }
+  .d6-railhead { font-size: 14px; font-weight: 500; color: #111111; display: flex; align-items: baseline; gap: 8px; }
+  .d6-railcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 12px; color: #787774; }
+  .d6-runs { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .d6-run { border: 1px solid #EAEAEA; border-radius: 10px; background: #FFFFFF; padding: 12px 14px; }
+  .d6-runhead { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; }
+  .d6-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .d6-runcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; margin-left: auto; }
+  .d6-lines { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .d6-line { display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #111111; }
+  .d6-ts { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; white-space: nowrap; }
+  .d6-msg { min-width: 340px; white-space: nowrap; }
+</style>
+<div id="root" data-composition-id="06-demo-approval" data-start="0" data-duration="14" data-width="1920" data-height="1080">
+  <div class="clip d6-ground" data-start="0" data-duration="14" data-track-index="0"></div>
+  <div class="clip d6-room" data-start="0" data-duration="14" data-track-index="1">
+    <header class="d6-topbar" id="d6-topbar">
+      <div class="d6-brand">DealRelay<span class="d6-roomid">room/NW-2026-114</span></div>
+      <div class="d6-topright">
+        <div class="d6-seg"><span class="d6-seg-off">Agency</span><span class="d6-seg-on">Client</span></div>
+        <span class="d6-condot"></span>
+      </div>
+    </header>
+    <section class="d6-header" id="d6-header">
+      <span class="d6-eyebrow">PROCUREMENT DEAL ROOM</span>
+      <h1 class="d6-event">Northwind Product Launch</h1>
+      <div class="d6-specs">
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>2026-11-20</span>
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M11 3.4a2.5 2.5 0 0 1 0 4.2M12 10.2c1.6.6 2.5 1.9 2.5 3.8"/></svg>500</span>
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg>$30,000 max</span>
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg>02:00</span>
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg>AV</span>
+      </div>
+    </section>
+    <main class="d6-body">
+      <section class="d6-col">
+        <div class="d6-calloutslot">
+          <div class="d6-callout" id="d6-callout">
+            <div class="d6-callouttop">
+              <svg class="d6-bell" viewBox="0 0 16 16"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 4-1.5 5-1.5 5h12s-1.5-1-1.5-5A4.5 4.5 0 0 0 8 1.5z"/><path d="M6.5 13.5a1.5 1.5 0 0 0 3 0"/></svg>
+              <span class="d6-count" id="d6-count">0</span>
+              <span>counter-offers need approval</span>
+            </div>
+            <div class="d6-approw" id="d6-rowA">
+              <span class="d6-appvenue">The Grand Loft</span>
+              <span class="d6-appessence">$27,000 if curfew extends to 01:30</span>
+              <span class="d6-appright">
+                <div class="d6-burst" id="d6-burst"><div class="d6-burstcore"></div></div>
+                <button class="d6-apbtn" id="d6-btnA">Approve</button>
+                <span class="d6-approved" id="d6-approvedA"><span class="d6-approvedchip"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>Approved</span></span>
+              </span>
+            </div>
+            <div class="d6-approw" id="d6-rowB">
+              <span class="d6-appvenue">Warehouse 9</span>
+              <span class="d6-appessence">$29,500, deposit split waived</span>
+              <span class="d6-appright">
+                <span class="d6-approvedchip" id="d6-vendorB"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>Vendor accepted</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <article class="d6-card" id="d6-cardA">
+          <div class="d6-cardrow">
+            <span class="d6-name">The Grand Loft</span>
+            <span class="d6-chip d6-status d6-pending" id="d6-statusA">Counter proposed</span>
+          </div>
+          <div class="d6-cardrow d6-chips">
+            <span class="d6-chip d6-met" id="d6-aBudget"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg><b>$26,000</b></span>
+            <span class="d6-chip d6-met" id="d6-aCap"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg><b>550</b></span>
+            <span class="d6-chip d6-violated" id="d6-aCurfew"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg><b>00:00</b></span>
+            <span class="d6-chip d6-met" id="d6-aAv"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg><b>AV included</b></span>
+          </div>
+          <div class="d6-cardrow d6-strategy"><span class="d6-ndot"></span><span>Counter: extend curfew to 01:30</span></div>
+          <div class="d6-cardrow d6-disclosure"><span>Vendor email</span><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+        </article>
+        <article class="d6-card" id="d6-cardB">
+          <div class="d6-cardrow">
+            <span class="d6-name">Warehouse 9</span>
+            <span class="d6-chip d6-status d6-pending" id="d6-statusB">Counter proposed</span>
+          </div>
+          <div class="d6-cardrow d6-chips">
+            <span class="d6-chip d6-violated" id="d6-bBudget"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg><b>$34,000</b></span>
+            <span class="d6-chip d6-met" id="d6-bCap"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg><b>600</b></span>
+            <span class="d6-chip d6-met" id="d6-bCurfew"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg><b>03:00</b></span>
+            <span class="d6-chip d6-met" id="d6-bAv"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg><b>AV included</b></span>
+          </div>
+          <div class="d6-cardrow d6-strategy"><span class="d6-ndot"></span><span>Counter: $29,500, deposit split waived</span></div>
+          <div class="d6-cardrow d6-disclosure"><span>Vendor email</span><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+        </article>
+      </section>
+      <aside class="d6-rail" id="d6-rail">
+        <div class="d6-railhead">Agent activity <span class="d6-railcount">5 events</span></div>
+        <div class="d6-runs">
+          <div class="d6-run" id="d6-runNegotiator">
+            <div class="d6-runhead"><span class="d6-dot" style="background:#956400"></span>Negotiator<span class="d6-runcount">2 events</span></div>
+            <div class="d6-lines">
+              <div class="d6-line"><span class="d6-ts">14:02:19</span><span class="d6-msg">drafted counter-offer</span></div>
+              <div class="d6-line" id="d6-lineReply"><span class="d6-ts">14:02:2x</span><span class="d6-msg"><span id="d6-textReply"></span></span></div>
+            </div>
+          </div>
+          <div class="d6-run" id="d6-runClient">
+            <div class="d6-runhead"><span class="d6-dot" style="background:#787774"></span>Client<span class="d6-runcount">1 event</span></div>
+            <div class="d6-lines">
+              <div class="d6-line" id="d6-lineApprove"><span class="d6-ts">14:02:2x</span><span class="d6-msg"><span id="d6-textApprove"></span></span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script>
+  const tl = gsap.timeline({ paused: true });
+
+  gsap.set("#d6-runNegotiator, #d6-runClient", { opacity: 0, y: 14 });
+  gsap.set("#d6-lineReply, #d6-lineApprove", { opacity: 0 });
+  gsap.set("#d6-vendorB", { opacity: 0 });
+
+  // Approval callout lands above the proposals (the hero of this shot).
+  tl.fromTo("#d6-callout", { y: -34, opacity: 0 }, { y: 0, opacity: 1, duration: 0.65, ease: "power3.out" }, 0.3);
+  tl.fromTo("#d6-callout", { scale: 1 }, { scale: 1.02, duration: 0.14, ease: "power1.in" }, 0.9);
+  tl.to("#d6-callout", { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 1.04);
+  tl.fromTo("#d6-rowA", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 1.5);
+  tl.fromTo("#d6-rowB", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.0);
+
+  // Count-up of "2" in display serif (counting-dynamic-scale: value + scale share ease/timing).
+  const counter = document.getElementById("d6-count");
+  const state = { value: 0 };
+  tl.to(state, {
+    value: 2,
+    duration: 1.2,
+    ease: "power3.out",
+    onUpdate: () => { counter.textContent = Math.round(state.value); },
+  }, 1.4);
+  tl.fromTo(counter, { scale: 0.4 }, { scale: 1, duration: 1.2, ease: "power3.out" }, 1.4);
+
+  // Negotiator run receipts the counter; the pulse dies when the result lands.
+  tl.to("#d6-runNegotiator", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 2.6);
+  tl.to("#d6-lineReply", { opacity: 1, duration: 0.25 }, 3.1);
+  const reply = { v: 0 };
+  const replyFull = "vendor replied within 3 seconds";
+  tl.to(reply, {
+    v: replyFull.length,
+    duration: 1.4,
+    ease: "none",
+    onUpdate: () => { document.getElementById("d6-textReply").textContent = replyFull.substring(0, Math.floor(reply.v)); },
+  }, 3.2);
+
+  // Client press (linear) and release (spring), with the burst popping behind the button.
+  const PRESS_START = 5.2, PRESS_DUR = 0.16, RELEASE_START = PRESS_START + PRESS_DUR;
+  tl.to("#d6-btnA", {
+    scale: 0.92,
+    boxShadow: "0 2px 6px rgba(17,17,17,0.18)",
+    duration: PRESS_DUR,
+    ease: "power1.in",
+  }, PRESS_START);
+  tl.to("#d6-btnA", {
+    scale: 1,
+    boxShadow: "0 8px 22px rgba(17,17,17,0.14)",
+    duration: 0.6,
+    ease: "back.out(2.0)",
+  }, RELEASE_START);
+  tl.fromTo("#d6-burst", { scale: 1, opacity: 0 }, { scale: 2.2, opacity: 0.5, duration: 0.4, ease: "power2.out" }, RELEASE_START);
+  tl.to("#d6-burst", { opacity: 0, duration: 0.6, ease: "power2.in" }, RELEASE_START + 0.4);
+
+  // The press turns terminal: button stamps to a green check (pop), row flips to approved.
+  tl.set("#d6-btnA", { backgroundColor: "#EDF3EC", color: "#346538", boxShadow: "none" }, RELEASE_START + 0.5);
+  tl.to("#d6-btnA", { scale: 1.06, duration: 0.22, ease: "back.out(1.8)" }, RELEASE_START + 0.5);
+  tl.to("#d6-btnA", { scale: 1, duration: 0.25 }, RELEASE_START + 0.72);
+  tl.fromTo("#d6-approvedA", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, RELEASE_START + 0.55);
+  tl.to("#d6-btnA", { opacity: 0, duration: 0.25 }, RELEASE_START + 0.6);
+
+  // Client status chips flip to green Accepted (chip background crossfade 300ms).
+  tl.to("#d6-statusA", { backgroundColor: "#EDF3EC", color: "#346538", duration: 0.3, ease: "power1.out" }, RELEASE_START + 0.7);
+  tl.to("#d6-statusB", { backgroundColor: "#EDF3EC", color: "#346538", duration: 0.3, ease: "power1.out" }, 11.0);
+
+  // Client run records the approval; Warehouse 9's vendor accepts.
+  tl.to("#d6-runClient", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 7.0);
+  tl.to("#d6-lineApprove", { opacity: 1, duration: 0.25 }, 7.5);
+  const appr = { v: 0 };
+  const apprFull = "approved The Grand Loft counter-offer";
+  tl.to(appr, {
+    v: apprFull.length,
+    duration: 1.4,
+    ease: "none",
+    onUpdate: () => { document.getElementById("d6-textApprove").textContent = apprFull.substring(0, Math.floor(appr.v)); },
+  }, 7.6);
+  tl.fromTo("#d6-vendorB", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.6)" }, 11.4);
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines["06-demo-approval"] = tl;
+  tl.seek(0);
+</script>
+</template>

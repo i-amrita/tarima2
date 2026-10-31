@@ -1,0 +1,7 @@
+{
+  "scene": "02-name",
+  "duration_s": 3,
+  "rules": ["gradient-text-sweep", "scale-swap-transition", "multi-phase-camera"],
+  "exit": { "vector": "outward, 6 px/s", "still_moving": true },
+  "entry": { "vector": "up, 49 px/s", "from_rest": false }
+}

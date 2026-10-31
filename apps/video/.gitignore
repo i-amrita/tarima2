@@ -1,0 +1,17 @@
+# Rendered video output: reproducible from source, never committed
+*/renders/
+*.mp4
+*.webm
+
+# HyperFrames scratch state and build artifacts
+**/.hyperframes/artifacts/
+**/.hyperframes/render-outputs.json
+**/.hyperframes/render-outputs-lock
+**/.hyperframes/video-state.json
+**/.hyperframes/video-state-lock
+**/.hyperframes/history-id
+**/.hyperframes/frame-packets/
+
+# Generated voiceover takes (regenerate from VO script + voice seed)
+**/assets/audio/voice-seed.safetensors
+**/assets/audio/voiceover-*.wav

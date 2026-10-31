@@ -1,0 +1,270 @@
+<template>
+  <style>
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a14;
+      color: #f5f5f7;
+      font-family: "Helvetica Neue", "Segoe UI", "SF Pro", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root ::selection {
+      background: transparent;
+    }
+    .bg-clip {
+      position: absolute;
+      inset: 0;
+    }
+    #one-bg {
+      background: #0a0a14;
+    }
+    #one-vignette {
+      background: radial-gradient(
+        120% 90% at 50% 38%,
+        rgba(122, 63, 184, 0.1) 0%,
+        rgba(31, 108, 159, 0.05) 45%,
+        rgba(10, 10, 20, 0) 70%
+      );
+    }
+    #one-grid {
+      opacity: 0.05;
+      background-image:
+        repeating-linear-gradient(0deg, #ffffff 0 1px, transparent 1px 108px),
+        repeating-linear-gradient(90deg, #ffffff 0 1px, transparent 1px 108px);
+    }
+    #one-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 90px 300px 70px;
+      will-change: transform;
+    }
+    .one-beat {
+      margin-bottom: 52px;
+    }
+    .one-beat:last-child {
+      margin-bottom: 0;
+    }
+    .one-stamp {
+      font-family: "Courier New", Menlo, Consolas, "SF Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.14em;
+      color: #787774;
+      margin-bottom: 12px;
+      will-change: transform, opacity;
+    }
+    .one-msg {
+      display: inline-block;
+      max-width: 100%;
+      font-size: 54px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.14;
+      will-change: transform, opacity;
+    }
+    .one-beat[data-tone="in"] .one-msg {
+      color: rgba(245, 245, 247, 0.9);
+      border-left: 4px solid rgba(122, 63, 184, 0.85);
+      padding-left: 26px;
+    }
+    .one-beat[data-tone="out"] .one-msg {
+      color: rgba(245, 245, 247, 0.94);
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 26px;
+      padding: 18px 34px;
+    }
+    .one-beat[data-tone="danger"] .one-msg {
+      color: #9f2f2d;
+      background: rgba(253, 235, 236, 0.06);
+      border: 1px solid rgba(159, 47, 45, 0.45);
+      border-radius: 26px;
+      padding: 18px 34px;
+    }
+    .one-file {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .one-file-ic {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 68px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      flex: 0 0 auto;
+    }
+    .one-file-ic span {
+      display: block;
+      width: 26px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 3px;
+    }
+    #one-glow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2600px;
+      height: 700px;
+      margin-left: -1300px;
+      margin-top: -350px;
+      background: linear-gradient(
+        100deg,
+        rgba(230, 232, 255, 0) 0%,
+        rgba(230, 232, 255, 0.14) 46%,
+        rgba(230, 232, 255, 0) 100%
+      );
+      filter: blur(40px);
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .one-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: rgba(245, 245, 247, 0.3);
+      flex: 0 0 auto;
+    }
+    .one-line i {
+      font-style: normal;
+      font-family: "Courier New", Menlo, Consolas, "SF Mono", monospace;
+      font-size: 28px;
+      flex: 0 0 auto;
+      padding-top: 4px;
+      color: #787774;
+    }
+    .one-line span {
+      flex: 0 0 auto;
+      color: rgba(245, 245, 247, 0.55);
+    }
+    .one-line b {
+      font-weight: 500;
+      flex: 0 0 auto;
+      color: rgba(245, 245, 247, 0.78);
+    }
+  </style>
+
+  <div id="root" data-composition-id="01-problem" data-width="1920" data-height="1080">
+    <div id="one-bg" class="clip bg-clip" data-start="0" data-duration="8" data-track-index="0"></div>
+    <div id="one-grid" class="clip bg-clip" data-start="0" data-duration="8" data-track-index="1"></div>
+    <div id="one-vignette" class="clip bg-clip" data-start="0" data-duration="8" data-track-index="2"></div>
+
+    <div id="one-stage">
+      <div class="one-beat" data-tone="in">
+        <div class="one-stamp">MON 09:12</div>
+        <div class="one-msg">Re: venue quote?</div>
+      </div>
+      <div class="one-beat" data-tone="in">
+        <div class="one-stamp">TUE 10:31</div>
+        <div class="one-msg one-file">
+          <span class="one-file-ic"><span></span></span>
+          FWD: venue-quote-final-FINAL.pdf
+        </div>
+      </div>
+      <div class="one-beat" data-tone="out">
+        <div class="one-stamp">TUE 17:40</div>
+        <div class="one-msg">which thread are we on?</div>
+      </div>
+      <div class="one-beat" data-tone="out">
+        <div class="one-stamp">THU 09:05</div>
+        <div class="one-msg">bumping this</div>
+      </div>
+      <div class="one-beat" data-tone="danger">
+        <div class="one-stamp">3 DAYS LATER</div>
+        <div class="one-msg">venue booked elsewhere</div>
+      </div>
+      <div class="one-line" id="one-line"><i>09:41</i><span class="one-dot"></span><span>+2 missed threads</span><b>deal lost</b></div>
+    </div>
+
+    <div id="one-glow" class="clip" data-start="0" data-duration="8" data-track-index="3"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var tl = gsap.timeline({ paused: true });
+      var D = 8;
+      var stage = document.getElementById("one-stage");
+      var glow = document.getElementById("one-glow");
+      var beats = gsap.utils.toArray(".one-beat");
+      var stamps = beats.map(function (b) { return b.querySelector(".one-stamp"); });
+      var msgs = beats.map(function (b) { return b.querySelector(".one-msg"); });
+
+      // Reveal schedule (content-state swaps on thresholds, per discrete-text-sequence)
+      var STAMPS_AT = [0.2, 1.6, 3.0, 4.4, 6.2];
+      var MSGS_AT = [0.3, 1.7, 3.1, 4.5, 6.3];
+
+      beats.forEach(function (beat, i) {
+        var s = stamps[i];
+        var m = msgs[i];
+        var drift = [-14, -30, -22, -44, -58][i];
+
+        // timestamp: stamps in dim, drifts apart as the chain grows
+        tl.fromTo(
+          s,
+          { opacity: 0, x: 26 },
+          { opacity: 0.95, x: 0, duration: 0.5, ease: "power3.out" },
+          STAMPS_AT[i]
+        );
+        tl.to(s, { x: drift, duration: 3.4, ease: "sine.inOut" }, STAMPS_AT[i] + 0.5);
+        // message: staggered rise + fade on its beat
+        tl.fromTo(
+          m,
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+          MSGS_AT[i]
+        );
+        // older lines settle back as new ones land
+        for (var j = 0; j < i; j++) {
+          tl.to(
+            msgs[j],
+            { opacity: 0.26, duration: 0.6, ease: "power2.out" },
+            MSGS_AT[i]
+          );
+          tl.to(
+            stamps[j],
+            { opacity: 0.16, duration: 0.6, ease: "power2.out" },
+            MSGS_AT[i]
+          );
+        }
+      });
+
+      // slow push-in under the whole run (camera modifier)
+      tl.fromTo(stage, { scale: 1 }, { scale: 1.045, duration: D, ease: "sine.inOut" }, 0);
+
+      // closing pale band sweep -> wipes the frame away
+      tl.fromTo(
+        glow,
+        { x: -2100, opacity: 0 },
+        { x: 2100, opacity: 1, duration: 0.85, ease: "power2.inOut" },
+        6.6
+      );
+
+      // epilogue rail line lands in the glow's wake
+      tl.fromTo(
+        "#one-line",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+        6.7
+      );
+
+      window.__timelines["01-problem"] = tl;
+    })();
+  </script>
+</template>

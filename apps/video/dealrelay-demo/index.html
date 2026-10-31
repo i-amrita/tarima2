@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0a0a14;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="77"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div
+        data-composition-id="01-problem"
+        data-composition-src="compositions/frames/01-problem.html"
+        data-start="0"
+        data-duration="8"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="02-name"
+        data-composition-src="compositions/frames/02-name.html"
+        data-start="8"
+        data-duration="3"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="03-demo-constraints"
+        data-composition-src="compositions/frames/03-demo-constraints.html"
+        data-start="11"
+        data-duration="8"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="04-demo-proposals"
+        data-composition-src="compositions/frames/04-demo-proposals.html"
+        data-start="19"
+        data-duration="12"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="05-demo-agents"
+        data-composition-src="compositions/frames/05-demo-agents.html"
+        data-start="31"
+        data-duration="14"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="06-demo-approval"
+        data-composition-src="compositions/frames/06-demo-approval.html"
+        data-start="45"
+        data-duration="14"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="07-roi"
+        data-composition-src="compositions/frames/07-roi.html"
+        data-start="59"
+        data-duration="8"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="08-architecture"
+        data-composition-src="compositions/frames/08-architecture.html"
+        data-start="67"
+        data-duration="6"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+      <div
+        data-composition-id="09-cta"
+        data-composition-src="compositions/frames/09-cta.html"
+        data-start="73"
+        data-duration="4"
+        data-track-index="0"
+        data-width="1920"
+        data-height="1080"
+        style="position: absolute; inset: 0; z-index: 1"
+      ></div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

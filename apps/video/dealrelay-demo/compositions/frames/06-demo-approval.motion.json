@@ -1,0 +1,7 @@
+{
+  "scene": "06-demo-approval",
+  "duration_s": 14.0,
+  "rules": ["dynamic-content-sequencing", "press-release-spring", "counting-dynamic-scale"],
+  "exit": { "vector": "room settles to rest after vendor-accepted beat (0 px/s); glow wipe owned by injector transition", "still_moving": false },
+  "entry": { "vector": "callout drops -34px to rest, chrome at rest", "from_rest": true }
+}

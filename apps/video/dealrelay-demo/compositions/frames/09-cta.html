@@ -1,0 +1,192 @@
+<template>
+  <div id="root" data-composition-id="09-cta" data-duration="4" data-fps="30">
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      #root {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        isolation: isolate;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      .cta09-clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      /* Dark framing register ground — dedicated clip layer, never on #root. */
+      .cta09-bg {
+        background: #0a0a14;
+      }
+
+      /* Soft radial glow pool behind the wordmark, subtle depth on the dark canvas. */
+      .cta09-glow-pool {
+        position: absolute;
+        left: 50%;
+        top: 40%;
+        width: 1400px;
+        height: 700px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(
+          closest-side,
+          rgba(230, 232, 255, 0.1),
+          rgba(230, 232, 255, 0)
+        );
+        opacity: 0;
+      }
+
+      .cta09-stage {
+        position: absolute;
+        left: 0;
+        right: 0;
+        /* Landscape register: compose near 0.42 x height; all content stays above y=896. */
+        top: 453px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .cta09-wordmark-stack {
+        display: grid;
+      }
+
+      .cta09-wordmark {
+        grid-area: 1 / 1;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 160px;
+        line-height: 1;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+
+      .cta09-wordmark-solid {
+        color: #f5f5f7;
+      }
+
+      /* gradient-text-sweep Form A: oversized gradient clipped into the glyphs. */
+      .cta09-wordmark-sweep {
+        background-image: linear-gradient(
+          105deg,
+          #f5f5f7 0%,
+          rgba(230, 232, 255, 0.9) 47%,
+          #ffffff 50%,
+          rgba(230, 232, 255, 0.9) 53%,
+          #f5f5f7 100%
+        );
+        background-size: 300% 100%;
+        background-position: 100% 50%;
+        background-repeat: no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        opacity: 0;
+      }
+
+      .cta09-mono-line {
+        margin-top: 64px;
+        font-family: "SF Mono", Menlo, monospace;
+        font-size: 40px;
+        letter-spacing: 0.01em;
+        color: #f5f5f7;
+        opacity: 0;
+      }
+
+      .cta09-subline {
+        margin-top: 28px;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 40px;
+        letter-spacing: -0.01em;
+        color: #787774;
+        opacity: 0;
+      }
+    </style>
+
+    <div class="cta09-clip cta09-bg clip" data-start="0" data-duration="4" data-track-index="0"></div>
+
+    <div class="cta09-clip clip" data-start="0" data-duration="4" data-track-index="1">
+      <div class="cta09-glow-pool" id="cta09-glowPool"></div>
+
+      <div class="cta09-stage" id="cta09-stage">
+        <div class="cta09-wordmark-stack" id="cta09-wordmarkWrap">
+          <h1 class="cta09-wordmark cta09-wordmark-solid" data-layout-allow-occlusion="true">DealRelay</h1>
+          <h1 class="cta09-wordmark cta09-wordmark-sweep" id="cta09-wordmarkSweep" data-layout-allow-occlusion="true" aria-hidden="true">DealRelay</h1>
+        </div>
+        <p class="cta09-mono-line" id="cta09-mono">github.com/espetro/tarima2</p>
+        <p class="cta09-subline" id="cta09-sub">agents + humans, one deal room</p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0-0.4s): static dark canvas establishes. Glow pool breathes in underneath.
+      tl.fromTo(
+        "#cta09-glowPool",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.9, ease: "power2.out" },
+        0.2,
+      );
+
+      // Scene 2 (0.4-1.5s): the ONE move - wordmark rises 24px, fades, settles 95% -> 100%.
+      tl.fromTo(
+        "#cta09-wordmarkWrap",
+        { opacity: 0, y: 28, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out" },
+        0.15,
+      );
+      // gradient-text-sweep Form A: the gradient slides THROUGH the glyphs, left -> right.
+      // Percent axis inverted: 100% -> 0% reads left-to-right. ease "none" - it is light.
+      tl.fromTo(
+        "#cta09-wordmarkSweep",
+        { opacity: 1, backgroundPosition: "100% 50%" },
+        { backgroundPosition: "0% 50%", duration: 3.35, ease: "none" },
+        0.45,
+      );
+
+      // Supporting lines reveal as the settle lands - sequenced, not front-loaded.
+      tl.fromTo(
+        "#cta09-mono",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        1.35,
+      );
+      tl.fromTo(
+        "#cta09-sub",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        1.6,
+      );
+
+      // Scene 3 (1.5s-end): allocated stillness. One live element: a slow breathing
+      // pulse on the card stack, resolving into a gentle final settle (no fade-out).
+      tl.to(
+        "#cta09-stage",
+        { scale: 1.012, duration: 1.6, ease: "sine.inOut", transformOrigin: "50% 50%" },
+        1.9,
+      );
+      tl.to(
+        "#cta09-stage",
+        { scale: 1, duration: 0.5, ease: "power2.out" },
+        3.5,
+      );
+
+      window.__timelines["09-cta"] = tl;
+      tl.seek(0);
+    </script>
+  </div>
+</template>

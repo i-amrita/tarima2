@@ -1,0 +1,7 @@
+{
+  "scene": "07-roi",
+  "duration_s": 8.0,
+  "rules": ["counting-dynamic-scale", "ambient-glow-bloom"],
+  "exit": { "vector": "none (non-final frame, root cut owns the exit; glow breathe is at rest at 8.0s)", "still_moving": true },
+  "entry": { "vector": "cut from prior frame; band sweep travels left-to-right ~1400 px/s at t=0, camera starts at scale 1.0", "from_rest": false }
+}

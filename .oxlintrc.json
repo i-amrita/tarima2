@@ -2,5 +2,5 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "categories": { "correctness": "error" },
   "rules": { "no-explicit-any": "error" },
-  "ignorePatterns": ["node_modules", "dist", ".output", "generated", ".durable-actors"]
+  "ignorePatterns": ["node_modules", "dist", ".output", "generated", ".durable-actors", ".agents/skills"]
 }

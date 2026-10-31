@@ -1,0 +1,465 @@
+<template>
+  <style>
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fbfbfa;
+      color: #111111;
+      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #three-bg {
+      position: absolute;
+      inset: 0;
+      background: #fbfbfa;
+    }
+    #three-screen {
+      position: absolute;
+      inset: 70px 150px 0;
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+    }
+    .three-topbar {
+      height: 56px;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      border-bottom: 1px solid #eaeaea;
+    }
+    .three-wordmark {
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .three-roomid {
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+      color: #787774;
+      letter-spacing: 0.04em;
+    }
+    .three-topspacer {
+      flex: 1;
+    }
+    .three-conn {
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: #346538;
+    }
+    .three-switch {
+      display: flex;
+      border: 1px solid #eaeaea;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 28px;
+    }
+    .three-switch span {
+      padding: 9px 24px;
+      color: #787774;
+    }
+    .three-switch span.on {
+      background: #111111;
+      color: #ffffff;
+    }
+    .three-header {
+      padding: 30px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .three-eyebrow {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      background: #f7f6f3;
+      border: 1px solid #eaeaea;
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+      letter-spacing: 0.2em;
+      color: #787774;
+    }
+    .three-event {
+      font-family: Georgia, "Times New Roman", "EB Garamond", serif;
+      font-size: 56px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    .three-chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-height: 42px;
+    }
+    .three-setspecs {
+      position: absolute;
+      right: 0;
+      bottom: 24px;
+      font-size: 28px;
+      color: #787774;
+    }
+    .three-header {
+      position: relative;
+      padding: 30px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .three-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      background: #f7f6f3;
+      border: 1px solid #eaeaea;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .three-chip svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      stroke: #787774;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .three-chip b {
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 30px;
+      font-weight: 400;
+      color: #111111;
+      letter-spacing: 0.01em;
+    }
+    .three-chip .k {
+      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      font-size: 28px;
+      color: #787774;
+    }
+    .three-body {
+      flex: 1;
+      display: flex;
+      gap: 48px;
+      min-height: 0;
+    }
+    .three-col {
+      flex: 8;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-top: 1px solid #eaeaea;
+      padding-top: 24px;
+    }
+    .three-sectionhead {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      font-size: 30px;
+      font-weight: 600;
+    }
+    .three-sectionhead .cnt {
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+      font-weight: 400;
+      color: #787774;
+    }
+    .three-venue {
+      background: #ffffff;
+      border: 1px solid #eaeaea;
+      border-radius: 10px;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .three-vrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .three-vname {
+      font-size: 32px;
+      font-weight: 600;
+    }
+    .three-vchip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      background: #edf3ec;
+      color: #346538;
+      font-size: 28px;
+    }
+    .three-vchip.warn {
+      background: #fbf3db;
+      color: #956400;
+    }
+    .three-vchips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .three-vchip2 {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+    }
+    .three-vchip2.ok { background: #edf3ec; color: #346538; }
+    .three-vchip2.bad { background: #fdebec; color: #9f2f2d; }
+    .three-vchip2.neu { background: #f7f6f3; color: #787774; }
+    .three-strat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 28px;
+      color: #787774;
+    }
+    .three-rail {
+      flex: 4;
+      background: #f7f6f3;
+      border-radius: 12px;
+      padding: 24px 26px;
+      align-self: flex-start;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .three-rail h3 {
+      margin: 0 0 10px;
+      font-size: 29px;
+      font-weight: 500;
+    }
+    .three-rail .cnt {
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+      color: #787774;
+    }
+    .three-run {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #eaeaea;
+      font-size: 28px;
+      color: #111111;
+    }
+    .three-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      flex: 0 0 auto;
+    }
+    .three-line {
+      display: flex;
+      gap: 14px;
+      padding: 10px 0 10px 18px;
+      font-size: 28px;
+      color: #787774;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .three-line i {
+      font-style: normal;
+      font-family: "Courier New", Menlo, Consolas, monospace;
+      font-size: 28px;
+      flex: 0 0 auto;
+      padding-top: 4px;
+      color: #a3a29e;
+    }
+  </style>
+
+  <div id="root" data-composition-id="03-demo-constraints" data-width="1920" data-height="1080">
+    <div id="three-bg" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+
+    <div id="three-screen">
+      <div class="three-topbar">
+        <span class="three-wordmark">DealRelay</span>
+        <span class="three-roomid">room_7f3kqx</span>
+        <span class="three-topspacer"></span>
+        <span class="three-conn"></span>
+        <div class="three-switch"><span class="on">Agency</span><span>Client</span></div>
+      </div>
+
+      <div class="three-header">
+        <span class="three-eyebrow">PROCUREMENT DEAL ROOM</span>
+        <h1 class="three-event">Northwind Product Launch</h1>
+        <div class="three-chips">
+          <span class="three-chip" id="three-chip-0">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 9h18M8 3v4M16 3v4" /></svg>
+            <span class="k">calendar</span>
+            <b>2026-11-20</b>
+          </span>
+          <span class="three-chip" id="three-chip-1">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" /></svg>
+            <span class="k">users</span>
+            <b>500</b>
+          </span>
+          <span class="three-chip" id="three-chip-2">
+            <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="2" /><path d="M3 11h18" /><path d="M7 15h4" /></svg>
+            <span class="k">wallet</span>
+            <b>$30,000 max</b>
+          </span>
+          <span class="three-chip" id="three-chip-3">
+            <svg viewBox="0 0 24 24"><path d="M20 13A8 8 0 1 1 11 4a7 7 0 0 0 9 9z" /></svg>
+            <span class="k">moon</span>
+            <b>02:00</b>
+          </span>
+          <span class="three-chip" id="three-chip-4">
+            <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>
+            <span class="k">speaker</span>
+            <b>AV</b>
+          </span>
+        </div>
+        <span class="three-setspecs" id="three-setspecs">Set demo specs</span>
+      </div>
+
+      <div class="three-body">
+        <div class="three-col">
+          <div class="three-sectionhead">Proposals <span class="cnt">2</span></div>
+          <div class="three-venue" id="three-venue-0">
+            <div class="three-vrow">
+              <span class="three-vname">Grand Loft</span>
+              <span class="three-vchip">Accepted</span>
+            </div>
+            <div class="three-vchips">
+              <span class="three-vchip2 ok">wallet $26,000</span>
+              <span class="three-vchip2 ok">users 550</span>
+              <span class="three-vchip2 bad">moon 00:00</span>
+              <span class="three-vchip2 ok">speaker AV</span>
+            </div>
+            <div class="three-strat"><span class="three-dot" style="background: #956400"></span>Counter: extend curfew to 02:00</div>
+          </div>
+          <div class="three-venue" id="three-venue-1">
+            <div class="three-vrow">
+              <span class="three-vname">Warehouse 9</span>
+              <span class="three-vchip warn">Requires approval</span>
+            </div>
+            <div class="three-vchips">
+              <span class="three-vchip2 ok">wallet $24,500</span>
+              <span class="three-vchip2 bad">users 380</span>
+              <span class="three-vchip2 ok">moon 02:00</span>
+              <span class="three-vchip2 neu">speaker none</span>
+            </div>
+          </div>
+        </div>
+        <div class="three-rail" id="three-rail">
+            <h3>Agent activity <span class="cnt">3</span></h3>
+            <div class="three-run"><span class="three-dot" style="background: #1f6c9f"></span>Scout</div>
+            <div class="three-line" id="three-line-0"><i>09:14</i>Shortlisted 4 venues within cap</div>
+            <div class="three-run"><span class="three-dot" style="background: #7a3fb8"></span>Finance</div>
+            <div class="three-line" id="three-line-1"><i>09:21</i>Validated quotes against $30,000</div>
+            <div class="three-run"><span class="three-dot" style="background: #956400"></span>Negotiator</div>
+            <div class="three-line" id="three-line-2"><i>09:27</i>Counter: extend curfew to 02:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var tl = gsap.timeline({ paused: true });
+      var chips = [0, 1, 2, 3, 4].map(function (i) {
+        return document.getElementById("three-chip-" + i);
+      });
+      var lines = [0, 1, 2].map(function (i) {
+        return document.getElementById("three-line-" + i);
+      });
+
+      // The header establishes immediately; the chips arrive as the VO reads them.
+      tl.fromTo(
+        "#three-screen",
+        { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
+        0.05
+      );
+
+      // dynamic-content-sequencing: beat window per chip scales with its label length.
+      var CHIPS = [
+        { label: "2026-11-20", hold: 1.0 },
+        { label: "500", hold: 0.8 },
+        { label: "$30,000 max", hold: 1.1 },
+        { label: "02:00", hold: 0.9 },
+        { label: "AV", hold: 0.7 },
+      ];
+      var BASE = 0.5;
+      var SEC_PER_CHAR = 0.045;
+      var AT = [1.05, 2.0, 2.75, 3.75, 4.7]; // window = BASE + chars*SEC_PER_CHAR + hold, clamped to 8s
+      for (var c = 0; c < CHIPS.length; c++) {
+        CHIPS[c].window = BASE + CHIPS[c].label.length * SEC_PER_CHAR + CHIPS[c].hold;
+        AT[c] = Math.min(AT[c], 7.4 - CHIPS[c].window + BASE);
+      }
+
+      chips.forEach(function (chip, i) {
+        tl.fromTo(
+          chip,
+          { y: 18, opacity: 0, scale: 0.92 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.6)" },
+          AT[i]
+        );
+        for (var j = 0; j < i; j++) {
+          tl.to(chips[j], { opacity: 0.62, duration: 0.35, ease: "power2.out" }, AT[i]);
+        }
+      });
+
+      // activity rail + live agent lines arrive behind the header beat
+      tl.fromTo(
+        "#three-rail",
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        1.6
+      );
+      // venue cards settle under the chips, one per second half beat
+      tl.fromTo(
+        "#three-venue-0",
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
+        5.35
+      );
+      tl.fromTo(
+        "#three-venue-1",
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" },
+        6.15
+      );
+      tl.fromTo(
+        "#three-setspecs",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: "power2.out" },
+        6.9
+      );
+      var LINE_AT = [2.3, 3.4, 4.6];
+      lines.forEach(function (line, i) {
+        tl.fromTo(
+          line,
+          { x: 22, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+          LINE_AT[i]
+        );
+      });
+
+      window.__timelines["03-demo-constraints"] = tl;
+    })();
+  </script>
+</template>

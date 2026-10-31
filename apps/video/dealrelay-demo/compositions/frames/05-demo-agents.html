@@ -1,0 +1,248 @@
+<template>
+<style>
+  #root {
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    color: #111111;
+    font-family: "Helvetica Neue", Arial, Inter, 'Helvetica Neue', Arial, sans-serif;
+  }
+  #root * { box-sizing: border-box; margin: 0; padding: 0; }
+  .d5-ground { position: absolute; inset: 0; background: #FBFBFA; }
+  .d5-room { position: absolute; inset: 0; }
+  .d5-topbar {
+    position: absolute; left: 0; right: 0; top: 0; height: 60px;
+    border-bottom: 1px solid #EAEAEA; background: #FBFBFA;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 56px;
+  }
+  .d5-brand { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .d5-roomid { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 14px; color: #787774; margin-left: 14px; }
+  .d5-topright { display: flex; align-items: center; }
+  .d5-seg { display: flex; border: 1px solid #EAEAEA; border-radius: 9999px; overflow: hidden; font-size: 13px; }
+  .d5-seg-on { background: #111111; color: #FFFFFF; padding: 6px 18px; }
+  .d5-seg-off { padding: 6px 18px; color: #787774; }
+  .d5-condot { width: 8px; height: 8px; border-radius: 50%; background: #346538; margin-left: 18px; }
+  .d5-header { position: absolute; left: 56px; right: 56px; top: 86px; }
+  .d5-eyebrow {
+    display: inline-block; font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace;
+    font-size: 11px; letter-spacing: 0.2em; background: #F7F6F3; color: #787774;
+    padding: 5px 12px; border-radius: 9999px;
+  }
+  .d5-event {
+    font-family: Georgia, "Times New Roman", Georgia, 'Times New Roman', serif;
+    font-weight: 400; font-size: 52px; line-height: 1; letter-spacing: -0.02em;
+    margin: 12px 0 14px; color: #111111;
+  }
+  .d5-specs { display: flex; gap: 10px; }
+  .d5-spec {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 13px;
+    background: #F7F6F3; border: 1px solid #EAEAEA; color: #111111;
+    padding: 6px 13px; border-radius: 9999px;
+  }
+  .d5-spec svg { width: 13px; height: 13px; stroke: #787774; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d5-body { position: absolute; left: 56px; top: 246px; width: 1808px; height: 630px; display: flex; gap: 24px; }
+  .d5-col { width: 1180px; display: flex; flex-direction: column; gap: 16px; }
+  .d5-calloutslot { height: 110px; }
+  .d5-card {
+    background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 10px;
+    padding: 24px 28px; height: 244px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .d5-cardrow { display: flex; align-items: center; }
+  .d5-name { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .d5-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    border-radius: 9999px; padding: 7px 15px; font-size: 13px; color: #787774;
+    background: #F7F6F3; border: 1px solid #EAEAEA;
+  }
+  .d5-chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d5-chip b { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-weight: 500; }
+  .d5-chips { gap: 10px; margin-top: 16px; }
+  .d5-status { margin-left: auto; font-size: 13px; }
+  .d5-met { background: #EDF3EC; color: #346538; }
+  .d5-violated { background: #FDEBEC; color: #9F2F2D; }
+  .d5-pending { background: #FBF3DB; color: #956400; }
+  .d5-strategy { font-size: 13px; color: #787774; gap: 8px; margin-top: 14px; }
+  .d5-ndot { width: 6px; height: 6px; border-radius: 50%; background: #956400; display: inline-block; }
+  .d5-disclosure { font-size: 12px; color: #787774; gap: 6px; margin-top: 12px; opacity: 0.7; }
+  .d5-disclosure svg { width: 12px; height: 12px; stroke: #787774; fill: none; stroke-width: 1.4; }
+  .d5-rail {
+    width: 604px; height: 630px; background: #F7F6F3; border-radius: 10px;
+    padding: 24px 26px; overflow: hidden;
+  }
+  .d5-railhead { font-size: 14px; font-weight: 500; color: #111111; display: flex; align-items: baseline; gap: 8px; }
+  .d5-railcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 12px; color: #787774; }
+  .d5-runs { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .d5-run { border: 1px solid #EAEAEA; border-radius: 10px; background: #FFFFFF; padding: 12px 14px; }
+  .d5-runhead { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; }
+  .d5-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .d5-runcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; margin-left: auto; }
+  .d5-lines { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .d5-line { display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #111111; }
+  .d5-ts { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; white-space: nowrap; }
+  .d5-msg { min-width: 340px; white-space: nowrap; }
+  .d5-caret { display: inline-block; width: 7px; }
+</style>
+<div id="root" data-composition-id="05-demo-agents" data-start="0" data-duration="14" data-width="1920" data-height="1080">
+  <div class="clip d5-ground" data-start="0" data-duration="14" data-track-index="0"></div>
+  <div class="clip d5-room" data-start="0" data-duration="14" data-track-index="1">
+    <header class="d5-topbar" id="d5-topbar">
+      <div class="d5-brand">DealRelay<span class="d5-roomid">room/NW-2026-114</span></div>
+      <div class="d5-topright">
+        <div class="d5-seg"><span class="d5-seg-on">Agency</span><span class="d5-seg-off">Client</span></div>
+        <span class="d5-condot"></span>
+      </div>
+    </header>
+    <section class="d5-header" id="d5-header">
+      <span class="d5-eyebrow">PROCUREMENT DEAL ROOM</span>
+      <h1 class="d5-event">Northwind Product Launch</h1>
+      <div class="d5-specs">
+        <span class="d5-spec"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>2026-11-20</span>
+        <span class="d5-spec"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M11 3.4a2.5 2.5 0 0 1 0 4.2M12 10.2c1.6.6 2.5 1.9 2.5 3.8"/></svg>500</span>
+        <span class="d5-spec"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg>$30,000 max</span>
+        <span class="d5-spec"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg>02:00</span>
+        <span class="d5-spec"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg>AV</span>
+      </div>
+    </section>
+    <main class="d5-body">
+      <section class="d5-col">
+        <div class="d5-calloutslot"></div>
+        <article class="d5-card" id="d5-cardA">
+          <div class="d5-cardrow">
+            <span class="d5-name">The Grand Loft</span>
+            <span class="d5-chip d5-status" id="d5-statusA">Audited</span>
+          </div>
+          <div class="d5-cardrow d5-chips">
+            <span class="d5-chip d5-met" id="d5-aBudget"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg><b>$26,000</b></span>
+            <span class="d5-chip d5-met" id="d5-aCap"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg><b>550</b></span>
+            <span class="d5-chip d5-violated" id="d5-aCurfew"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg><b>00:00</b></span>
+            <span class="d5-chip d5-met" id="d5-aAv"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg><b>AV included</b></span>
+          </div>
+          <div class="d5-cardrow d5-strategy" id="d5-strategyA"><span class="d5-ndot"></span><span id="d5-strategyText"></span></div>
+          <div class="d5-cardrow d5-disclosure"><span>Vendor email</span><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+        </article>
+        <article class="d5-card" id="d5-cardB">
+          <div class="d5-cardrow">
+            <span class="d5-name">Warehouse 9</span>
+            <span class="d5-chip d5-status" id="d5-statusB">Audited</span>
+          </div>
+          <div class="d5-cardrow d5-chips">
+            <span class="d5-chip d5-violated" id="d5-bBudget"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg><b>$34,000</b></span>
+            <span class="d5-chip d5-met" id="d5-bCap"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg><b>600</b></span>
+            <span class="d5-chip d5-met" id="d5-bCurfew"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg><b>03:00</b></span>
+            <span class="d5-chip d5-met" id="d5-bAv"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg><b>AV included</b></span>
+          </div>
+          <div class="d5-cardrow d5-strategy" id="d5-strategyB"><span class="d5-ndot"></span><span id="d5-strategyTextB"></span></div>
+          <div class="d5-cardrow d5-disclosure"><span>Vendor email</span><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+        </article>
+      </section>
+      <aside class="d5-rail" id="d5-rail">
+        <div class="d5-railhead">Agent activity <span class="d5-railcount" id="d5-railcount">0 events</span></div>
+        <div class="d5-runs">
+          <div class="d5-run" id="d5-runScout">
+            <div class="d5-runhead"><span class="d5-dot" style="background:#1F6C9F"></span>Scout<span class="d5-runcount">1 run</span></div>
+            <div class="d5-lines">
+              <div class="d5-line" id="d5-line1"><span class="d5-ts">14:02:11</span><span class="d5-msg"><span id="d5-text1"></span><span class="d5-caret" id="d5-caret1">&nbsp;</span></span></div>
+            </div>
+          </div>
+          <div class="d5-run" id="d5-runFinance">
+            <div class="d5-runhead"><span class="d5-dot" style="background:#7A3FB8"></span>Finance<span class="d5-runcount">2 events</span></div>
+            <div class="d5-lines">
+              <div class="d5-line" id="d5-line2"><span class="d5-ts">14:02:14</span><span class="d5-msg"><span id="d5-text2"></span><span class="d5-caret" id="d5-caret2">&nbsp;</span></span></div>
+              <div class="d5-line" id="d5-line3"><span class="d5-ts">14:02:15</span><span class="d5-msg"><span id="d5-text3"></span><span class="d5-caret" id="d5-caret3">&nbsp;</span></span></div>
+            </div>
+          </div>
+          <div class="d5-run" id="d5-runNegotiator">
+            <div class="d5-runhead"><span class="d5-dot" style="background:#956400"></span>Negotiator<span class="d5-runcount">1 run</span></div>
+            <div class="d5-lines">
+              <div class="d5-line" id="d5-line4"><span class="d5-ts">14:02:19</span><span class="d5-msg"><span id="d5-text4"></span><span class="d5-caret" id="d5-caret4">&nbsp;</span></span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script>
+  const tl = gsap.timeline({ paused: true });
+
+  // Rail starts collapsed (only the header shows); runs pop in on the stream cadence.
+  gsap.set("#d5-runScout, #d5-runFinance, #d5-runNegotiator", { opacity: 0, y: 14 });
+  gsap.set("#d5-line2, #d5-line3, #d5-line4", { opacity: 0 });
+  gsap.set("#d5-strategyA, #d5-strategyB", { opacity: 0 });
+
+  tl.fromTo("#d5-railcount", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.0);
+
+  // Working-state theater: each run pops, then its lines type on (discrete-text-sequence).
+  tl.to("#d5-runScout", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 0.9);
+  tl.to("#d5-runFinance", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 3.4);
+  tl.to("#d5-line2", { opacity: 1, duration: 0.25 }, 3.9);
+  tl.to("#d5-line3", { opacity: 1, duration: 0.25 }, 6.2);
+  tl.to("#d5-runNegotiator", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 9.2);
+  tl.to("#d5-line4", { opacity: 1, duration: 0.25 }, 9.7);
+
+  // Typewriter: each message types via a smooth char-slice proxy at measured cadence.
+  function typeIn(textEl, caretEl, full, start, dur) {
+    gsap.set(textEl, { textContent: "" });
+    const len = { v: 0 };
+    tl.to(len, {
+      v: full.length,
+      duration: dur,
+      ease: "none",
+      onUpdate: () => { textEl.textContent = full.substring(0, Math.floor(len.v)); },
+    }, start);
+    // Caret rides the typing, then hides when the line completes.
+    if (caretEl) {
+      tl.fromTo(caretEl, { opacity: 1 }, { opacity: 1, duration: dur, ease: "none" }, start);
+      tl.to(caretEl, { opacity: 0, duration: 0.2 }, start + dur);
+    }
+  }
+  typeIn(document.getElementById("d5-text1"), "#d5-caret1", "parsed Grand Loft proposal", 1.4, 1.6);
+  typeIn(document.getElementById("d5-text2"), "#d5-caret2", "$26,000 within $30,000 cap", 4.1, 1.6);
+  typeIn(document.getElementById("d5-text3"), "#d5-caret3", "curfew 00:00 violates 02:00 requirement", 6.4, 1.9);
+  typeIn(document.getElementById("d5-text4"), "#d5-caret4", "drafting counter-offer", 9.9, 1.4);
+
+  // Red violation chips pulse in sync with the Finance curfew flag landing (~6.5s).
+  tl.to("#d5-aCurfew", { scale: 1.07, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1 }, 6.7);
+  tl.to("#d5-aCurfew", { scale: 1.07, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1 }, 7.6);
+  tl.to("#d5-bBudget", { scale: 1.07, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1 }, 4.3);
+
+  // Negotiator payoff: counter strategies type onto both cards, then statuses
+  // flip to "Counter proposed" amber (hands off to the approval beat).
+  tl.to("#d5-strategyA", { opacity: 1, duration: 0.3 }, 11.6);
+  typeIn(document.getElementById("d5-strategyText"), null, "Counter: extend curfew to 01:30", 11.8, 0.9);
+  tl.to("#d5-strategyB", { opacity: 1, duration: 0.3 }, 12.2);
+  typeIn(document.getElementById("d5-strategyTextB"), null, "Counter: $27,000 cleaning deposit split", 12.4, 0.9);
+
+  const flipStatus = (el) => {
+    el.textContent = "Counter proposed";
+    el.classList.remove("d5-met");
+    el.classList.add("d5-pending");
+  };
+  const driver = { t: 0 };
+  let flippedA = false, flippedB = false;
+  const EVENT_MARKS = [1.4, 4.1, 6.4, 9.9];
+  const railCount = document.getElementById("d5-railcount");
+  let eventCount = 0;
+  tl.to(driver, {
+    t: 14,
+    duration: 14,
+    ease: "none",
+    onUpdate: () => {
+      while (eventCount < EVENT_MARKS.length && driver.t >= EVENT_MARKS[eventCount]) {
+        eventCount++;
+        railCount.textContent = eventCount + " events";
+      }
+      if (!flippedA && driver.t >= 13.0) { flipStatus(document.getElementById("d5-statusA")); flippedA = true; }
+      if (!flippedB && driver.t >= 13.3) { flipStatus(document.getElementById("d5-statusB")); flippedB = true; }
+    },
+  }, 0);
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines["05-demo-agents"] = tl;
+  tl.seek(0);
+</script>
+</template>

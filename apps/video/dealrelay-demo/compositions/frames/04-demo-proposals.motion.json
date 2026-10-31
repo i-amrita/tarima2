@@ -1,0 +1,7 @@
+{
+  "scene": "04-demo-proposals",
+  "duration_s": 12.0,
+  "rules": ["dynamic-content-sequencing", "press-release-spring"],
+  "exit": { "vector": "right +140 px/s (room body drifts right under incoming cut)", "still_moving": true },
+  "entry": { "vector": "chrome rises from rest (top bar y -24 to 0, cards x -80 to 0)", "from_rest": true }
+}
