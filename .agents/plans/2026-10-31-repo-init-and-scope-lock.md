@@ -67,3 +67,8 @@ Three workspaces with linear dependencies. Bun workspaces plus two root scripts 
 - Verification: `bun run validate` green (baseline had zero failures, no regressions). `bash tests/e2e/smoke.sh` covers inject, relay audit, two-window approval sync, vendor acceptance, and actor kill with state restored. `bun scripts/demo/persistence-check.ts` covers durability.
 - Delegation verdict (per HARNESSES.md and REMOTE.md): A and D stayed with the orchestrator because they share root config and gate everything else. B and C ran in parallel as local `agy` sessions in worktrees under `~/.worktrees/tarima2/`. The VPS (`own-agents@ovhcloud`) was not used: the repo has no pushed remote, and the placement rule needs one. Benefit: B and C finished in about 15 minutes of wall time while the orchestrator verified; cost: one real bug (StrictMode socket) and one wrong registry URL that only orchestrator-side browser QA and a registry probe caught. Verdict: worth it for B and C, not for A and D. For stream E or a second web iteration, push the repo and use `harness r own-agents@ovhcloud`.
 - Deferred by this plan, unchanged: live mode (`DEMO_MODE=live`, after the video is recorded) and the cloud demo host (decide after first local run; default VPS).
+
+## Status 2026-10-31 (blocked on user)
+
+- Fixtures aligned with demo-video-plan (a8522b5). Nitro vercel preset wired and build verified (1852d96); runbook in `.agents/docs/vercel-hosting.md`.
+- Remaining and blocked on the user: (1) pick the actor/relay host, VPS (default) or Vercel Sandbox, which also needs a pushed remote and public ports; (2) dress rehearsal and recording, which are manual; (3) `DEMO_MODE=live`, deferred by this plan until after the video.
