@@ -19,10 +19,12 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@vercel/sandbox": "^3.9.1",
+    "agent-relay": "15.0.1",
     "oxlint": "latest",
     "type-fest": "latest",
     "typescript": "^7.0.0",
-    "vitest": "latest"
+    "vitest": "latest",
+    "zod": "^4.6.7"
   },
   "trustedDependencies": ["esbuild"]
 }

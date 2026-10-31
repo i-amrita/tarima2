@@ -7,6 +7,7 @@ dist/
 .durable-actors/
 .agent-relay/
 .relay/
+.agentworkforce/
 .generated/
 .DS_Store
 *.log
