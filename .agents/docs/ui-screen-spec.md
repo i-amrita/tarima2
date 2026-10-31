@@ -1,103 +1,187 @@
-# Screen spec: room redesign (light editorial)
+# Screen spec: room redesign (light editorial, minimal information load)
 
-Status: draft v1, 2026-10-31. Checkpoint: `/room/$roomId` (agency + client roles, empty +
-populated states). Evaluator inputs: this spec, `.agents/docs/ui-references.md`, the rubric
-below, screenshots under `.agents/docs/screens/`.
+Status: draft v2, 2026-10-31. Supersedes v1. Checkpoint: `/room/$roomId` (agency + client
+roles, empty + populated states). Evaluator inputs: this spec, `.agents/docs/ui-references.md`,
+the rubric below, screenshots under `.agents/docs/screens/`.
+
+Design system basis: minimalist-ui protocol (warm monochrome canvas, pastel spot colors,
+ultra-flat components, hairline borders) with the editorial serif display voice from the
+high-end visual design skill. Governing principle: information is embedded in component form
+(color-coded chips, callouts, collapsibles), never delivered as paragraph text. First view
+carries meaning; details are one click away.
 
 ## 1. Intent
 
-Replace the dark all-mono dashboard with a light, editorial, canvas-forward deal room. The
-event, the proposals, and the agent activity are the product; chrome shrinks to one slim top
-bar. Direction and rationale: `.agents/docs/ui-references.md` (patterns converge across
-paper.design, town.com, promptql.io, relume.io; agent-swarm is the color outlier).
+A light, quiet deal room where a judge reads the story in under five seconds: the event, what
+needs a decision, how each venue scores, what the agents did. Chrome is nearly absent;
+color is scarce and semantic.
 
 Baseline evidence (current UI, to be replaced): `screens/baseline/before-agency-1440.png`,
 `before-agency-populated-1440.png`, `before-client-populated-1440.png`, plus 1024/390 variants.
 
 ## 2. Tokens (styles.css)
 
-Light is the default. `:root` carries the light values below; keep a `.dark` override block
-with the current dark palette for future use; remove `className="dark"` from `<html>` in
-`__root.tsx`. No hardcoded colors in components.
+Light is the default. `:root` carries the values below; keep a `.dark` override block with the
+current dark palette for future use; remove `className="dark"` from `<html>` in `__root.tsx`.
+No hardcoded colors in components.
 
-- `--background`: warm off-white, oklch(0.975 0.004 90). Evidence: paper + town warm canvases
-  (2 of 5, pattern 1).
-- `--foreground`: warm near-black, oklch(0.19 0.005 90).
-- `--card`: pure white oklch(1 0 0); cards float on the warm canvas (relume, paper).
-- `--muted`: oklch(0.955 0.004 90); `--muted-foreground`: oklch(0.5 0.01 90).
-- `--border` / `--input`: hairline oklch(0.9 0.005 90); `--ring`: oklch(0.4 0.01 90).
-- `--primary`: ink (same as foreground); `--primary-foreground`: white. Primary buttons are
-  near-black on light, the paper/relume CTA pattern (pattern 5).
-- `--radius`: 0.625rem (slightly softer than current 0.5rem; cards read friendlier in light).
-- Status tokens become tint systems for light bg: met = green tint bg oklch(0.96 0.03 150),
-  text oklch(0.42 0.12 150), border oklch(0.85 0.07 150); violated = red tint bg
-  oklch(0.96 0.02 25), text oklch(0.5 0.19 25), border oklch(0.87 0.08 25); pending = amber
-  tint bg oklch(0.97 0.04 85), text oklch(0.55 0.12 70), border oklch(0.89 0.07 85). Keep the
-  existing var names (`--status-met` etc. plus `-foreground`/`-border` additions). Color is
-  earned: green only met/approved, red only violated/destructive, amber only awaiting (pattern 5).
-- Fonts: add `@fontsource/instrument-serif` (verified on npm, 5.3.0) as `--font-display`.
-  Geist Sans stays the body font, Geist Mono the meta font (pattern 4: mono is a utility
-  voice, never body or headings).
-- Add a favicon (inline SVG data URI or a small svg in `public/`): the current app logs one
-  console error for the missing favicon and the hard gate is zero console errors.
+Neutrals (warm monochrome):
+
+- `--background`: warm bone oklch(0.978 0.003 90) (~#FBFBFA).
+- `--foreground`: soft ink oklch(0.21 0.005 90) (~#111111); never pure black.
+- `--card`: white oklch(1 0 0).
+- `--muted`: oklch(0.96 0.003 90) (~#F7F6F3); `--muted-foreground`: oklch(0.55 0.01 90)
+  (~#787774).
+- `--border` / `--input`: hairline oklch(0.925 0.004 90) (~#EAEAEA); `--ring`: oklch(0.4 0.01 90).
+- `--primary`: ink; `--primary-foreground`: white. Primary buttons: ink bg, 4-6px radius, no
+  shadow, hover #333, active scale 0.98.
+
+Pastel spot colors (chips and tints only, never large surfaces). Each is a background/text
+pair; add `-foreground` and `-border` companions:
+
+- `--status-met`: bg oklch(0.962 0.012 140) (~#EDF3EC), fg oklch(0.42 0.07 140) (~#346538),
+  border oklch(0.9 0.03 140).
+- `--status-violated`: bg oklch(0.96 0.012 15) (~#FDEBEC), fg oklch(0.42 0.09 15) (~#9F2F2D),
+  border oklch(0.9 0.03 15).
+- `--status-pending`: bg oklch(0.965 0.025 95) (~#FBF3DB), fg oklch(0.5 0.08 85) (~#956400),
+  border oklch(0.91 0.04 95).
+- `--info`: bg oklch(0.955 0.02 230) (~#E1F3FE), fg oklch(0.45 0.07 230) (~#1F6C9F), for
+  capacity/guest chips and the activity rail's quiet accents.
+- Pastel actor dots (6px circles): scout `--info` fg blue, finance purple oklch(0.45 0.08 300),
+  negotiator `--status-pending` fg amber, client/system `--muted-foreground`. Dots only, never
+  tinted text badges.
+
+Typography:
+
+- `--font-display`: `@fontsource/instrument-serif` (npm 5.3.0, add with bun) for the event
+  name and the approval callout's count figure only.
+- Geist Sans: all body, UI, buttons. Geist Mono: room id, timestamps, chip values, eyebrow.
+  Mono never for headings or body sentences.
+- `--radius`: 0.625rem (10px). Chips are pills (9999px) per the tag spec; cards never pills.
+
+Icons: keep `lucide-react` (already installed; accepted deviation from the skill's Phosphor
+preference) at size-3.5, single stroke weight, muted color. No emoji anywhere.
+
+Favicon: add `apps/web/public/favicon.svg` and reference it; the current app logs one console
+error for the missing favicon and zero console errors is a hard gate.
 
 ## 3. Layout
 
-Max width `max-w-6xl`, generous vertical rhythm (py-10 desktop). Regions top to bottom:
+Max width `max-w-6xl`, py-10 desktop, generous gaps (space-y-8 minimum between regions).
 
-1. **Top bar** (one row, h-14, hairline bottom border, white bg): left = wordmark
-   "DealRelay" (sans semibold, sentence case) + mono room id in muted; right = connection
-   indicator (small dot + "connected" text, green/red by status), role switcher as a compact
-   segmented control (Agency / Client, active = ink bg white text), and a "Demo" popover
-   holding the env-gated kill action. No second stacked bar anywhere (pattern 3).
-2. **Editorial header** (the event): mono eyebrow "PROCUREMENT DEAL ROOM"; the event name as
-   an oversized display heading in Instrument Serif, 44-52px desktop, sentence case, tight
-   tracking (pattern 2). Below it one quiet inline specs row separated by hairlines or dots:
-   date, guests, budget, curfew, AV in mono values with tiny sans labels; not boxed chip
-   cards. Contextual action: "Set demo specs" / "Reset demo specs" as a ghost button aligned
-   right of the specs row. Empty state: heading "No event on the books yet." + the set-specs
-   button; no amber dot pulse.
-3. **Approval panel** (only when proposals are `REQUIRES_APPROVAL`): one amber-tinted panel
-   above the proposals list, not one white card per proposal. Title "Awaiting your approval",
-   one row per pending proposal (venue name + counter strategy + delta), and a single ink
-   "Approve counter-offer" button per row for the client; agency sees "Waiting for client
-   approval" with a subtle pulse. This is the human-in-the-loop beat; it must be
-   unmistakable in both roles.
-4. **Content split 8/4** (lg): left = "Proposals" section, stacked white VenueCards; right =
-   "Agent activity" rail, sticky, height `calc(100vh - 8rem)` with internal scroll. Proposal
-   count moves into the section heading as quiet text ("Proposals (2)").
-5. **Proposal cards** (white, hairline border, no backdrop-blur): venue name in sans
-   semibold 18px; status badge top-right (tinted, sentence case "Requires approval"); vendor
-   rawText as a muted quote block in sans italic; constraint audit as a 4-up row of quiet
-   tinted cells with mono details; agent strategy section only when audit exists, counter
-   text in sans, not mono. Remove per-actor rainbow badge palettes (pattern 5); actors get a
-   small colored dot at most.
-6. **Agent activity rail**: white card, header "Agent activity" + count; grouped runs keep
-   Task/Collapsible; actor label with a small dot, message in sans 13px, timestamp in mono
-   11px muted (pattern 4). Auto-scroll behavior preserved.
-7. **Demo controls**: inject + vendor-accept actions become an inline toolbar row at the top
-   of the proposals column: ghost buttons for "Inject Grand Loft" / "Inject Warehouse 9" /
-   "Vendor accepts", exactly one ink primary action "Simulate inbound proposal" style CTA.
-   "Kill actor" lives in the top-bar Demo popover, destructive only in confirmation, and
-   keeps its current env-gating behavior unchanged.
-8. **Mobile** (<lg): single column; specs row wraps; approval panel above proposals; activity
-   rail becomes a normal section below proposals (no sticky); toolbar wraps. No layout
-   collapse or horizontal scroll at 1440/1024/390.
+```
+top bar
+editorial event header (eyebrow pill, serif name, neutral spec chips, set-specs ghost button)
+[approval callout - only when something is REQUIRES_APPROVAL]
+proposals column (8)                     | agent activity rail (4, muted, sticky)
+  section head + demo toolbar            |   collapsible agent runs
+  venue cards (white, flat)
+```
+
+### 3.1 Top bar
+
+One row, h-14, hairline bottom border, canvas bg (not white). Left: wordmark "DealRelay"
+(sans semibold, sentence case) + mono room id in `--muted-foreground`, no "Room:" label.
+Right: role switcher as a compact segmented control (Agency / Client; active = ink bg, white
+text); connection = a 6px dot only (green `--status-met` fg when connected, red when
+disconnected/error, amber pulse while connecting) with `title`/`aria-label` carrying the
+status word; no "connected" text anywhere. A quiet "Demo" disclosure (outline button, size
+icon-sm + chevron) holding "Kill actor" (destructive only inside the confirm step, env gating
+and `kill-actor` testid unchanged). No second stacked bar.
+
+### 3.2 Editorial event header
+
+- Eyebrow pill: "PROCUREMENT DEAL ROOM" as a microscopic pill tag (10px, uppercase,
+  tracking 0.2em, muted bg, mono). No status dots, no pulsing.
+- Event name: Instrument Serif, 44-52px desktop, sentence case, tracking -0.02em. Empty
+  state: "No event on the books yet." with the set-specs ink button beside it.
+- Spec chips (when specs exist): one quiet row of neutral pills, icon + value in mono,
+  e.g. `calendar 2026-11-20`, `users 500`, `wallet $30,000 max`, `moon 02:00`, `speaker AV`.
+  Neutral bg (`--muted`) with ink text; color is NOT used here - specs are requirements, not
+  results. Hairline separators or gap-2; no boxed stat cards, no labels like "DATE"/"GUESTS".
+- "Set demo specs" / "Reset demo specs": ghost button (muted text, hover ink) aligned right
+  of the chip row. `constraint-header` and `set-demo-specs-button` testids stay.
+
+### 3.3 Approval callout (replaces the per-proposal cards)
+
+One slim strip, `--status-pending` bg tint, pending-border hairline, rounded-lg, no heavy
+border, only when proposals are `REQUIRES_APPROVAL`. Content:
+
+- Left: a small bell/alert icon (amber fg) + one sentence: "2 counter-offers need approval"
+  (count in display serif or semibold sans; sentence is the only copy on the strip).
+- Below it, one row per pending venue, single line each: venue name (sans medium) + the
+  counter essence as short muted text (strategy, max ~60 chars) + right-aligned action.
+- Client role: one ink button per row, "Approve" (plus the venue name makes it explicit).
+  `approve-button` testid per row.
+- Agency role: no buttons; a muted "waiting for client" text with the amber dot, one per row
+  (`approval-waiting-state` testid).
+- No counter-draft quotes, no deltas, no timestamps on the strip - those live in the card.
+
+The callout must be readable in one glance in both roles' screenshots.
+
+### 3.4 Proposals column (8/12)
+
+Section head: "Proposals" (sans semibold 15px) + count in `--muted-foreground`
+("Proposals (2)" is fine) + the demo toolbar inline right (agency only): ghost icon+text
+buttons "Inject Grand Loft", "Inject Warehouse 9", "Vendor accepts" (size sm, muted fg, no
+borders until hover), keeping all three testids. Nothing else in the toolbar.
+
+Venue card (white, `--border` hairline, 10px radius, no shadow or shadow < 0.05 opacity,
+no backdrop-blur):
+
+- Row 1: venue name (sans semibold 17px) left; status chip right - pill, pastel tint by
+  status (met-green for ACCEPTED, pending-yellow for REQUIRES_APPROVAL / COUNTER_PROPOSED,
+  neutral for PENDING_AUDIT), sentence case text ("Requires approval").
+- Row 2: four constraint chips, pill, each icon + mono value, color-coded by evaluated
+  status: budget `wallet $26,000` green/red, capacity `users 550` green (or `--info` when
+  met? no - keep green/red/amber consistent: met=green, violated=red, pending=amber),
+  curfew `moon 00:00` red when violated, AV `speaker` green/neutral. `constraint-badge-*`
+  testids stay on these chips. The chip's title attribute carries the full detail sentence
+  (e.g. "+$4,000 over the $30,000 cap"); the visible text is value-only. This is the
+  color-coding the judge reads.
+- Row 3 (only when audit exists): one-line agent strategy in sans, muted, prefixed with a
+  tiny negotiator dot - "Counter: extend curfew to 02:00". Clamped to one line.
+- Row 4 (collapsed by default): "Vendor email" disclosure (ChevronDown, muted) wrapping the
+  rawText quote in sans italic muted. Collapsed on first view; `rawText` testid is not
+  required but keep `proposal-card-*` and `proposal-status-*`.
+
+No "AGENT STRATEGY" label, no violation-count line, no boxed sub-grids, no separators
+between rows; whitespace does the grouping.
+
+### 3.5 Agent activity rail (4/12, muted, sticky)
+
+- Container: `--muted` bg, no border (or hairline same as muted), rounded-lg, sticky,
+  height `calc(100vh - 8rem)`, internal scroll, auto-scroll preserved (`trace-feed` testid).
+- Header inside: "Agent activity" (sans medium 13px) + count in muted mono; no green pulse
+  dot, no "FEED" caps.
+- Runs (grouped as today) render as collapsibles: trigger = pastel actor dot + actor name
+  (sans 13px) + run count in muted mono. Latest run expanded, all older runs collapsed by
+  default. Expanded content: per-event lines - mono 11px muted timestamp + sans 13px message.
+  No actor text badges (dots carry the identity), no search icon.
+- Empty state: single muted line "No agent activity yet." (`trace-run`/`trace-item` testids
+  preserved on render).
+
+### 3.6 Mobile (<lg)
+
+Single column: header, approval callout, proposals, activity rail (static, not sticky, muted
+bg still distinguishes it). Toolbar wraps under the section head. Chips wrap. No horizontal
+scroll or layout collapse at 390x844.
 
 ## 4. Invariants
 
 - All existing `data-testid`s survive: `room-header`, `switch-role-agency|client`,
-  `connection-status`, `constraint-header`, `set-demo-specs-button`, `approval-bar`,
-  `approve-button`, `approval-waiting-state`, `comparison-canvas`,
+  `connection-status` (now the dot), `constraint-header`, `set-demo-specs-button`,
+  `approval-bar`, `approve-button`, `approval-waiting-state`, `comparison-canvas`,
   `proposal-card-*`, `proposal-status-*`, `constraint-badge-*`, `trace-feed`, `trace-run`,
-  `trace-item`, `simulation-drawer`, `inject-grand-loft`, `inject-warehouse-9`,
-  `vendor-accepts`, `kill-actor`.
+  `trace-item`, `simulation-drawer` (may live on the toolbar wrapper),
+  `inject-grand-loft`, `inject-warehouse-9`, `vendor-accepts`, `kill-actor`.
 - No behavior changes: socket flow, server functions, status transitions, env gating,
   approvals, auto-scroll stay as-is.
 - Component sourcing rules from `design-system.md` still apply (ui primitives, ai-elements,
-  dealroom compositions only).
-- Role-gated rendering unchanged: SimulationDrawer/toolbar only for agency; approve button
-  only for client.
+  dealroom compositions only). Chips = Badge; callout = Alert; disclosures = Collapsible/Task.
+- Role-gated rendering unchanged: toolbar only for agency; approve only for client.
+- Motion: subtle only - 150-200ms hover shifts, optional 400-600ms fade-up on first paint.
+  Nothing that delays screenshots or e2e asserts.
 
 ## 5. Rubric (evaluator-only; do not hand to the generator as a checklist)
 
@@ -107,19 +191,22 @@ console warnings 0, network 5xx 0, axe critical/serious 0, no layout collapse at
 
 Then, each scored pass/fail with evidence:
 
-1. Light editorial canvas: warm off-white bg, white cards, near-black ink; no dark-mode
-   remnants (cites spec S2, references pattern 1).
-2. Display heading: event name in Instrument Serif >= 44px sentence case; mono never used
-   for headings or body (S2, S3.2; pattern 2, 4).
-3. Single top bar; no stacked full-width bars; product surface starts immediately (S3.1;
-   pattern 3).
-4. Approval beat: single panel, amber tint, distinct per-role states, present in both roles'
-   screenshots (S3.3).
-5. Status color earned: green/red/amber only for met/violated/pending; no rainbow actor
-   badges; primary CTA is ink (S2, S3.5; pattern 5).
-6. Mono restricted to meta: timestamps, room id, spec values, eyebrows (pattern 4).
-7. Layout: 8/4 split at lg, sticky activity rail, inline demo toolbar, kill in popover;
-   empty states for specs and proposals exist and are quiet (S3).
-8. Invariants: all testids present (S4), behavior unchanged, role gating unchanged.
+1. Quiet canvas: bone bg, white cards, hairline borders, soft ink text; no dark remnants,
+   no shadows heavier than 0.05, no backdrop-blur on scrolling content.
+2. Pastel discipline: the four pastel pairs appear only as chip/tint/callout accents; no
+   saturated surfaces; no large tinted areas besides the approval callout and activity rail.
+3. Serif display voice: event name in Instrument Serif >= 44px; mono never for headings or
+   body; sans everywhere else.
+4. Embedded information: specs as neutral icon chips (no labeled stat boxes); venue
+   constraints as color-coded chips whose hue alone communicates met/violated/pending; the
+   full detail hidden in title/tooltip, not on-screen.
+5. Top bar: one bar, no status word, connection is a dot; role switcher segmented; kill
+   action inside the Demo disclosure.
+6. Approval callout: single slim strip, one line per venue, per-role action state, readable
+   at a glance in both roles' screenshots.
+7. Progressive disclosure: vendor email collapsed by default; older activity runs collapsed;
+   strategy clamped to one line; no paragraph-length text visible without expansion.
+8. Layout: 8/4 split, muted sticky rail, ghost demo toolbar; mobile stacks cleanly.
+9. Invariants: all testids present (S4), behavior unchanged, role gating unchanged.
 
 Verdict schema per UILOOP S5; max 3 iterations; anti-oscillation ledger required.
