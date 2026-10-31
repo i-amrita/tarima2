@@ -16,8 +16,7 @@ A light, quiet deal room where a judge reads the story in under five seconds: th
 needs a decision, how each venue scores, what the agents did. Chrome is nearly absent;
 color is scarce and semantic.
 
-Baseline evidence (current UI, to be replaced): `screens/baseline/before-agency-1440.png`,
-`before-agency-populated-1440.png`, `before-client-populated-1440.png`, plus 1024/390 variants.
+Baseline evidence (approved UILOOP iteration 4, 2026-10-31): `screens/baseline/{agency-empty,agency-populated,client-populated}-{1440,1024,390}.png`. Trace items wrap to two lines with the full text in `title`; the agent activity panel is slated to become a chat-style log (see the follow-up plan).
 
 ## 2. Tokens (styles.css)
 
@@ -53,9 +52,9 @@ pair; add `-foreground` and `-border` companions:
 
 Typography:
 
-- `--font-display`: `@fontsource/instrument-serif` (npm 5.3.0, add with bun) for the event
+- `--font-display`: Fraunces (self-hosted woff2 in `apps/web/public/fonts`, declared in `apps/web/src/fonts.css`, same files as dits) for the event
   name and the approval callout's count figure only.
-- Geist Sans: all body, UI, buttons. Geist Mono: room id, timestamps, chip values, eyebrow.
+- Plus Jakarta Sans (variable): all body, UI, buttons. Mono stack (Berkeley Mono, then ui-monospace): room id, timestamps, chip values, eyebrow. Same type system as dits.
   Mono never for headings or body sentences.
 - `--radius`: 0.625rem (10px). Chips are pills (9999px) per the tag spec; cards never pills.
 
@@ -93,7 +92,7 @@ and `kill-actor` testid unchanged). No second stacked bar.
 
 - Eyebrow pill: "PROCUREMENT DEAL ROOM" as a microscopic pill tag (10px, uppercase,
   tracking 0.2em, muted bg, mono). No status dots, no pulsing.
-- Event name: Instrument Serif, 44-52px desktop, sentence case, tracking -0.02em. Empty
+- Event name: Fraunces, 44-52px desktop, sentence case, tracking -0.02em. Empty
   state: "No event on the books yet." with the set-specs ink button beside it.
 - Spec chips (when specs exist): one quiet row of neutral pills, icon + value in mono,
   e.g. `calendar 2026-11-20`, `users 500`, `wallet $30,000 max`, `moon 02:00`, `speaker AV`.
@@ -195,7 +194,7 @@ Then, each scored pass/fail with evidence:
    no shadows heavier than 0.05, no backdrop-blur on scrolling content.
 2. Pastel discipline: the four pastel pairs appear only as chip/tint/callout accents; no
    saturated surfaces; no large tinted areas besides the approval callout and activity rail.
-3. Serif display voice: event name in Instrument Serif >= 44px; mono never for headings or
+3. Serif display voice: event name in Fraunces >= 44px; mono never for headings or
    body; sans everywhere else.
 4. Embedded information: specs as neutral icon chips (no labeled stat boxes); venue
    constraints as color-coded chips whose hue alone communicates met/violated/pending; the

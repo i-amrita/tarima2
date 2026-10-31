@@ -27,7 +27,8 @@ pw tab-select 0 >/dev/null
 expect "COUNTER PROPOSED" "agency window synced"
 pw click "getByRole('button', { name: /vendor accepts/i })" >/dev/null
 expect "ACCEPTED" "vendor acceptance"
-pw click "getByRole('button', { name: 'Kill actor' })" >/dev/null
+pw click "getByTestId('demo-menu')" >/dev/null
+pw click "getByTestId('kill-actor')" >/dev/null
 sleep 8
 pw reload >/dev/null
 expect "ACCEPTED" "state restored after actor kill and refresh"
