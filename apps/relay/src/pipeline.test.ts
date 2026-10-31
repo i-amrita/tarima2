@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import type { ActivityActor, AuditResult } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution, AuditResult } from "@dealrelay/shared"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 import {
   isCurfewEarlier,
@@ -10,13 +10,25 @@ import {
 } from "./pipeline.js"
 
 function createFakeRoomClient() {
-  const activities: Array<{ actor: ActivityActor; message: string }> = []
+  const activities: Array<{
+    actor: ActivityActor
+    message: string
+    attribution?: AgentAttribution
+    actedBy?: ActivityActor
+  }> = []
   const audits: Array<{ proposalId: string; audit: AuditResult }> = []
 
   const room: RoomClient = {
-    appendActivity: vi.fn(async (actor: ActivityActor, message: string) => {
-      activities.push({ actor, message })
-    }),
+    appendActivity: vi.fn(
+      async (
+        actor: ActivityActor,
+        message: string,
+        attribution?: AgentAttribution,
+        actedBy?: ActivityActor,
+      ) => {
+        activities.push({ actor, message, attribution, actedBy })
+      },
+    ),
     submitAudit: vi.fn(async (proposalId: string, audit: AuditResult) => {
       audits.push({ proposalId, audit })
     }),
@@ -89,6 +101,7 @@ describe("RelayPipeline - Grand Loft run", () => {
     // Counter proposal derived from violations
     expect(audit.counterStrategy).toMatch(/curfew/i)
     expect(audit.draftCounterProposal).toMatch(/02:00/)
+    expect(audit.actedBy).toBe("negotiator")
 
     // Activity events order: scout -> finance -> negotiator
     const actors = activities.map((a) => a.actor)
@@ -99,6 +112,15 @@ describe("RelayPipeline - Grand Loft run", () => {
     expect(scoutIndices.length).toBeGreaterThan(0)
     expect(financeIndices.length).toBeGreaterThan(0)
     expect(negotiatorIndices.length).toBeGreaterThan(0)
+
+    // Verify attribution and actedBy on every activity
+    for (const act of activities) {
+      expect(act.actedBy).toBe(act.actor)
+      expect(act.attribution).toBeDefined()
+      expect(act.attribution?.agent).toBe(act.actor)
+      expect(act.attribution?.verb).toBeDefined()
+      expect(act.attribution?.model).toBeDefined()
+    }
 
     const lastScout = Math.max(...scoutIndices)
     const firstFinance = Math.min(...financeIndices)

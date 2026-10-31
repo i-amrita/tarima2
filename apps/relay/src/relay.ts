@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { AgentRelay } from "agent-relay"
-import type { ActivityActor } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution } from "@dealrelay/shared"
 import type { RoomClient } from "./pipeline.js"
 
 export type RelayAgentClient = Awaited<ReturnType<AgentRelay["workspace"]["reconnect"]>>
@@ -159,10 +159,11 @@ export class RelayCoordinator {
     room: RoomClient,
     actor: ActivityActor,
     message: string,
-    attribution?: unknown,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
   ): Promise<void> {
     // When connected to Relay, trace-viewer is the agent reading and mirroring the message to the room actor
-    await room.appendActivity(actor, message, attribution)
+    await room.appendActivity(actor, message, attribution, actedBy)
   }
 }
 

@@ -1,9 +1,14 @@
-import type { ActivityActor, AuditResult, EventSpecs } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution, AuditResult, EventSpecs } from "@dealrelay/shared"
 import { createModelClient, type ModelClient } from "./llm/index.js"
 import type { RelayCoordinator } from "./relay.js"
 
 export type RoomClient = {
-  appendActivity(actor: ActivityActor, message: string, attribution?: unknown): Promise<void>
+  appendActivity(
+    actor: ActivityActor,
+    message: string,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
+  ): Promise<void>
   submitAudit(proposalId: string, audit: AuditResult): Promise<void>
 }
 
@@ -145,22 +150,30 @@ export class RelayPipeline {
   private async emitActivity(
     actor: ActivityActor,
     message: string,
-    attribution?: unknown,
+    attribution?: AgentAttribution,
+    actedBy?: ActivityActor,
   ): Promise<void> {
     if (this.coordinator?.isReady()) {
       if (actor === "scout") await this.coordinator.postAsScout(message)
       else if (actor === "finance") await this.coordinator.postAsFinance(message)
       else if (actor === "negotiator") await this.coordinator.postAsNegotiator(message)
 
-      await this.coordinator.mirrorActivity(this.room, actor, message, attribution)
+      await this.coordinator.mirrorActivity(this.room, actor, message, attribution, actedBy)
     } else {
-      await this.room.appendActivity(actor, message, attribution)
+      await this.room.appendActivity(actor, message, attribution, actedBy)
     }
   }
 
   async runProposal(proposalId: string, rawText: string, specs: EventSpecs): Promise<void> {
+    const viaRelay = Boolean(this.coordinator?.isReady())
+
     // 1. Scout step
-    await this.emitActivity("scout", "Scanning inbound proposal text and extracting venue specifications...")
+    await this.emitActivity(
+      "scout",
+      "Scanning inbound proposal text and extracting venue specifications...",
+      { agent: "scout", verb: "scan", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+      "scout",
+    )
     await this.sleep(80)
 
     const extraction = await this.modelClient.extractFacts(rawText)
@@ -168,7 +181,15 @@ export class RelayPipeline {
     await this.emitActivity(
       "scout",
       `Extracted facts: cost $${facts.cost.toLocaleString()}, capacity ${facts.capacity}, curfew ${facts.curfew}, AV ${facts.avIncluded ? "included" : "not included"}`,
-      extraction.attribution,
+      {
+        agent: "scout",
+        verb: "extracted",
+        model: extraction.attribution.model,
+        latencyMs: extraction.attribution.latencyMs,
+        tokens: extraction.attribution.tokens,
+        viaRelay,
+      },
+      "scout",
     )
     await this.sleep(80)
 
@@ -176,7 +197,12 @@ export class RelayPipeline {
     if (this.coordinator?.isReady()) {
       await this.coordinator.readAsFinance()
     }
-    await this.emitActivity("finance", "Evaluating proposal against event constraints and budget...")
+    await this.emitActivity(
+      "finance",
+      "Evaluating proposal against event constraints and budget...",
+      { agent: "finance", verb: "evaluated", model: "deterministic", latencyMs: 0, viaRelay },
+      "finance",
+    )
     await this.sleep(80)
 
     const budgetDelta = specs.maxBudget - facts.cost
@@ -199,6 +225,8 @@ export class RelayPipeline {
     await this.emitActivity(
       "finance",
       `Audit complete: budget delta $${budgetDelta.toLocaleString()}, capacity delta ${capacityDelta}. Violations: ${violations.length > 0 ? violations.join(", ") : "none"}`,
+      { agent: "finance", verb: "audited", model: "deterministic", latencyMs: 0, viaRelay },
+      "finance",
     )
     await this.sleep(80)
 
@@ -206,7 +234,12 @@ export class RelayPipeline {
     if (this.coordinator?.isReady()) {
       await this.coordinator.readAsNegotiator()
     }
-    await this.emitActivity("negotiator", "Reviewing audit findings and formulating counter-proposal strategy...")
+    await this.emitActivity(
+      "negotiator",
+      "Reviewing audit findings and formulating counter-proposal strategy...",
+      { agent: "negotiator", verb: "reviewed", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+      "negotiator",
+    )
     await this.sleep(80)
 
     const counterResult = await this.modelClient.draftCounter(violations, specs, facts)
@@ -216,7 +249,15 @@ export class RelayPipeline {
     await this.emitActivity(
       "negotiator",
       `Counter strategy: ${counterStrategy}. Drafted proposal: "${draftCounterProposal}"`,
-      counterResult.attribution,
+      {
+        agent: "negotiator",
+        verb: "countered",
+        model: counterResult.attribution.model,
+        latencyMs: counterResult.attribution.latencyMs,
+        tokens: counterResult.attribution.tokens,
+        viaRelay,
+      },
+      "negotiator",
     )
     await this.sleep(80)
 
@@ -226,6 +267,7 @@ export class RelayPipeline {
       violations,
       counterStrategy,
       draftCounterProposal,
+      actedBy: "negotiator",
     }
 
     await this.room.submitAudit(proposalId, audit)

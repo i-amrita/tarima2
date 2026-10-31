@@ -1,4 +1,4 @@
-// shared contract v1. Bump this number and call it out in the PR when anything changes.
+// shared contract v2. Bumped from v1: added optional attribution and actedBy fields.
 export type Role = "agency" | "client"
 
 export type VenueStatus = "PENDING_AUDIT" | "REQUIRES_APPROVAL" | "COUNTER_PROPOSED" | "ACCEPTED"
@@ -13,12 +13,26 @@ export type EventSpecs = {
   avRequired: boolean
 }
 
+export type AgentAttribution = {
+  agent: ActivityActor
+  verb?: string
+  model?: string
+  latencyMs?: number
+  tokens?: {
+    prompt?: number
+    completion?: number
+    total?: number
+  }
+  viaRelay?: boolean
+}
+
 export type AuditResult = {
   budgetDelta: number
   capacityDelta: number
   violations: string[]
   counterStrategy: string
   draftCounterProposal: string
+  actedBy?: ActivityActor
 }
 
 export type VenueProposal = {
@@ -32,9 +46,10 @@ export type VenueProposal = {
   status: VenueStatus
   audit?: AuditResult
   approvedBy?: Role
+  actedBy?: ActivityActor
 }
 
-export type NewVenueProposal = Omit<VenueProposal, "id" | "status" | "audit" | "approvedBy">
+export type NewVenueProposal = Omit<VenueProposal, "id" | "status" | "audit" | "approvedBy" | "actedBy">
 
 export type ActivityActor = "scout" | "finance" | "negotiator" | "client" | "agency" | "system"
 
@@ -44,6 +59,8 @@ export type ActivityEvent = {
   at: number
   actor: ActivityActor
   message: string
+  attribution?: AgentAttribution
+  actedBy?: ActivityActor
 }
 
 export type RoomState = {
