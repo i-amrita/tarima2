@@ -31,3 +31,10 @@ User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a clo
 - Aliases: https://dealrelay-pi.vercel.app and https://dealrelay-quino-terrasas-projects.vercel.app. Deployment Protection (SSO) is on, so the URLs redirect to a Vercel login until it is disabled in project settings. `vercel curl <path> --deployment <url>` bypasses it for checks.
 - Sandbox: `set -a; . apps/web/.env.local; set +a; bun scripts/demo/sandbox.ts` printed public ACTOR_URL (port 7100, contract endpoint answers) and RELAY_URL (port 7200, /health ok). The `durable-actors dev` server is reachable, so the localhost-bind worry did not materialize. Sandbox URLs change on every run and the sandbox expires (45 min timeout), so re-run, then update `ACTOR_URL`/`RELAY_URL` with `vercel env add ... production --force` and redeploy.
 - Not yet verified end to end: the browser WebSocket through the sandbox URL and a full simulate flow on the deployed app.
+
+## Findings from verifying against the sandbox (2026-10-31)
+
+- The generated client ignores `ACTOR_URL`. `actors.RoomActor.get(...)` reads `DURABLE_ACTORS_CONTROL_PLANE_URL`, and remote hosts also need `DURABLE_ACTORS_PROJECT_ID=local`. Both are set on Vercel production alongside `ACTOR_URL`.
+- The dev server advertises `ws://127.0.0.1:7100` in socket grants. `getSocketGrant` now rewrites it to the public `ACTOR_URL` origin (`wss`, no port).
+- Verified against the live sandbox from this laptop: setSpecs, injectProposal, relay `/run` (202), proposal reaches REQUIRES_APPROVAL, and a `wss` connection receives the initial `state` message.
+- Still unchecked: a browser session on the deployed app. Deployment Protection blocks unauthenticated browsers (and Playwright) until it is disabled or a bypass secret is used.
