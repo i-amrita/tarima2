@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.output/
+.env
+.env.local
+.env.*.local
+.durable-actors/
+.agent-relay/
+.relay/
+.generated/
+.DS_Store
+*.log
+.videos/
+tmp/
+
+# Hackathon repo: plans are part of the deliverable docs (overrides global ignore)
+!/.agents/plans/
+!/.agents/plans/**
+
