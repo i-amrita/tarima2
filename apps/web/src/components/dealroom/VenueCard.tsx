@@ -1,8 +1,7 @@
 import * as React from "react"
 import type { EventSpecs, VenueProposal, VenueStatus } from "@dealrelay/shared"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { ChevronDown } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { evaluateConstraints } from "@/lib/constraints"
 import { ConstraintBadge } from "./ConstraintBadge"
 import { cn } from "@/lib/utils"
@@ -12,17 +11,29 @@ interface VenueCardProps {
   specs: EventSpecs | null
 }
 
-function getStatusBadgeClass(status: VenueStatus): string {
+function getStatusInfo(status: VenueStatus) {
   switch (status) {
     case "ACCEPTED":
-      return "border-status-met/40 bg-status-met/10 text-status-met"
+      return {
+        label: "Accepted",
+        className: "bg-status-met text-status-met-foreground border-status-met-border",
+      }
     case "REQUIRES_APPROVAL":
-      return "border-status-pending/40 bg-status-pending/10 text-status-pending"
+      return {
+        label: "Requires approval",
+        className: "bg-status-pending text-status-pending-foreground border-status-pending-border",
+      }
     case "COUNTER_PROPOSED":
-      return "border-status-pending/30 bg-status-pending/10 text-status-pending"
+      return {
+        label: "Counter proposed",
+        className: "bg-status-pending text-status-pending-foreground border-status-pending-border",
+      }
     case "PENDING_AUDIT":
     default:
-      return "border-muted-foreground/30 bg-muted/40 text-muted-foreground"
+      return {
+        label: "Pending audit",
+        className: "bg-muted text-muted-foreground border-border",
+      }
   }
 }
 
@@ -32,78 +43,81 @@ export function VenueCard({ proposal, specs }: VenueCardProps) {
     [specs, proposal],
   )
 
+  const statusInfo = getStatusInfo(proposal.status)
+
+  const constraintValues: Record<string, string> = {
+    budget: `$${proposal.quotedCost.toLocaleString()}`,
+    capacity: `${proposal.quotedCapacity}`,
+    curfew: proposal.quotedCurfew,
+    av: "AV",
+  }
+
   return (
-    <Card
+    <div
       data-testid={`proposal-card-${proposal.id}`}
-      className="p-5 border-border bg-card/80 backdrop-blur-sm space-y-4 hover:border-border/80 transition-all"
+      className="rounded-[10px] border border-border bg-card p-5 space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-muted-foreground">{proposal.id}</span>
-            <Badge
-              data-testid={`proposal-status-${proposal.id}`}
-              variant="outline"
-              className={cn("text-xs font-mono uppercase", getStatusBadgeClass(proposal.status))}
-            >
-              {proposal.status.replace("_", " ")}
-            </Badge>
-          </div>
-          <h3 className="text-base font-semibold tracking-tight text-foreground">
-            {proposal.name}
-          </h3>
-        </div>
+      {/* Row 1: venue name left; status chip right */}
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-[17px] font-semibold text-foreground font-sans tracking-tight">
+          {proposal.name}
+        </h3>
 
-        {proposal.approvedBy && (
-          <Badge variant="secondary" className="text-[11px] font-mono">
-            Approved by {proposal.approvedBy}
-          </Badge>
-        )}
-      </div>
-
-      <div className="text-xs text-muted-foreground italic rounded bg-muted/20 p-2.5 border border-border/40 font-mono">
-        "{proposal.rawText}"
-      </div>
-
-      <div className="space-y-1.5">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
-          Constraint Audit
-        </span>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {constraints.map((c) => (
-            <ConstraintBadge
-              key={c.id}
-              id={c.id}
-              label={c.label}
-              status={c.status}
-              detail={c.detail}
-            />
-          ))}
+        <div className="flex items-center gap-2">
+          {proposal.approvedBy && (
+            <span className="text-xs font-mono text-muted-foreground">
+              Approved by {proposal.approvedBy}
+            </span>
+          )}
+          <span
+            data-testid={`proposal-status-${proposal.id}`}
+            className={cn(
+              "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-sans font-medium transition-colors",
+              statusInfo.className,
+            )}
+          >
+            {statusInfo.label}
+            <span className="sr-only">{proposal.status.replace("_", " ")}</span>
+          </span>
         </div>
       </div>
 
+      {/* Row 2: four constraint chips */}
+      <div className="flex flex-wrap items-center gap-2">
+        {constraints.map((c) => (
+          <ConstraintBadge
+            key={c.id}
+            id={c.id}
+            label={c.label}
+            status={c.status}
+            detail={c.detail}
+            value={constraintValues[c.id]}
+          />
+        ))}
+      </div>
+
+      {/* Row 3 (only when audit exists): one-line agent strategy */}
       {proposal.audit && (
-        <>
-          <Separator className="bg-border/60" />
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between font-mono text-[11px]">
-              <span className="text-muted-foreground uppercase">Agent Strategy</span>
-              <span className="text-status-pending">
-                {proposal.audit.violations.length} violation(s) identified
-              </span>
-            </div>
-
-            <div className="rounded border border-border/60 bg-muted/30 p-2.5 space-y-1 font-mono text-[11px]">
-              <div className="text-foreground font-semibold">
-                Strategy: {proposal.audit.counterStrategy}
-              </div>
-              <div className="text-muted-foreground">
-                Draft: {proposal.audit.draftCounterProposal}
-              </div>
-            </div>
-          </div>
-        </>
+        <div className="flex items-center gap-2 text-xs font-sans text-muted-foreground min-w-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-actor-negotiator shrink-0" />
+          <span className="truncate">
+            Counter: {proposal.audit.counterStrategy.replace(/^(Strategy:\s*|Counter:\s*)/i, "")}
+          </span>
+        </div>
       )}
-    </Card>
+
+      {/* Row 4 (collapsed by default): Vendor email disclosure */}
+      <Collapsible>
+        <CollapsibleTrigger className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-sans transition-colors cursor-pointer group">
+          <ChevronDown className="size-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
+          <span>Vendor email</span>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pt-2">
+          <div className="text-xs font-sans italic text-muted-foreground bg-muted/40 rounded-md p-3 border border-border/40 leading-relaxed">
+            "{proposal.rawText}"
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
   )
 }

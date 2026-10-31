@@ -7,7 +7,6 @@ import { ConstraintHeader } from "@/components/dealroom/ConstraintHeader"
 import { ComparisonCanvas } from "@/components/dealroom/ComparisonCanvas"
 import { TraceFeed } from "@/components/dealroom/TraceFeed"
 import { ApprovalBar } from "@/components/dealroom/ApprovalBar"
-import { SimulationDrawer } from "@/components/dealroom/SimulationDrawer"
 import { getRoomState } from "@/server/room"
 
 type RoomSearch = {
@@ -45,7 +44,7 @@ function RoomComponent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 space-y-6">
-            <ComparisonCanvas specs={state.specs} proposals={state.proposals} />
+            <ComparisonCanvas roomId={roomId} role={activeRole} specs={state.specs} proposals={state.proposals} />
           </div>
 
           <div className="lg:col-span-4 lg:sticky lg:top-20">
@@ -55,8 +54,6 @@ function RoomComponent() {
           </div>
         </div>
       </main>
-
-      <SimulationDrawer roomId={roomId} role={activeRole} proposals={state.proposals} />
     </div>
   )
 }
