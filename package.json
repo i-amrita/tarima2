@@ -1,0 +1,25 @@
+{
+  "name": "tarima2",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "engines": { "bun": ">=1.4.2" },
+  "packageManager": "bun@1.4.3",
+  "scripts": {
+    "dev": "bun scripts/dev.ts",
+    "actors": "bun --cwd packages/actors run dev",
+    "validate": "bun scripts/validate.ts",
+    "validate:quick": "bun scripts/validate.ts --quick",
+    "lint": "oxlint",
+    "test": "vitest run",
+    "generate": "bun --cwd packages/actors run generate"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "oxlint": "latest",
+    "type-fest": "latest",
+    "typescript": "^7.0.0",
+    "vitest": "latest"
+  },
+  "trustedDependencies": ["esbuild"]
+}
