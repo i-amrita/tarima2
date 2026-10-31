@@ -170,7 +170,7 @@ export function TraceFeed({ activity }: TraceFeedProps) {
                         </div>
                         <p
                           title={item.message}
-                          className="line-clamp-1 text-[13px] font-sans text-foreground/90 leading-snug"
+                          className="line-clamp-2 text-[13px] font-sans text-foreground/90 leading-snug"
                         >
                           {cleanTraceMessage(item.message)}
                         </p>
