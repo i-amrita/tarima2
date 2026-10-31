@@ -18,6 +18,7 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
   @Persisted @Emittable proposals: VenueProposal[] = []
   @Persisted @Emittable activity: ActivityEvent[] = []
   @Persisted private nextId = 1
+  @Persisted private nextActivityId = 1
 
   async setSpecs(specs: EventSpecs): Promise<void> {
     this.specs = specs
@@ -65,6 +66,6 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
   }
 
   private async log(actor: ActivityActor, message: string): Promise<void> {
-    this.activity = pushActivity(this.activity, { id: `a${this.nextId++}`, at: Date.now(), actor, message })
+    this.activity = pushActivity(this.activity, { id: `a${this.nextActivityId++}`, at: Date.now(), actor, message })
   }
 }
