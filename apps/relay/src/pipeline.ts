@@ -1,4 +1,5 @@
 import type { ActivityActor, AuditResult, EventSpecs } from "@dealrelay/shared"
+import { createModelClient, type ModelClient } from "./llm/index.js"
 
 export type RoomClient = {
   appendActivity(actor: ActivityActor, message: string): Promise<void>
@@ -8,6 +9,7 @@ export type RoomClient = {
 export type RelayPipelineOptions = {
   room: RoomClient
   mode: "fixtures" | "live"
+  modelClient?: ModelClient
   sleep?: (ms: number) => Promise<void>
 }
 
@@ -126,31 +128,30 @@ export function generateNegotiation(
 export class RelayPipeline {
   private room: RoomClient
   private mode: "fixtures" | "live"
+  private modelClient: ModelClient
   private sleep: (ms: number) => Promise<void>
 
   constructor(options: RelayPipelineOptions) {
     this.room = options.room
     this.mode = options.mode
+    this.modelClient = options.modelClient ?? createModelClient(options.mode)
     this.sleep = options.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)))
   }
 
   async runProposal(proposalId: string, rawText: string, specs: EventSpecs): Promise<void> {
-    if (this.mode === "live") {
-      throw new Error("DEMO_MODE=live not implemented yet")
-    }
-
     // 1. Scout step
     await this.room.appendActivity("scout", "Scanning inbound proposal text and extracting venue specifications...")
     await this.sleep(80)
 
-    const facts = parseProposalText(rawText)
+    const extraction = await this.modelClient.extractFacts(rawText)
+    const facts = extraction.facts
     await this.room.appendActivity(
       "scout",
       `Extracted facts: cost $${facts.cost.toLocaleString()}, capacity ${facts.capacity}, curfew ${facts.curfew}, AV ${facts.avIncluded ? "included" : "not included"}`,
     )
     await this.sleep(80)
 
-    // 2. Finance step
+    // 2. Finance step (money math & constraints stay deterministic)
     await this.room.appendActivity("finance", "Evaluating proposal against event constraints and budget...")
     await this.sleep(80)
 
@@ -181,7 +182,9 @@ export class RelayPipeline {
     await this.room.appendActivity("negotiator", "Reviewing audit findings and formulating counter-proposal strategy...")
     await this.sleep(80)
 
-    const { counterStrategy, draftCounterProposal } = generateNegotiation(violations, specs, facts)
+    const counterResult = await this.modelClient.draftCounter(violations, specs, facts)
+    const counterStrategy = counterResult.counterStrategy
+    const draftCounterProposal = counterResult.draftCounterProposal
 
     await this.room.appendActivity(
       "negotiator",

@@ -148,12 +148,32 @@ describe("RelayPipeline - Warehouse 9 run", () => {
   })
 })
 
-describe("RelayPipeline - Live mode stub", () => {
-  it("throws clear error when DEMO_MODE=live", async () => {
-    const { room } = createFakeRoomClient()
-    const pipeline = new RelayPipeline({ room, mode: "live", sleep: instantSleep })
-    await expect(pipeline.runProposal("p1", "some text", DEFAULT_SPECS)).rejects.toThrow(
-      "DEMO_MODE=live not implemented yet",
-    )
+describe("RelayPipeline - Live mode execution", () => {
+  it("executes successfully in live mode with ModelClient", async () => {
+    const { room, activities, audits } = createFakeRoomClient()
+    const mockModelClient = {
+      extractFacts: vi.fn(async () => ({
+        facts: { cost: 26000, capacity: 550, curfew: "00:00", avIncluded: true },
+        attribution: { model: "mock-model", latencyMs: 100, tokens: { total: 150 }, fallbackUsed: false },
+      })),
+      draftCounter: vi.fn(async () => ({
+        counterStrategy: "Counter with curfew extension",
+        draftCounterProposal: "Please extend curfew to 02:00",
+        attribution: { model: "mock-model", latencyMs: 120, tokens: { total: 200 }, fallbackUsed: false },
+      })),
+    }
+
+    const pipeline = new RelayPipeline({
+      room,
+      mode: "live",
+      modelClient: mockModelClient,
+      sleep: instantSleep,
+    })
+
+    await pipeline.runProposal("p1", "Proposal text", DEFAULT_SPECS)
+    expect(mockModelClient.extractFacts).toHaveBeenCalledTimes(1)
+    expect(mockModelClient.draftCounter).toHaveBeenCalledTimes(1)
+    expect(audits).toHaveLength(1)
+    expect(activities.length).toBeGreaterThan(0)
   })
 })
