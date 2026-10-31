@@ -101,7 +101,7 @@ export function VenueCard({ proposal, specs }: VenueCardProps) {
         <div className="flex items-center gap-2 text-xs font-sans text-muted-foreground min-w-0">
           <span className="w-1.5 h-1.5 rounded-full bg-actor-negotiator shrink-0" />
           <span className="truncate">
-            Counter: {proposal.audit.counterStrategy.replace(/^(Strategy:\s*|Counter:\s*)/i, "")}
+            {counterLine(proposal.audit.counterStrategy)}
           </span>
         </div>
       )}
@@ -120,4 +120,10 @@ export function VenueCard({ proposal, specs }: VenueCardProps) {
       </Collapsible>
     </div>
   )
+}
+
+/** Drop a leading "Strategy:" or "Counter:" label and avoid repeating "Counter" in the line. */
+function counterLine(counterStrategy: string): string {
+  const text = counterStrategy.replace(/^(Strategy:\s*|Counter:\s*)/i, "")
+  return /^counter\b/i.test(text) ? text : `Counter: ${text}`
 }

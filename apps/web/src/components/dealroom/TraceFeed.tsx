@@ -55,6 +55,8 @@ function groupRuns(activity: ActivityEvent[]): ActivityRun[] {
 export function TraceFeed({ activity }: TraceFeedProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const runs = React.useMemo(() => groupRuns(activity), [activity])
+  // Only the latest run is open by default; a user toggle overrides that for its run.
+  const [overrides, setOverrides] = React.useState<Record<string, boolean>>({})
 
   React.useEffect(() => {
     if (scrollRef.current) {
@@ -87,7 +89,8 @@ export function TraceFeed({ activity }: TraceFeedProps) {
             return (
               <Collapsible
                 key={run.key}
-                defaultOpen={isLatest}
+                open={overrides[run.key] ?? isLatest}
+                onOpenChange={(open) => setOverrides((prev) => ({ ...prev, [run.key]: open }))}
                 data-testid="trace-run"
                 data-actor={run.actor}
                 className="space-y-1"

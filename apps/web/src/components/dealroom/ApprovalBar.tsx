@@ -35,13 +35,13 @@ export function ApprovalBar({ role, proposals, onApprove }: ApprovalBarProps) {
           const rawStrategy = proposal.audit?.counterStrategy
             ? proposal.audit.counterStrategy.replace(/^(Strategy:\s*|Counter:\s*)/i, "")
             : "Counter draft prepared"
-          const strategy =
-            rawStrategy.length > 60 ? rawStrategy.slice(0, 57) + "..." : rawStrategy
+          const sentence = rawStrategy.charAt(0).toUpperCase() + rawStrategy.slice(1)
+          const strategy = sentence.length > 60 ? sentence.slice(0, 57) + "..." : sentence
 
           return (
             <div
               key={proposal.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-1.5 border-t border-status-pending-border/60 first:border-t-0 first:pt-0"
+              className="flex items-center justify-between gap-3 py-1.5 border-t border-status-pending-border/60 first:border-t-0 first:pt-0"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span className="font-sans text-sm font-medium text-foreground truncate">
@@ -52,7 +52,7 @@ export function ApprovalBar({ role, proposals, onApprove }: ApprovalBarProps) {
                 </span>
               </div>
 
-              <div className="shrink-0 self-end sm:self-auto">
+              <div className="shrink-0">
                 {role === "client" ? (
                   <Button
                     data-testid="approve-button"
