@@ -47,3 +47,19 @@ Register is idempotent by name; re-registering an existing name adopts it and ro
 ## Demo fixtures
 
 Scripted participants (Scout, Finance, Negotiator) are just registered relay agents whose `sendMessage` calls are driven by a fixture script with per-chunk delays. The video audience sees real relay messages flowing between real relay identities; the content is pre-authored. This keeps the take deterministic and free of LLM latency.
+
+## Using Agent Relay for the implementation itself (assessed 2026-10-31)
+
+Assessed the workforce/proactive-agents surface as a development harness for building this repo (agents coordinating on the codebase, not in the product).
+
+What exists:
+- `agent-relay` CLI: local broker (`agent-relay up`), `spawn <name> <cli> <task>`, `send`, `attach <name> --mode view`, durable delivery queues, `node workflow run workflows/*.ts` for typed multi-step runs, observer mode for watching traffic.
+- Agent Relay MCP: `agent-relay mcp` exposes register/spawn/send/inbox/actions as MCP tools, so coding agents can join a shared channel without embedding the SDK.
+- Workforce/proactive personas (`agentworkforce deploy`): cron/integration-triggered cloud agents with `ctx.harness.run`, memory, typed Slack/GitHub clients. Cloud-deployed, opinionated.
+
+Verdict: **No for the build loop; maybe for one narrow slice.**
+- This repo is small (3 workspaces) with linear deps. Streams A-E finish faster than a relay-coordinated fleet would converge; coordination overhead (channel etiquette, idle detection, handoff prompt quality) exceeds the parallelism win. Maki subagents + git worktrees already cover parallel implementation.
+- The proactive/persona runtime requires cloud deploys and OAuth'd integrations; wrong tool for a 1-2 day hackathon.
+- The one plausible use: **cross-session worker visibility during stream C (web)**. If 2-3 coding agents run concurrently in separate worktrees, a shared `#tarima2` channel plus `agent-relay attach --mode view` gives a live TUI of who is doing what, and durable delivery means a task sent to a busy agent is queued rather than lost. Nice-to-have; adopt only if we actually run 3+ agents at once, and scope it to observation (attach/view), not task routing.
+
+Revisit trigger: stream C starts while stream B is unfinished AND two or more agents are running concurrently.

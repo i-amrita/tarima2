@@ -53,6 +53,7 @@ Three workspaces with linear dependencies. Bun workspaces plus two root scripts 
 
 - Cloud demo host: VPS (Hetzner, own-agents user) vs fly.io. Decide after first local run. Default VPS since we already have the user and can caddy it.
 - Whether to check in `.durable-actors/` seeded state for judges: no, judges get the empty-room flow; the video carries the state story.
+- Using Agent Relay itself as the dev-coordination harness for building this repo: assessed in `.agents/docs/agent-relay-integration.md`. Verdict: no for the build loop (repo too small, coordination overhead exceeds parallelism win); revisit only if stream C runs with 3+ concurrent coding agents, and then only for observation (attach/view), not task routing.
 
 ## Verification
 
