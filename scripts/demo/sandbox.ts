@@ -12,7 +12,7 @@ const sandbox = await Sandbox.create({
   source: { type: "git", url, revision },
   runtime: "node24",
   ports: [ACTOR_PORT, RELAY_PORT],
-  timeout: 45 * 60 * 1000,
+  timeout: Number(process.env.SANDBOX_MINUTES ?? 45) * 60 * 1000,
 })
 
 async function sh(script: string, detached = false): Promise<void> {

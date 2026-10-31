@@ -39,3 +39,10 @@ User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a clo
 - Verified against the live sandbox from this laptop: setSpecs, injectProposal, relay `/run` (202), proposal reaches REQUIRES_APPROVAL, and a `wss` connection receives the initial `state` message.
 - Still unchecked: a browser session on the deployed app. Deployment Protection blocks unauthenticated browsers (and Playwright) until it is disabled or a bypass secret is used.
 - Browser check (2026-10-31): `tests/e2e/smoke.sh` minus the kill step passed with a local web app (port 3101) pointed at the public sandbox over https/wss: connect, simulate, relay audit, two-window approval sync, vendor acceptance. The Vercel-hosted build itself still needs protection lifted or a bypass secret for a browser run.
+
+## Deployed e2e verified (2026-10-31)
+
+- Decision (user delegated): keep Deployment Protection ON and use an automation bypass secret (project note `e2e-browser-check`, created through the Vercel API) for browser checks. Flip protection off only at submission time, when a judge URL is needed and the backing host is durable.
+- `bash scripts/demo/redeploy-vercel.sh` boots a fresh sandbox, sets all five production env vars, rebuilds and deploys. Env vars are stored as secrets and hidden from `vercel env pull`, so do not use pull to verify them.
+- Browser smoke on https://dealrelay-pi.vercel.app (smoke minus the kill step, bypass via `?x-vercel-protection-bypass=<secret>&x-vercel-set-bypass-cookie=true` on the first URL) passed: socket connect, relay audit, trace, client approval, two-window sync, vendor acceptance.
+- Hobby plan caps a sandbox at 45 minutes. After expiry the app shows socket "error" (HTTP 410/502); rerun the redeploy script. The durable answer is the ovhcloud VPS plus cloudflared, or a Pro plan.
