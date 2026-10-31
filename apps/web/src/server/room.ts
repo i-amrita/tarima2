@@ -3,6 +3,18 @@ import { actors } from "@dealrelay/actors"
 import type { EventSpecs, Role, RoomState } from "@dealrelay/shared"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 
+/** The dev actor server advertises its bind address (ws://127.0.0.1:7100); browsers need the public ACTOR_URL origin. */
+function publicGrant<T extends { websocketUrl: string }>(grant: T): T {
+  const actorUrl = process.env.ACTOR_URL
+  if (!actorUrl) return grant
+  const socket = new URL(grant.websocketUrl)
+  const origin = new URL(actorUrl)
+  socket.protocol = origin.protocol === "https:" ? "wss:" : "ws:"
+  socket.hostname = origin.hostname
+  socket.port = origin.port
+  return { ...grant, websocketUrl: socket.toString() }
+}
+
 export const getSocketGrant = createServerFn({ method: "POST" })
   .validator((d: { roomId: string; role: Role }) => d)
   .handler(async ({ data }) => {
@@ -15,7 +27,7 @@ export const getSocketGrant = createServerFn({ method: "POST" })
         controlPlaneUrl: process.env.ACTOR_URL ?? "http://127.0.0.1:7100",
       },
     )
-    return grant
+    return publicGrant(grant)
   })
 
 export const getRoomState = createServerFn({ method: "GET" })
