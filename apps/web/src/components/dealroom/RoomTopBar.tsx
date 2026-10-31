@@ -36,16 +36,16 @@ export function RoomTopBar({ roomId, activeRole, status }: RoomTopBarProps) {
       className="h-14 border-b border-border bg-background sticky top-0 z-20"
     >
       <div className="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <span className="font-semibold text-sm tracking-tight text-foreground font-sans">
             DealRelay
           </span>
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="hidden sm:inline truncate font-mono text-xs text-muted-foreground">
             {roomId}
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Connection status 6px dot */}
           <div
             data-testid="connection-status"
@@ -100,6 +100,7 @@ export function RoomTopBar({ roomId, activeRole, status }: RoomTopBarProps) {
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                data-testid="demo-menu"
                 variant="outline"
                 size="sm"
                 className="h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground border-border bg-transparent shadow-none"
@@ -113,7 +114,7 @@ export function RoomTopBar({ roomId, activeRole, status }: RoomTopBarProps) {
                 Demo actions
               </div>
               <Button
-                data-testid="kill-actor-popover"
+                data-testid="kill-actor"
                 variant="destructive"
                 size="sm"
                 onClick={handleKillActor}
@@ -129,19 +130,6 @@ export function RoomTopBar({ roomId, activeRole, status }: RoomTopBarProps) {
               )}
             </PopoverContent>
           </Popover>
-
-          {/* Actionable kill-actor trigger for e2e automation, imperceptible in visual render */}
-          <button
-            data-testid="kill-actor"
-            type="button"
-            onClick={handleKillActor}
-            disabled={loadingKill}
-            tabIndex={-1}
-            aria-hidden="false"
-            className="fixed bottom-0 right-0 w-[1px] h-[1px] opacity-[0.001] pointer-events-auto z-50 overflow-hidden cursor-default"
-          >
-            Kill actor
-          </button>
         </div>
       </div>
     </header>
