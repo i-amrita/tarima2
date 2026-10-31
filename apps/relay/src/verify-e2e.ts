@@ -71,6 +71,9 @@ async function verifyVenue(venueIndex: number) {
 
         const found = proposals.find((p) => p.id === proposalId)
         if (found && found.status === "REQUIRES_APPROVAL" && found.audit) {
+          if (found.actedBy !== "negotiator") {
+            console.warn(`Note: proposal.actedBy is ${found.actedBy}`)
+          }
           clearTimeout(timeout)
           ws.close()
           resolve(found)
