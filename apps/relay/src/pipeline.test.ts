@@ -176,4 +176,37 @@ describe("RelayPipeline - Live mode execution", () => {
     expect(audits).toHaveLength(1)
     expect(activities.length).toBeGreaterThan(0)
   })
+
+  it("coordinates steps through Agent Relay when coordinator is provided", async () => {
+    const { room, activities } = createFakeRoomClient()
+    const mockCoordinator = {
+      isReady: vi.fn(() => true),
+      postAsScout: vi.fn(async () => {}),
+      readAsFinance: vi.fn(async () => "Scout posted facts"),
+      postAsFinance: vi.fn(async () => {}),
+      readAsNegotiator: vi.fn(async () => "Finance posted audit"),
+      postAsNegotiator: vi.fn(async () => {}),
+      mirrorActivity: vi.fn(async (_room: RoomClient, actor: ActivityActor, message: string) => {
+        activities.push({ actor, message })
+      }),
+    }
+
+    const pipeline = new RelayPipeline({
+      room,
+      mode: "fixtures",
+      coordinator: mockCoordinator as unknown as import("./relay.js").RelayCoordinator,
+      sleep: instantSleep,
+    })
+
+    const grandLoft = VENUE_FIXTURES.find((v) => v.name === "The Grand Loft")!
+    await pipeline.runProposal("p1", grandLoft.rawText, DEFAULT_SPECS)
+
+    expect(mockCoordinator.postAsScout).toHaveBeenCalled()
+    expect(mockCoordinator.readAsFinance).toHaveBeenCalled()
+    expect(mockCoordinator.postAsFinance).toHaveBeenCalled()
+    expect(mockCoordinator.readAsNegotiator).toHaveBeenCalled()
+    expect(mockCoordinator.postAsNegotiator).toHaveBeenCalled()
+    expect(mockCoordinator.mirrorActivity).toHaveBeenCalled()
+    expect(activities.length).toBeGreaterThan(0)
+  })
 })
