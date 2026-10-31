@@ -14,7 +14,7 @@ Vercel hosts `apps/web` only. The actor server (SQLite on disk, long-lived WebSo
 
 ## Where actor and relay run
 
-- A (recommended): `own-agents@ovhcloud` VPS behind caddy or a tunnel. Durable state, no time limit. Needs the repo pushed to a remote.
+- A (recommended): `own-agents@ovhcloud` VPS behind caddy or a tunnel. Durable state, no time limit. Full self-contained deployment runbook: [.agents/docs/vps-deploy.md](./vps-deploy.md).
 - B: a Vercel Sandbox session exposing both ports. Everything on Vercel, but sandboxes time out and `.durable-actors/` is lost unless snapshotted. Fine for a recording window.
 
 ## Open
@@ -45,4 +45,4 @@ User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a clo
 - Decision (user delegated): keep Deployment Protection ON and use an automation bypass secret (project note `e2e-browser-check`, created through the Vercel API) for browser checks. Flip protection off only at submission time, when a judge URL is needed and the backing host is durable.
 - `bash scripts/demo/redeploy-vercel.sh` boots a fresh sandbox, sets all five production env vars, rebuilds and deploys. Env vars are stored as secrets and hidden from `vercel env pull`, so do not use pull to verify them.
 - Browser smoke on https://dealrelay-pi.vercel.app (smoke minus the kill step, bypass via `?x-vercel-protection-bypass=<secret>&x-vercel-set-bypass-cookie=true` on the first URL) passed: socket connect, relay audit, trace, client approval, two-window sync, vendor acceptance.
-- Hobby plan caps a sandbox at 45 minutes. After expiry the app shows socket "error" (HTTP 410/502); rerun the redeploy script. The durable answer is the ovhcloud VPS plus cloudflared, or a Pro plan.
+- Hobby plan caps a sandbox at 45 minutes. After expiry the app shows socket "error" (HTTP 410/502); rerun the redeploy script. The durable answer is the ovhcloud VPS plus cloudflared (see [.agents/docs/vps-deploy.md](./vps-deploy.md)), or a Pro plan.
