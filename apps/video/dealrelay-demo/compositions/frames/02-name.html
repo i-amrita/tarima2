@@ -1,5 +1,19 @@
 <template>
   <style>
+    @font-face {
+      font-family: "Fraunces";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("../../assets/fonts/Fraunces-Regular.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Plus Jakarta Sans Variable";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("../../assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+    }
     #root,
     #root * {
       box-sizing: border-box;
@@ -9,25 +23,20 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #0a0a14;
-      color: #f5f5f7;
-      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      background: #f8f8f5;
+      color: #191816;
+      font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     #two-bg {
       position: absolute;
       inset: 0;
-      background: #0a0a14;
+      background: #f8f8f5;
     }
     #two-halo {
       position: absolute;
       inset: 0;
-      background: radial-gradient(
-        62% 46% at 50% 42%,
-        rgba(122, 63, 184, 0.16) 0%,
-        rgba(31, 108, 159, 0.07) 52%,
-        rgba(10, 10, 20, 0) 78%
-      );
+      background: transparent;
     }
     #two-stage {
       position: absolute;
@@ -59,45 +68,33 @@
     }
     .two-word {
       grid-area: 1 / 1;
+      font-family: Fraunces, ui-serif, Georgia, serif;
       font-size: 148px;
-      font-weight: 700;
+      font-weight: 400;
       letter-spacing: -0.045em;
       line-height: 1;
       margin: 0;
       white-space: nowrap;
     }
     .two-word.solid {
-      color: #f5f5f7;
+      color: #191816;
     }
     .two-word.gradient {
-      background-image: linear-gradient(
-        90deg,
-        #f5f5f7 0%,
-        #f5f5f7 30%,
-        #c7d6ff 42%,
-        #ffffff 50%,
-        #c7d6ff 58%,
-        #f5f5f7 70%,
-        #f5f5f7 100%
-      );
-      background-size: 300% 100%;
-      background-position: 100% 50%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      color: #191816;
+      background-image: none;
     }
     .two-sub {
       font-size: 40px;
       font-weight: 400;
       letter-spacing: -0.005em;
-      color: rgba(245, 245, 247, 0.72);
+      color: #65635d;
       opacity: 0;
       will-change: transform, opacity;
     }
     .two-rule {
       width: 210px;
       height: 1px;
-      background: rgba(245, 245, 247, 0.22);
+      background: #e7e6e3;
       opacity: 0;
     }
   </style>
@@ -109,9 +106,9 @@
     <div id="two-stage">
       <div class="two-mark" id="two-mark">
         <svg class="two-mark-ic" viewBox="0 0 64 64" fill="none" aria-hidden="true" data-layout-ignore>
-          <rect x="6" y="6" width="52" height="52" rx="14" stroke="rgba(245,245,247,0.5)" stroke-width="2.5" />
-          <path d="M20 22v20h10" stroke="#f5f5f7" stroke-width="4" stroke-linecap="square" />
-          <path d="M34 22v20h12" stroke="rgba(245,245,247,0.72)" stroke-width="4" stroke-linecap="square" />
+          <rect x="6" y="6" width="52" height="52" rx="14" stroke="#74716b" stroke-width="2.5" />
+          <path d="M20 22v20h10" stroke="#191816" stroke-width="4" stroke-linecap="square" />
+          <path d="M34 22v20h12" stroke="#74716b" stroke-width="4" stroke-linecap="square" />
         </svg>
         <div class="two-stack">
           <h1 class="two-word solid" data-layout-allow-occlusion>DealRelay</h1>

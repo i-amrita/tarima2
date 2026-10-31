@@ -1,6 +1,20 @@
 <template>
   <div id="root" data-composition-id="07-roi" data-duration="8" data-fps="30">
     <style>
+      @font-face {
+        font-family: "Fraunces";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("../../assets/fonts/Fraunces-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans Variable";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url("../../assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+      }
       *,
       *::before,
       *::after {
@@ -13,8 +27,8 @@
         overflow: hidden;
         container-type: size;
         isolation: isolate;
-        color: #f5f5f7;
-        font-family: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+        color: #191816;
+        font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
         pointer-events: none;
       }
 
@@ -22,13 +36,13 @@
         position: absolute;
         inset: 0;
         overflow: hidden;
-        background: #0a0a14;
+        background: #f8f8f5;
       }
 
       .roi-orb {
         position: absolute;
         border-radius: 50%;
-        filter: blur(130px);
+        opacity: 0;
       }
 
       .roi-band {
@@ -37,13 +51,7 @@
         left: 0;
         width: 24%;
         height: 170%;
-        background: linear-gradient(
-          90deg,
-          rgba(230, 232, 255, 0) 0%,
-          rgba(230, 232, 255, 0.14) 50%,
-          rgba(230, 232, 255, 0) 100%
-        );
-        filter: blur(40px);
+        background: transparent;
       }
 
       .roi-stage {
@@ -72,17 +80,19 @@
       }
 
       .roi-eyebrow {
-        color: rgba(245, 245, 247, 0.55);
+        color: #65635d;
+        font-family: ui-monospace, "SF Mono", monospace;
         font-size: 2.5cqh;
-        font-weight: 600;
+        font-weight: 400;
         letter-spacing: 0.22em;
         text-transform: uppercase;
       }
 
       .roi-tag {
-        color: rgba(245, 245, 247, 0.42);
+        color: #65635d;
+        font-family: ui-monospace, "SF Mono", monospace;
         font-size: 2.3cqh;
-        font-weight: 600;
+        font-weight: 400;
         letter-spacing: 0.24em;
         text-transform: uppercase;
       }
@@ -101,8 +111,9 @@
 
       .roi-num {
         display: inline-block;
-        font-weight: 700;
-        letter-spacing: -0.045em;
+        font-family: Fraunces, ui-serif, Georgia, serif;
+        font-weight: 400;
+        letter-spacing: -0.03em;
         line-height: 0.94;
         font-variant-numeric: tabular-nums;
         font-feature-settings: "tnum" 1;
@@ -113,8 +124,8 @@
       .roi-suffix {
         display: inline-block;
         margin-left: 0.16em;
-        color: rgba(245, 245, 247, 0.7);
-        font-weight: 600;
+        color: #65635d;
+        font-weight: 500;
         letter-spacing: -0.02em;
         will-change: transform, opacity;
       }
@@ -126,13 +137,13 @@
         top: 52%;
         height: 0.42cqh;
         border-radius: 0.21cqh;
-        background: #f5f5f7;
+        background: #76363d;
         transform: scaleX(0);
         transform-origin: 0% 50%;
       }
 
       .roi-label {
-        color: #f5f5f7;
+        color: #191816;
         font-size: 3.1cqh;
         font-weight: 600;
         letter-spacing: 0.12em;
@@ -150,9 +161,10 @@
         align-items: center;
         gap: 0.9cqh;
         padding: 1.1cqh 2.2cqw;
-        border: 0.12cqw solid rgba(245, 245, 247, 0.22);
+        border: 0.12cqw solid #e7e6e3;
         border-radius: 9999px;
-        color: rgba(245, 245, 247, 0.9);
+        background: #ffffff;
+        color: #191816;
         font-size: 2.4cqh;
         font-weight: 600;
         letter-spacing: 0.1em;
@@ -173,12 +185,7 @@
         margin-left: -46cqw;
         margin-top: -31cqh;
         border-radius: 50%;
-        background: radial-gradient(
-          circle at 50% 50%,
-          rgba(96, 128, 214, 0.5) 0%,
-          rgba(31, 108, 159, 0.2) 42%,
-          rgba(10, 10, 20, 0) 72%
-        );
+        background: transparent;
         opacity: 0;
         transform: scale(0.8);
         will-change: transform, opacity;
@@ -193,19 +200,20 @@
 
       .roi-subnum {
         display: inline-block;
-        color: #f5f5f7;
+        color: #191816;
+        font-family: Fraunces, ui-serif, Georgia, serif;
         font-size: 8.4cqh;
-        font-weight: 700;
-        letter-spacing: -0.04em;
+        font-weight: 400;
+        letter-spacing: -0.03em;
         line-height: 1;
         font-variant-numeric: tabular-nums;
         transform-origin: 50% 58%;
       }
 
       .roi-sublabel {
-        color: rgba(245, 245, 247, 0.6);
+        color: #65635d;
         font-size: 3cqh;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.16em;
         text-transform: uppercase;
       }
@@ -267,13 +275,13 @@
           <div class="roi-row" style="top: 58cqh">
             <div class="roi-pillrow">
               <span class="roi-pill" id="roi-pill-1">
-                <span class="roi-dot" style="background: #1f6c9f"></span>Scout
+                <span class="roi-dot" style="background: #255c75"></span>Scout
               </span>
               <span class="roi-pill" id="roi-pill-2">
-                <span class="roi-dot" style="background: #7a3fb8"></span>Finance
+                <span class="roi-dot" style="background: #5c4a7b"></span>Finance
               </span>
               <span class="roi-pill" id="roi-pill-3">
-                <span class="roi-dot" style="background: #956400"></span>Negotiator
+                <span class="roi-dot" style="background: #785f28"></span>Negotiator
               </span>
             </div>
           </div>

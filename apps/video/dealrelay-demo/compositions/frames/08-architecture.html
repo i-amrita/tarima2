@@ -1,6 +1,20 @@
 <template>
   <div id="root" data-composition-id="08-architecture" data-duration="6" data-fps="30">
     <style>
+      @font-face {
+        font-family: "Fraunces";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("../../assets/fonts/Fraunces-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans Variable";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url("../../assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+      }
       *,
       *::before,
       *::after {
@@ -13,8 +27,8 @@
         overflow: hidden;
         container-type: size;
         isolation: isolate;
-        color: #f5f5f7;
-        font-family: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+        color: #191816;
+        font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
         pointer-events: none;
       }
 
@@ -22,13 +36,13 @@
         position: absolute;
         inset: 0;
         overflow: hidden;
-        background: #0a0a14;
+        background: #f8f8f5;
       }
 
       .arch-orb {
         position: absolute;
         border-radius: 50%;
-        filter: blur(130px);
+        opacity: 0;
       }
 
       .arch-stage {
@@ -78,10 +92,10 @@
         gap: 0.9cqh;
         width: 100%;
         padding: 1.4cqh 1.6cqw;
-        border-radius: 1.6cqw;
-        border: 0.12cqw solid rgba(245, 245, 247, 0.2);
-        background: rgba(255, 255, 255, 0.05);
-        color: #f5f5f7;
+        border-radius: 10px;
+        border: 1px solid #e7e6e3;
+        background: #ffffff;
+        color: #191816;
         font-size: 2.2cqw;
         font-weight: 600;
         line-height: 1.1;
@@ -95,7 +109,7 @@
         width: 1.25cqh;
         height: 1.25cqh;
         border-radius: 50%;
-        background: var(--node-color, #1f6c9f);
+        background: var(--node-color, #74716b);
       }
 
       .arch-hub-wrap {
@@ -116,12 +130,7 @@
         margin-left: -39cqw;
         margin-top: -31cqh;
         border-radius: 50%;
-        background: radial-gradient(
-          circle at 50% 50%,
-          rgba(96, 128, 214, 0.4) 0%,
-          rgba(122, 63, 184, 0.15) 46%,
-          rgba(10, 10, 20, 0) 74%
-        );
+        background: transparent;
         opacity: 0;
         transform: scale(0.8);
         will-change: transform, opacity;
@@ -135,12 +144,13 @@
         width: 21cqw;
         min-height: 14cqh;
         padding: 1.8cqh 2cqw;
-        border-radius: 1.6cqw;
-        border: 0.2cqw solid rgba(245, 245, 247, 0.85);
-        background: rgba(255, 255, 255, 0.07);
-        color: #f5f5f7;
+        border-radius: 10px;
+        border: 1px solid #191816;
+        background: #ffffff;
+        color: #191816;
+        font-family: Fraunces, ui-serif, Georgia, serif;
         font-size: 2.9cqw;
-        font-weight: 700;
+        font-weight: 400;
         line-height: 1.06;
         letter-spacing: -0.02em;
         text-align: center;
@@ -158,9 +168,9 @@
 
       .arch-caption {
         display: block;
-        color: rgba(245, 245, 247, 0.6);
+        color: #65635d;
         font-size: 2.2cqh;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.2em;
         line-height: 1.55;
         text-transform: uppercase;
@@ -189,7 +199,7 @@
               cy="40"
               rx="37"
               ry="26"
-              style="stroke: rgba(245, 245, 247, 0.24); opacity: 0.42"
+              style="stroke: rgba(25, 24, 22, 0.18); opacity: 1"
             ></ellipse>
           </svg>
           <svg
@@ -240,9 +250,9 @@
         var RY = 26;
 
         var nodes = [
-          { label: "Scout", color: "#1f6c9f", angle: 200, cue: 0.55 },
-          { label: "Finance", color: "#7a3fb8", angle: 340, cue: 1.25 },
-          { label: "Negotiator", color: "#956400", angle: 270, cue: 1.95 },
+          { label: "Scout", color: "#255c75", angle: 200, cue: 0.55 },
+          { label: "Finance", color: "#5c4a7b", angle: 340, cue: 1.25 },
+          { label: "Negotiator", color: "#785f28", angle: 270, cue: 1.95 },
         ];
 
         orbA.style.width = "44cqw";
@@ -271,7 +281,7 @@
             "d",
             "M " + HUB_X + " " + HUB_Y + " L " + x.toFixed(3) + " " + y.toFixed(3),
           );
-          connector.setAttribute("style", "stroke: " + def.color);
+          connector.setAttribute("style", "stroke: #c9c7c2");
           connectorLayer.appendChild(connector);
           connectors.push(connector);
 
@@ -283,7 +293,7 @@
           var node = document.createElement("div");
           node.className = "arch-node";
           node.style.setProperty("--node-color", def.color);
-          node.style.borderColor = def.color;
+          node.style.borderColor = "#e7e6e3";
 
           var dot = document.createElement("span");
           dot.className = "arch-dot";

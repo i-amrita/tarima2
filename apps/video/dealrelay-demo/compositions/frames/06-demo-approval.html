@@ -5,48 +5,49 @@
     height: 1080px;
     position: relative;
     overflow: hidden;
-    color: #111111;
-    font-family: "Helvetica Neue", Arial, Inter, 'Helvetica Neue', Arial, sans-serif;
+    color: #191816;
+    font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
   }
   #root * { box-sizing: border-box; margin: 0; padding: 0; }
-  .d6-ground { position: absolute; inset: 0; background: #FBFBFA; }
+  #root { -webkit-font-smoothing: antialiased; }
+  .d6-ground { position: absolute; inset: 0; background: #F8F8F5; }
   .d6-room { position: absolute; inset: 0; }
   .d6-topbar {
     position: absolute; left: 0; right: 0; top: 0; height: 60px;
-    border-bottom: 1px solid #EAEAEA; background: #FBFBFA;
+    border-bottom: 1px solid #E7E6E3; background: #F8F8F5;
     display: flex; align-items: center; justify-content: space-between; padding: 0 56px;
   }
   .d6-brand { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
-  .d6-roomid { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 14px; color: #787774; margin-left: 14px; }
+  .d6-roomid { font-family: ui-monospace, "SF Mono", monospace; font-size: 14px; color: #65635D; margin-left: 14px; }
   .d6-topright { display: flex; align-items: center; }
-  .d6-seg { display: flex; border: 1px solid #EAEAEA; border-radius: 9999px; overflow: hidden; font-size: 13px; }
-  .d6-seg-on { background: #111111; color: #FFFFFF; padding: 6px 18px; }
-  .d6-seg-off { padding: 6px 18px; color: #787774; }
-  .d6-condot { width: 8px; height: 8px; border-radius: 50%; background: #346538; margin-left: 18px; }
+  .d6-seg { display: flex; border: 1px solid #E7E6E3; border-radius: 9999px; overflow: hidden; font-size: 13px; }
+  .d6-seg-on { background: #191816; color: #FFFFFF; padding: 6px 18px; }
+  .d6-seg-off { padding: 6px 18px; color: #65635D; }
+  .d6-condot { width: 8px; height: 6px; border-radius: 50%; background: #385631; margin-left: 18px; }
   .d6-header { position: absolute; left: 56px; right: 56px; top: 86px; }
   .d6-eyebrow {
-    display: inline-block; font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace;
-    font-size: 11px; letter-spacing: 0.2em; background: #F7F6F3; color: #787774;
+    display: inline-block; font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 11px; letter-spacing: 0.2em; background: #F2F2EF; color: #65635D;
     padding: 5px 12px; border-radius: 9999px;
   }
   .d6-event {
-    font-family: Georgia, "Times New Roman", Georgia, 'Times New Roman', serif;
+    font-family: Fraunces, ui-serif, Georgia, serif;
     font-weight: 400; font-size: 52px; line-height: 1; letter-spacing: -0.02em;
-    margin: 12px 0 14px; color: #111111;
+    margin: 12px 0 14px; color: #191816;
   }
   .d6-specs { display: flex; gap: 10px; }
   .d6-spec {
     display: inline-flex; align-items: center; gap: 7px;
-    font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 13px;
-    background: #F7F6F3; border: 1px solid #EAEAEA; color: #111111;
+    font-family: ui-monospace, "SF Mono", monospace; font-size: 13px;
+    background: #F2F2EF; border: 1px solid #E7E6E3; color: #191816;
     padding: 6px 13px; border-radius: 9999px;
   }
-  .d6-spec svg { width: 13px; height: 13px; stroke: #787774; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-spec svg { width: 13px; height: 13px; stroke: #65635D; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
   .d6-body { position: absolute; left: 56px; top: 246px; width: 1808px; height: 630px; display: flex; gap: 24px; }
   .d6-col { width: 1180px; display: flex; flex-direction: column; gap: 16px; }
   .d6-calloutslot { height: 110px; }
   .d6-card {
-    background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 10px;
+    background: #FFFFFF; border: 1px solid #E7E6E3; border-radius: 10px;
     padding: 24px 28px; height: 244px;
     display: flex; flex-direction: column; justify-content: space-between;
   }
@@ -54,73 +55,73 @@
   .d6-name { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
   .d6-chip {
     display: inline-flex; align-items: center; gap: 7px;
-    border-radius: 9999px; padding: 7px 15px; font-size: 13px; color: #787774;
-    background: #F7F6F3; border: 1px solid #EAEAEA;
+    border-radius: 9999px; padding: 7px 15px; font-size: 13px; color: #65635D;
+    background: #F2F2EF; border: 1px solid #E7E6E3;
   }
   .d6-chip svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-  .d6-chip b { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-weight: 500; }
+  .d6-chip b { font-family: ui-monospace, "SF Mono", monospace; font-weight: 500; }
   .d6-chips { gap: 10px; margin-top: 16px; }
   .d6-status { margin-left: auto; font-size: 13px; }
-  .d6-met { background: #EDF3EC; color: #346538; }
-  .d6-violated { background: #FDEBEC; color: #9F2F2D; }
-  .d6-pending { background: #FBF3DB; color: #956400; }
-  .d6-strategy { font-size: 13px; color: #787774; gap: 8px; margin-top: 14px; }
-  .d6-ndot { width: 6px; height: 6px; border-radius: 50%; background: #956400; display: inline-block; }
-  .d6-disclosure { font-size: 12px; color: #787774; gap: 6px; margin-top: 12px; opacity: 0.7; }
-  .d6-disclosure svg { width: 12px; height: 12px; stroke: #787774; fill: none; stroke-width: 1.4; }
+  .d6-met { background: #EEF5ED; color: #385631; }
+  .d6-violated { background: #FAEFEF; color: #76363D; }
+  .d6-pending { background: #F8F4E1; color: #785F28; }
+  .d6-strategy { font-size: 13px; color: #65635D; gap: 8px; margin-top: 14px; }
+  .d6-ndot { width: 6px; height: 6px; border-radius: 50%; background: #785F28; display: inline-block; }
+  .d6-disclosure { font-size: 12px; color: #65635D; gap: 6px; margin-top: 12px; opacity: 0.7; }
+  .d6-disclosure svg { width: 12px; height: 12px; stroke: #65635D; fill: none; stroke-width: 1.4; }
   .d6-callout {
-    background: #FBF3DB; border: 1px solid rgba(149, 100, 0, 0.25); border-radius: 10px;
+    background: #F8F4E1; border: 1px solid #E9E2C4; border-radius: 10px;
     padding: 16px 22px; height: 110px;
     display: flex; flex-direction: column; justify-content: space-between;
   }
   .d6-callouttop { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 600; }
-  .d6-bell { width: 17px; height: 17px; stroke: #956400; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-bell { width: 17px; height: 17px; stroke: #785F28; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
   .d6-count {
-    font-family: Georgia, "Times New Roman", Georgia, 'Times New Roman', serif;
-    font-weight: 400; font-size: 30px; color: #956400; display: inline-block;
+    font-family: Fraunces, ui-serif, Georgia, serif;
+    font-weight: 400; font-size: 30px; color: #785F28; display: inline-block;
   }
   .d6-approw {
     display: flex; align-items: center; gap: 16px; font-size: 13px;
-    border-top: 1px solid rgba(149, 100, 0, 0.18); padding-top: 12px;
+    border-top: 1px solid #E9E2C4; padding-top: 12px;
   }
   .d6-appvenue { font-weight: 600; }
-  .d6-appessence { color: #787774; }
+  .d6-appessence { color: #65635D; }
   .d6-appright { margin-left: auto; display: flex; align-items: center; }
   .d6-apbtn {
     position: relative; transform-origin: 50% 50%;
-    background: #111111; color: #FFFFFF; font-size: 13px; font-weight: 500;
+    background: #191816; color: #FFFFFF; font-size: 13px; font-weight: 500;
     border: none; border-radius: 6px; padding: 8px 22px; cursor: pointer;
-    box-shadow: 0 8px 22px rgba(17, 17, 17, 0.14);
+    box-shadow: 0 8px 22px rgba(25, 24, 22, 0.14);
     display: inline-flex; align-items: center; gap: 8px;
   }
   .d6-apbtn svg { width: 13px; height: 13px; stroke: #FFFFFF; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .d6-approved { position: relative; transform-origin: 50% 50%; display: none; }
   .d6-approvedchip {
-    background: #EDF3EC; color: #346538; font-size: 13px; font-weight: 500;
+    background: #EEF5ED; color: #385631; font-size: 13px; font-weight: 500;
     border-radius: 9999px; padding: 8px 18px; display: inline-flex; align-items: center; gap: 8px;
   }
-  .d6-approvedchip svg { width: 13px; height: 13px; stroke: #346538; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .d6-approvedchip svg { width: 13px; height: 13px; stroke: #385631; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .d6-burst { position: absolute; inset: -300px; opacity: 0; pointer-events: none; }
   .d6-burstcore {
     position: absolute; left: 50%; top: 50%; width: 120px; height: 60px;
     margin-left: -60px; margin-top: -30px; border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(52, 101, 56, 0.6), rgba(52, 101, 56, 0));
+    background: radial-gradient(closest-side, rgba(56, 86, 49, 0.6), rgba(56, 86, 49, 0));
     filter: blur(40px);
   }
   .d6-rail {
-    width: 604px; height: 630px; background: #F7F6F3; border-radius: 10px;
+    width: 604px; height: 630px; background: #F2F2EF; border-radius: 10px;
     padding: 24px 26px; overflow: hidden;
   }
-  .d6-railhead { font-size: 14px; font-weight: 500; color: #111111; display: flex; align-items: baseline; gap: 8px; }
-  .d6-railcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 12px; color: #787774; }
+  .d6-railhead { font-size: 14px; font-weight: 500; color: #191816; display: flex; align-items: baseline; gap: 8px; }
+  .d6-railcount { font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; color: #65635D; }
   .d6-runs { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
-  .d6-run { border: 1px solid #EAEAEA; border-radius: 10px; background: #FFFFFF; padding: 12px 14px; }
+  .d6-run { border: 1px solid #E7E6E3; border-radius: 10px; background: #FFFFFF; padding: 12px 14px; }
   .d6-runhead { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; }
-  .d6-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .d6-runcount { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; margin-left: auto; }
+  .d6-dot { width: 8px; height: 6px; border-radius: 50%; display: inline-block; }
+  .d6-runcount { font-family: ui-monospace, "SF Mono", monospace; font-size: 11px; color: #65635D; margin-left: auto; }
   .d6-lines { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .d6-line { display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #111111; }
-  .d6-ts { font-family: Menlo, "Courier New", 'SF Mono', Menlo, monospace; font-size: 11px; color: #787774; white-space: nowrap; }
+  .d6-line { display: flex; gap: 10px; align-items: baseline; font-size: 13px; color: #191816; }
+  .d6-ts { font-family: ui-monospace, "SF Mono", monospace; font-size: 11px; color: #65635D; white-space: nowrap; }
   .d6-msg { min-width: 340px; white-space: nowrap; }
 </style>
 <div id="root" data-composition-id="06-demo-approval" data-start="0" data-duration="14" data-width="1920" data-height="1080">
@@ -135,13 +136,13 @@
     </header>
     <section class="d6-header" id="d6-header">
       <span class="d6-eyebrow">PROCUREMENT DEAL ROOM</span>
-      <h1 class="d6-event">Northwind Product Launch</h1>
+      <h1 class="d6-event">Northwind Product Launch.</h1>
       <div class="d6-specs">
         <span class="d6-spec"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>2026-11-20</span>
         <span class="d6-spec"><svg viewBox="0 0 16 16"><circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M11 3.4a2.5 2.5 0 0 1 0 4.2M12 10.2c1.6.6 2.5 1.9 2.5 3.8"/></svg>500</span>
         <span class="d6-spec"><svg viewBox="0 0 16 16"><rect x="1.5" y="3.5" width="13" height="9" rx="2"/><path d="M11 8h3.5"/></svg>$30,000 max</span>
         <span class="d6-spec"><svg viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg>02:00</span>
-        <span class="d6-spec"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg>AV</span>
+        <span class="d6-spec"><svg viewBox="0 0 16 16"><path d="M2 6v4h3l4 3.5v-11L5 6H2z"/><path d="M12 5.5a4 4 0 0 1 0 5"/></svg>AV required</span>
       </div>
     </section>
     <main class="d6-body">
@@ -204,14 +205,14 @@
         <div class="d6-railhead">Agent activity <span class="d6-railcount">5 events</span></div>
         <div class="d6-runs">
           <div class="d6-run" id="d6-runNegotiator">
-            <div class="d6-runhead"><span class="d6-dot" style="background:#956400"></span>Negotiator<span class="d6-runcount">2 events</span></div>
+            <div class="d6-runhead"><span class="d6-dot" style="background:#785F28"></span>Negotiator<span class="d6-runcount">2 events</span></div>
             <div class="d6-lines">
               <div class="d6-line"><span class="d6-ts">14:02:19</span><span class="d6-msg">drafted counter-offer</span></div>
               <div class="d6-line" id="d6-lineReply"><span class="d6-ts">14:02:2x</span><span class="d6-msg"><span id="d6-textReply"></span></span></div>
             </div>
           </div>
           <div class="d6-run" id="d6-runClient">
-            <div class="d6-runhead"><span class="d6-dot" style="background:#787774"></span>Client<span class="d6-runcount">1 event</span></div>
+            <div class="d6-runhead"><span class="d6-dot" style="background:#65635D"></span>Client<span class="d6-runcount">1 event</span></div>
             <div class="d6-lines">
               <div class="d6-line" id="d6-lineApprove"><span class="d6-ts">14:02:2x</span><span class="d6-msg"><span id="d6-textApprove"></span></span></div>
             </div>
@@ -277,15 +278,15 @@
   tl.to("#d6-burst", { opacity: 0, duration: 0.6, ease: "power2.in" }, RELEASE_START + 0.4);
 
   // The press turns terminal: button stamps to a green check (pop), row flips to approved.
-  tl.set("#d6-btnA", { backgroundColor: "#EDF3EC", color: "#346538", boxShadow: "none" }, RELEASE_START + 0.5);
+  tl.set("#d6-btnA", { backgroundColor: "#EEF5ED", color: "#385631", boxShadow: "none" }, RELEASE_START + 0.5);
   tl.to("#d6-btnA", { scale: 1.06, duration: 0.22, ease: "back.out(1.8)" }, RELEASE_START + 0.5);
   tl.to("#d6-btnA", { scale: 1, duration: 0.25 }, RELEASE_START + 0.72);
   tl.fromTo("#d6-approvedA", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, RELEASE_START + 0.55);
   tl.to("#d6-btnA", { opacity: 0, duration: 0.25 }, RELEASE_START + 0.6);
 
   // Client status chips flip to green Accepted (chip background crossfade 300ms).
-  tl.to("#d6-statusA", { backgroundColor: "#EDF3EC", color: "#346538", duration: 0.3, ease: "power1.out" }, RELEASE_START + 0.7);
-  tl.to("#d6-statusB", { backgroundColor: "#EDF3EC", color: "#346538", duration: 0.3, ease: "power1.out" }, 11.0);
+  tl.to("#d6-statusA", { backgroundColor: "#EEF5ED", color: "#385631", duration: 0.3, ease: "power1.out" }, RELEASE_START + 0.7);
+  tl.to("#d6-statusB", { backgroundColor: "#EEF5ED", color: "#385631", duration: 0.3, ease: "power1.out" }, 11.0);
 
   // Client run records the approval; Warehouse 9's vendor accepts.
   tl.to("#d6-runClient", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)" }, 7.0);

@@ -1,6 +1,20 @@
 <template>
   <div id="root" data-composition-id="09-cta" data-duration="4" data-fps="30">
     <style>
+      @font-face {
+        font-family: "Fraunces";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("../../assets/fonts/Fraunces-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans Variable";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url("../../assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+      }
       *,
       *::before,
       *::after {
@@ -16,7 +30,7 @@
         height: 1080px;
         overflow: hidden;
         isolation: isolate;
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
       }
 
       .cta09-clip {
@@ -25,12 +39,12 @@
         overflow: hidden;
       }
 
-      /* Dark framing register ground — dedicated clip layer, never on #root. */
+      /* Light editorial ground — dedicated clip layer, never on #root. */
       .cta09-bg {
-        background: #0a0a14;
+        background: #f8f8f5;
       }
 
-      /* Soft radial glow pool behind the wordmark, subtle depth on the dark canvas. */
+      /* Soft radial glow pool behind the wordmark (neutral in the light theme). */
       .cta09-glow-pool {
         position: absolute;
         left: 50%;
@@ -38,11 +52,7 @@
         width: 1400px;
         height: 700px;
         transform: translate(-50%, -50%);
-        background: radial-gradient(
-          closest-side,
-          rgba(230, 232, 255, 0.1),
-          rgba(230, 232, 255, 0)
-        );
+        background: transparent;
         opacity: 0;
       }
 
@@ -64,7 +74,7 @@
 
       .cta09-wordmark {
         grid-area: 1 / 1;
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: Fraunces, ui-serif, Georgia, serif;
         font-size: 160px;
         line-height: 1;
         font-weight: 400;
@@ -73,43 +83,38 @@
       }
 
       .cta09-wordmark-solid {
-        color: #f5f5f7;
+        color: #191816;
       }
 
-      /* gradient-text-sweep Form A: oversized gradient clipped into the glyphs. */
+      /* Static ink pass over the wordmark (no gradient sweep in the light theme). */
       .cta09-wordmark-sweep {
-        background-image: linear-gradient(
-          105deg,
-          #f5f5f7 0%,
-          rgba(230, 232, 255, 0.9) 47%,
-          #ffffff 50%,
-          rgba(230, 232, 255, 0.9) 53%,
-          #f5f5f7 100%
-        );
+        color: #191816;
+        background-image: none;
         background-size: 300% 100%;
         background-position: 100% 50%;
         background-repeat: no-repeat;
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
         opacity: 0;
       }
 
       .cta09-mono-line {
         margin-top: 64px;
-        font-family: "SF Mono", Menlo, monospace;
+        font-family: ui-monospace, "SF Mono", monospace;
         font-size: 40px;
         letter-spacing: 0.01em;
-        color: #f5f5f7;
+        color: #191816;
+        background: #f2f2ef;
+        border: 1px solid #e7e6e3;
+        border-radius: 9999px;
+        padding: 18px 44px;
         opacity: 0;
       }
 
       .cta09-subline {
         margin-top: 28px;
-        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-family: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
         font-size: 40px;
         letter-spacing: -0.01em;
-        color: #787774;
+        color: #65635d;
         opacity: 0;
       }
     </style>

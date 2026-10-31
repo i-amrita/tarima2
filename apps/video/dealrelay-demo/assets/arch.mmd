@@ -1,0 +1,47 @@
+---
+config:
+  theme: base
+  fontFamily: "Plus Jakarta Sans Variable, ui-sans-serif, system-ui, sans-serif"
+  fontSize: 18
+  themeVariables:
+    primaryColor: "#FFFFFF"
+    primaryTextColor: "#191816"
+    primaryBorderColor: "#E7E6E3"
+    lineColor: "#C9C7C2"
+    secondaryColor: "#F2F2EF"
+    tertiaryColor: "#F8F8F5"
+    clusterBkg: "#F2F2EF"
+    clusterBorder: "#E7E6E3"
+    edgeLabelBackground: "#F8F8F5"
+    fontSize: "18px"
+---
+flowchart LR
+    UI["Web UI<br/>TanStack Start"]
+    subgraph agents["Agents"]
+        A1(["Scout"])
+        A2(["Finance"])
+        A3(["Negotiator"])
+    end
+    H(["Client"])
+    subgraph terse["Terse AI · durable actors"]
+        RA(["RoomActor<br/>state · events · SQLite"])
+    end
+    subgraph relayL["Agent Relay"]
+        B(["coordination bus"])
+    end
+    UI <-->|"websocket<br/>snapshot"| RA
+    H -->|"approve"| RA
+    RA <--> B
+    A1 <--> B
+    A2 <--> B
+    A3 <--> B
+    style UI fill:#FFFFFF,stroke:#E7E6E3,color:#191816,stroke-width:1.5px
+    style RA fill:#E3F3FB,stroke:#CBE2EE,color:#255C75,stroke-width:1.5px
+    style B fill:#F8F4E1,stroke:#E9E2C4,color:#785F28,stroke-width:1.5px
+    style A1 fill:#FFFFFF,stroke:#255C75,color:#191816
+    style A2 fill:#FFFFFF,stroke:#5C4A7B,color:#191816
+    style A3 fill:#FFFFFF,stroke:#785F28,color:#191816
+    style H fill:#FFFFFF,stroke:#74716B,color:#191816
+    style agents fill:#F2F2EF,stroke:#E7E6E3
+    style terse fill:#F8F8F5,stroke:#E7E6E3
+    style relayL fill:#F8F8F5,stroke:#E7E6E3

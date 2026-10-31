@@ -1,842 +1,956 @@
 [
  {
   "text": "Booking",
-  "start": 0.25,
-  "end": 0.44,
+  "start": 0.05,
+  "end": 0.49,
   "id": "w0"
  },
  {
   "text": "a",
-  "start": 0.44,
-  "end": 0.5,
+  "start": 0.49,
+  "end": 0.56,
   "id": "w1"
  },
  {
   "text": "venue",
-  "start": 0.5,
-  "end": 0.82,
+  "start": 0.56,
+  "end": 0.89,
   "id": "w2"
  },
  {
-  "text": "shouldn't",
-  "start": 0.82,
-  "end": 1.39,
+  "text": "takes",
+  "start": 1.05,
+  "end": 1.26,
   "id": "w3"
  },
  {
-  "text": "take",
-  "start": 1.39,
-  "end": 1.64,
+  "text": "days",
+  "start": 1.26,
+  "end": 1.54,
   "id": "w4"
  },
  {
-  "text": "a",
-  "start": 1.64,
-  "end": 1.69,
+  "text": "of",
+  "start": 1.54,
+  "end": 1.67,
   "id": "w5"
  },
  {
-  "text": "week,",
-  "start": 1.69,
-  "end": 2.03,
+  "text": "email.",
+  "start": 1.67,
+  "end": 2.1,
   "id": "w6"
  },
  {
-  "text": "but",
-  "start": 2.18,
-  "end": 2.23,
+  "text": "Quotes",
+  "start": 2.15,
+  "end": 2.38,
   "id": "w7"
  },
  {
-  "text": "quotes",
-  "start": 2.23,
-  "end": 2.5,
+  "text": "arrive",
+  "start": 2.38,
+  "end": 2.67,
   "id": "w8"
  },
  {
-  "text": "arrive",
-  "start": 2.56,
-  "end": 3,
+  "text": "scattered",
+  "start": 2.67,
+  "end": 2.99,
   "id": "w9"
  },
  {
-  "text": "as",
-  "start": 3,
-  "end": 3.07,
+  "text": "with",
+  "start": 3.15,
+  "end": 3.3,
   "id": "w10"
  },
  {
-  "text": "scattered",
-  "start": 3.24,
-  "end": 3.49,
+  "text": "different",
+  "start": 3.3,
+  "end": 3.73,
   "id": "w11"
  },
  {
-  "text": "emails,",
-  "start": 3.5,
-  "end": 4.09,
+  "text": "terms,",
+  "start": 3.73,
+  "end": 4.12,
   "id": "w12"
  },
  {
-  "text": "each",
+  "text": "and",
   "start": 4.17,
-  "end": 4.3,
+  "end": 4.23,
   "id": "w13"
  },
  {
-  "text": "with",
-  "start": 4.36,
-  "end": 4.46,
+  "text": "someone",
+  "start": 4.31,
+  "end": 4.65,
   "id": "w14"
  },
  {
-  "text": "different",
-  "start": 4.76,
-  "end": 5.1,
+  "text": "chases",
+  "start": 4.65,
+  "end": 4.96,
   "id": "w15"
  },
  {
-  "text": "terms.",
-  "start": 5.1,
-  "end": 8.36,
+  "text": "them",
+  "start": 4.96,
+  "end": 5.02,
   "id": "w16"
  },
  {
-  "text": "DealRelay.",
-  "start": 8.36,
-  "end": 9.5,
+  "text": "all.",
+  "start": 5.17,
+  "end": 5.52,
   "id": "w17"
  },
  {
-  "text": "Agents",
-  "start": 9.8,
-  "end": 9.91,
-  "id": "w19"
+  "text": "DealRelay",
+  "start": 5.52,
+  "end": 8.92,
+  "id": "w18"
  },
  {
-  "text": "and",
-  "start": 9.93,
-  "end": 10.13,
+  "text": "Agents",
+  "start": 9.09,
+  "end": 9.42,
   "id": "w20"
  },
  {
-  "text": "humans.",
-  "start": 10.13,
-  "end": 10.76,
+  "text": "negotiate.",
+  "start": 9.42,
+  "end": 10.2,
   "id": "w21"
  },
  {
-  "text": "One",
-  "start": 10.76,
-  "end": 11.06,
+  "text": "Humans",
+  "start": 10.25,
+  "end": 10.55,
   "id": "w22"
  },
  {
-  "text": "deal",
-  "start": 11.06,
-  "end": 11.25,
+  "text": "decide.",
+  "start": 10.55,
+  "end": 11.08,
   "id": "w23"
  },
  {
-  "text": "room.",
-  "start": 11.25,
-  "end": 11.76,
+  "text": "One",
+  "start": 11.13,
+  "end": 11.19,
   "id": "w24"
  },
  {
-  "text": "The",
-  "start": 11.76,
-  "end": 11.91,
+  "text": "intake",
+  "start": 11.27,
+  "end": 11.57,
   "id": "w25"
  },
  {
-  "text": "agency",
-  "start": 12.06,
-  "end": 12.22,
+  "text": "for",
+  "start": 11.57,
+  "end": 11.73,
   "id": "w26"
  },
  {
-  "text": "sets",
-  "start": 12.22,
-  "end": 12.42,
+  "text": "the",
+  "start": 11.73,
+  "end": 11.84,
   "id": "w27"
  },
  {
-  "text": "the",
-  "start": 12.42,
-  "end": 12.57,
+  "text": "Northwind",
+  "start": 11.9,
+  "end": 12.38,
   "id": "w28"
  },
  {
-  "text": "specs",
-  "start": 12.57,
-  "end": 12.83,
+  "text": "Product",
+  "start": 12.38,
+  "end": 12.77,
   "id": "w29"
  },
  {
-  "text": "once.",
-  "start": 12.83,
-  "end": 13.19,
+  "text": "launch.",
+  "start": 12.77,
+  "end": 13.32,
   "id": "w30"
  },
  {
   "text": "500",
-  "start": 13.52,
-  "end": 13.93,
+  "start": 13.37,
+  "end": 13.94,
   "id": "w31"
  },
  {
   "text": "guests,",
-  "start": 13.93,
-  "end": 14.55,
+  "start": 13.94,
+  "end": 14.5,
   "id": "w32"
  },
  {
-  "text": "a",
-  "start": 14.59,
-  "end": 14.64,
+  "text": "$30,000",
+  "start": 14.5,
+  "end": 15.48,
   "id": "w33"
  },
  {
-  "text": "$30,000",
-  "start": 14.64,
-  "end": 16.05,
+  "text": "cap,",
+  "start": 15.51,
+  "end": 15.8,
   "id": "w34"
  },
  {
-  "text": "budget,",
-  "start": 16.05,
-  "end": 16.68,
+  "text": "2",
+  "start": 15.8,
+  "end": 15.98,
   "id": "w35"
  },
  {
-  "text": "a",
-  "start": 16.68,
-  "end": 16.75,
+  "text": "a.m.",
+  "start": 15.98,
+  "end": 16.48,
   "id": "w36"
  },
  {
-  "text": "2",
-  "start": 16.75,
-  "end": 16.99,
+  "text": "curfew.",
+  "start": 16.48,
+  "end": 17.08,
   "id": "w37"
  },
  {
-  "text": "a.m.",
-  "start": 17,
-  "end": 17.7,
+  "text": "Two",
+  "start": 17.08,
+  "end": 18.075,
   "id": "w38"
  },
  {
-  "text": "curfew.",
-  "start": 17.7,
-  "end": 18.82,
+  "text": "venues",
+  "start": 18.075,
+  "end": 19.07,
   "id": "w39"
  },
  {
-  "text": "Two",
-  "start": 18.82,
-  "end": 19.68,
+  "text": "answer,",
+  "start": 19.07,
+  "end": 20.23,
   "id": "w40"
  },
  {
-  "text": "venue",
-  "start": 19.68,
-  "end": 19.89,
+  "text": "and",
+  "start": 20.27,
+  "end": 20.41,
   "id": "w41"
  },
  {
-  "text": "proposals",
-  "start": 19.89,
-  "end": 20.46,
+  "text": "the",
+  "start": 20.41,
+  "end": 20.57,
   "id": "w42"
  },
  {
-  "text": "arrive,",
-  "start": 20.46,
-  "end": 20.96,
+  "text": "room",
+  "start": 20.57,
+  "end": 20.72,
   "id": "w43"
  },
  {
-  "text": "and",
-  "start": 20.96,
-  "end": 21.12,
+  "text": "goes",
+  "start": 20.8,
+  "end": 21.04,
   "id": "w44"
  },
  {
-  "text": "the",
-  "start": 21.2,
-  "end": 21.34,
+  "text": "to",
+  "start": 21.04,
+  "end": 21.21,
   "id": "w45"
  },
  {
-  "text": "agents",
-  "start": 21.57,
-  "end": 21.71,
+  "text": "work.",
+  "start": 21.21,
+  "end": 21.6,
   "id": "w46"
  },
  {
-  "text": "take",
-  "start": 21.77,
-  "end": 21.95,
+  "text": "Scout",
+  "start": 21.65,
+  "end": 21.91,
   "id": "w47"
  },
  {
-  "text": "it",
-  "start": 21.97,
-  "end": 22.09,
+  "text": "reads",
+  "start": 21.91,
+  "end": 22.22,
   "id": "w48"
  },
  {
-  "text": "from",
-  "start": 22.09,
-  "end": 22.29,
+  "text": "the",
+  "start": 22.22,
+  "end": 22.36,
   "id": "w49"
  },
  {
-  "text": "there.",
-  "start": 22.34,
-  "end": 22.92,
+  "text": "Grand",
+  "start": 22.41,
+  "end": 22.72,
   "id": "w50"
  },
  {
-  "text": "Scout",
-  "start": 23.22,
-  "end": 23.29,
+  "text": "Loft",
+  "start": 22.72,
+  "end": 22.97,
   "id": "w51"
  },
  {
-  "text": "reads",
-  "start": 23.35,
-  "end": 23.72,
+  "text": "and",
+  "start": 22.97,
+  "end": 23.09,
   "id": "w52"
  },
  {
-  "text": "each",
-  "start": 23.72,
-  "end": 24.04,
+  "text": "Warehouse",
+  "start": 23.09,
+  "end": 23.3,
   "id": "w53"
  },
  {
-  "text": "proposal.",
-  "start": 24.04,
-  "end": 24.96,
+  "text": "9.",
+  "start": 23.75,
+  "end": 24.08,
   "id": "w54"
  },
  {
   "text": "Finance",
-  "start": 25.26,
-  "end": 25.61,
+  "start": 24.13,
+  "end": 24.5,
   "id": "w55"
  },
  {
   "text": "checks",
-  "start": 25.61,
-  "end": 26.17,
+  "start": 24.5,
+  "end": 24.77,
   "id": "w56"
  },
  {
-  "text": "it",
-  "start": 26.17,
-  "end": 26.35,
+  "text": "budget",
+  "start": 24.9,
+  "end": 25.22,
   "id": "w57"
  },
  {
-  "text": "against",
-  "start": 26.35,
-  "end": 26.81,
+  "text": "and",
+  "start": 25.22,
+  "end": 25.39,
   "id": "w58"
  },
  {
-  "text": "budget",
-  "start": 27.15,
-  "end": 27.56,
+  "text": "curfew",
+  "start": 25.39,
+  "end": 25.77,
   "id": "w59"
  },
  {
   "text": "and",
-  "start": 27.56,
-  "end": 27.84,
+  "start": 25.77,
+  "end": 25.98,
   "id": "w60"
  },
  {
-  "text": "curfew,",
-  "start": 27.84,
-  "end": 28.58,
+  "text": "flags",
+  "start": 26.22,
+  "end": 26.37,
   "id": "w61"
  },
  {
-  "text": "and",
-  "start": 28.58,
-  "end": 28.86,
+  "text": "every",
+  "start": 26.37,
+  "end": 26.73,
   "id": "w62"
  },
  {
-  "text": "flags",
-  "start": 28.86,
-  "end": 29.32,
+  "text": "violation.",
+  "start": 26.73,
+  "end": 27.59,
   "id": "w63"
  },
  {
-  "text": "every",
-  "start": 29.32,
-  "end": 29.78,
+  "text": "Then",
+  "start": 27.59,
+  "end": 28.743,
   "id": "w64"
  },
  {
-  "text": "violation.",
-  "start": 29.78,
-  "end": 30.96,
+  "text": "Negotiator",
+  "start": 28.743,
+  "end": 29.897,
   "id": "w65"
  },
  {
-  "text": "Negotiator",
-  "start": 30.96,
-  "end": 31.57,
+  "text": "drafts",
+  "start": 29.897,
+  "end": 31.05,
   "id": "w66"
  },
  {
-  "text": "drafts",
-  "start": 31.57,
-  "end": 31.91,
+  "text": "the",
+  "start": 31.05,
+  "end": 31.27,
   "id": "w67"
  },
  {
-  "text": "the",
-  "start": 31.94,
-  "end": 32.12,
+  "text": "counter.",
+  "start": 31.27,
+  "end": 32.7,
   "id": "w68"
  },
  {
-  "text": "counter,",
-  "start": 32.12,
-  "end": 32.68,
+  "text": "27,000,",
+  "start": 32.93,
+  "end": 34.23,
   "id": "w69"
  },
  {
-  "text": "$27,000,",
-  "start": 32.68,
-  "end": 33.87,
+  "text": "if",
+  "start": 34.23,
+  "end": 34.37,
   "id": "w70"
  },
  {
-  "text": "if",
-  "start": 33.92,
-  "end": 34.03,
+  "text": "the",
+  "start": 34.37,
+  "end": 34.57,
   "id": "w71"
  },
  {
-  "text": "the",
-  "start": 34.03,
-  "end": 34.2,
+  "text": "curfew",
+  "start": 34.57,
+  "end": 34.58,
   "id": "w72"
  },
  {
-  "text": "curfew",
-  "start": 34.21,
-  "end": 34.58,
+  "text": "moves",
+  "start": 35.07,
+  "end": 35.36,
   "id": "w73"
  },
  {
-  "text": "moves",
-  "start": 34.58,
-  "end": 34.87,
+  "text": "to",
+  "start": 35.36,
+  "end": 35.5,
   "id": "w74"
  },
  {
-  "text": "to",
-  "start": 34.87,
-  "end": 34.99,
+  "text": "130.",
+  "start": 35.5,
+  "end": 36.39,
   "id": "w75"
  },
  {
-  "text": "$130.",
-  "start": 35.07,
-  "end": 35.94,
+  "text": "Every",
+  "start": 36.45,
+  "end": 36.72,
   "id": "w76"
  },
  {
-  "text": "Every",
-  "start": 36.24,
-  "end": 37.08,
+  "text": "step",
+  "start": 36.72,
+  "end": 36.97,
   "id": "w77"
  },
  {
-  "text": "step",
-  "start": 37.08,
-  "end": 37.77,
+  "text": "is",
+  "start": 36.97,
+  "end": 37.1,
   "id": "w78"
  },
  {
-  "text": "is",
-  "start": 38.13,
-  "end": 38.44,
+  "text": "traced,",
+  "start": 37.15,
+  "end": 37.61,
   "id": "w79"
  },
  {
-  "text": "traced,",
-  "start": 38.5,
-  "end": 40.24,
+  "text": "so",
+  "start": 37.69,
+  "end": 37.75,
   "id": "w80"
  },
  {
-  "text": "so",
-  "start": 40.29,
-  "end": 40.74,
+  "text": "you",
+  "start": 37.83,
+  "end": 37.94,
   "id": "w81"
  },
  {
-  "text": "nothing",
-  "start": 40.74,
-  "end": 41.53,
+  "text": "can",
+  "start": 37.94,
+  "end": 38.12,
   "id": "w82"
  },
  {
-  "text": "is",
-  "start": 42.34,
-  "end": 42.8,
+  "text": "see",
+  "start": 38.12,
+  "end": 38.3,
   "id": "w83"
  },
  {
-  "text": "a",
-  "start": 42.8,
-  "end": 43.03,
+  "text": "exactly",
+  "start": 38.3,
+  "end": 38.74,
   "id": "w84"
  },
  {
-  "text": "black",
-  "start": 43.93,
-  "end": 44.17,
+  "text": "why",
+  "start": 38.74,
+  "end": 38.92,
   "id": "w85"
  },
  {
-  "text": "box.",
-  "start": 44.34,
-  "end": 45.5,
+  "text": "each",
+  "start": 38.92,
+  "end": 39.17,
   "id": "w86"
  },
  {
-  "text": "Nothing",
-  "start": 45.9,
-  "end": 45.97,
+  "text": "agent",
+  "start": 39.17,
+  "end": 39.34,
   "id": "w87"
  },
  {
-  "text": "closes",
-  "start": 46.03,
-  "end": 46.28,
+  "text": "said",
+  "start": 39.52,
+  "end": 39.67,
   "id": "w88"
  },
  {
-  "text": "without",
-  "start": 46.28,
-  "end": 46.65,
+  "text": "what",
+  "start": 39.83,
+  "end": 39.95,
   "id": "w89"
  },
  {
-  "text": "a",
-  "start": 46.65,
-  "end": 46.68,
+  "text": "it",
+  "start": 40.04,
+  "end": 40.1,
   "id": "w90"
  },
  {
-  "text": "human.",
-  "start": 46.7,
-  "end": 47.14,
+  "text": "said.",
+  "start": 40.1,
+  "end": 40.6,
   "id": "w91"
  },
  {
-  "text": "The",
-  "start": 47.14,
-  "end": 47.44,
+  "text": "But",
+  "start": 40.6,
+  "end": 42.083,
   "id": "w92"
  },
  {
-  "text": "client",
-  "start": 47.44,
-  "end": 47.74,
+  "text": "nothing",
+  "start": 42.083,
+  "end": 43.567,
   "id": "w93"
  },
  {
-  "text": "reviews,",
-  "start": 47.74,
-  "end": 48.33,
+  "text": "closes",
+  "start": 43.567,
+  "end": 45.05,
   "id": "w94"
  },
  {
-  "text": "approves,",
-  "start": 48.33,
-  "end": 48.99,
+  "text": "without",
+  "start": 45.05,
+  "end": 45.06,
   "id": "w95"
  },
  {
-  "text": "and",
-  "start": 48.99,
-  "end": 49.19,
+  "text": "a",
+  "start": 45.06,
+  "end": 45.25,
   "id": "w96"
  },
  {
-  "text": "the",
-  "start": 49.32,
-  "end": 49.39,
+  "text": "human.",
+  "start": 45.25,
+  "end": 46.69,
   "id": "w97"
  },
  {
-  "text": "vendor",
-  "start": 49.46,
-  "end": 49.79,
+  "text": "That's",
+  "start": 46.87,
+  "end": 47.13,
   "id": "w98"
  },
  {
-  "text": "accepts.",
-  "start": 49.79,
-  "end": 50.48,
+  "text": "the",
+  "start": 47.13,
+  "end": 47.28,
   "id": "w99"
  },
  {
-  "text": "No",
-  "start": 50.78,
-  "end": 50.99,
+  "text": "deal",
+  "start": 47.28,
+  "end": 47.49,
   "id": "w100"
  },
  {
-  "text": "follow-up",
-  "start": 50.99,
-  "end": 53.26,
+  "text": "breaker.",
+  "start": 47.49,
+  "end": 48.03,
   "id": "w101"
  },
  {
-  "text": "emails,",
-  "start": 53.26,
-  "end": 55.28,
+  "text": "The",
+  "start": 48.09,
+  "end": 48.24,
   "id": "w102"
  },
  {
-  "text": "no",
-  "start": 55.28,
-  "end": 55.78,
+  "text": "client",
+  "start": 48.24,
+  "end": 48.65,
   "id": "w103"
  },
  {
-  "text": "lost",
-  "start": 55.78,
-  "end": 56.08,
+  "text": "reviews,",
+  "start": 48.65,
+  "end": 49.25,
   "id": "w104"
  },
  {
-  "text": "threads.",
-  "start": 58.47,
-  "end": 59.37,
+  "text": "approves,",
+  "start": 49.26,
+  "end": 49.94,
   "id": "w105"
  },
  {
-  "text": "Four",
-  "start": 59.37,
-  "end": 59.7,
+  "text": "and",
+  "start": 49.94,
+  "end": 50.23,
   "id": "w106"
  },
  {
-  "text": "days",
-  "start": 59.7,
-  "end": 59.94,
+  "text": "the",
+  "start": 50.23,
+  "end": 50.34,
   "id": "w107"
  },
  {
-  "text": "of",
-  "start": 59.94,
-  "end": 60.07,
+  "text": "vendor",
+  "start": 50.34,
+  "end": 50.7,
   "id": "w108"
  },
  {
-  "text": "email,",
-  "start": 60.07,
-  "end": 60.54,
+  "text": "accepts.",
+  "start": 50.88,
+  "end": 51.52,
   "id": "w109"
  },
  {
-  "text": "collapsed",
-  "start": 60.54,
-  "end": 61.11,
+  "text": "No",
+  "start": 51.57,
+  "end": 51.63,
   "id": "w110"
  },
  {
-  "text": "into",
-  "start": 61.16,
-  "end": 61.43,
+  "text": "follow-up",
+  "start": 51.71,
+  "end": 52.28,
   "id": "w111"
  },
  {
-  "text": "46",
-  "start": 61.59,
-  "end": 61.84,
+  "text": "emails,",
+  "start": 52.34,
+  "end": 52.83,
   "id": "w112"
  },
  {
-  "text": "seconds.",
-  "start": 61.84,
-  "end": 62.47,
+  "text": "no",
+  "start": 52.86,
+  "end": 52.99,
   "id": "w113"
  },
  {
-  "text": "Three",
-  "start": 62.9,
-  "end": 63.14,
+  "text": "Friday",
+  "start": 52.99,
+  "end": 53.22,
   "id": "w114"
  },
  {
-  "text": "agents,",
-  "start": 63.14,
-  "end": 63.99,
+  "text": "scramble,",
+  "start": 53.71,
+  "end": 54.11,
   "id": "w115"
  },
  {
-  "text": "one",
-  "start": 63.99,
-  "end": 64.31,
+  "text": "no",
+  "start": 54.11,
+  "end": 54.19,
   "id": "w116"
  },
  {
-  "text": "approval,",
-  "start": 64.31,
-  "end": 65.38,
+  "text": "lost",
+  "start": 54.36,
+  "end": 54.53,
   "id": "w117"
  },
  {
-  "text": "zero",
-  "start": 65.38,
-  "end": 65.66,
+  "text": "threads.",
+  "start": 54.53,
+  "end": 55.24,
   "id": "w118"
  },
  {
-  "text": "lost",
-  "start": 65.84,
-  "end": 66.24,
+  "text": "Four",
+  "start": 59.01,
+  "end": 59.24,
   "id": "w119"
  },
  {
-  "text": "threads.",
-  "start": 66.24,
-  "end": 67.36,
+  "text": "days",
+  "start": 59.24,
+  "end": 59.52,
   "id": "w120"
  },
  {
-  "text": "Durable",
-  "start": 67.57,
-  "end": 67.85,
+  "text": "of",
+  "start": 59.52,
+  "end": 59.66,
   "id": "w121"
  },
  {
-  "text": "actors",
-  "start": 67.85,
-  "end": 68.27,
+  "text": "email",
+  "start": 59.66,
+  "end": 59.85,
   "id": "w122"
  },
  {
-  "text": "hold",
-  "start": 68.27,
-  "end": 68.55,
+  "text": "collapsed",
+  "start": 60.01,
+  "end": 60.63,
   "id": "w123"
  },
  {
-  "text": "the",
-  "start": 68.55,
-  "end": 68.76,
+  "text": "into",
+  "start": 60.63,
+  "end": 60.84,
   "id": "w124"
  },
  {
-  "text": "state.",
-  "start": 68.76,
-  "end": 69.35,
+  "text": "46",
+  "start": 61.11,
+  "end": 61.27,
   "id": "w125"
  },
  {
-  "text": "Agent",
-  "start": 69.35,
-  "end": 69.66,
+  "text": "seconds.",
+  "start": 61.36,
+  "end": 62.04,
   "id": "w126"
  },
  {
-  "text": "Relay",
-  "start": 69.66,
-  "end": 69.86,
+  "text": "Three",
+  "start": 62.09,
+  "end": 62.43,
   "id": "w127"
  },
  {
-  "text": "coordinates.",
-  "start": 69.86,
-  "end": 70.56,
+  "text": "agents,",
+  "start": 62.43,
+  "end": 62.99,
   "id": "w128"
  },
  {
-  "text": "The",
-  "start": 70.86,
-  "end": 70.88,
+  "text": "one",
+  "start": 63.09,
+  "end": 63.26,
   "id": "w129"
  },
  {
-  "text": "UI",
-  "start": 70.88,
-  "end": 71.09,
+  "text": "approval,",
+  "start": 63.29,
+  "end": 64.07,
   "id": "w130"
  },
  {
-  "text": "just",
-  "start": 71.09,
-  "end": 71.5,
+  "text": "one",
+  "start": 64.19,
+  "end": 64.32,
   "id": "w131"
  },
  {
-  "text": "mirrors",
-  "start": 71.52,
-  "end": 72.25,
+  "text": "room,",
+  "start": 64.32,
+  "end": 64.71,
   "id": "w132"
  },
  {
-  "text": "the",
-  "start": 72.26,
-  "end": 72.59,
+  "text": "one",
+  "start": 64.88,
+  "end": 65.02,
   "id": "w133"
  },
  {
-  "text": "room.",
-  "start": 72.75,
-  "end": 73.36,
+  "text": "thread,",
+  "start": 65.02,
+  "end": 65.62,
   "id": "w134"
  },
  {
-  "text": "Open",
-  "start": 73.36,
-  "end": 73.66,
+  "text": "zero",
+  "start": 65.69,
+  "end": 66.02,
   "id": "w135"
  },
  {
-  "text": "source.",
-  "start": 73.66,
-  "end": 74.36,
+  "text": "chasing.",
+  "start": 66.02,
+  "end": 67,
   "id": "w136"
  },
  {
-  "text": "Find",
-  "start": 74.36,
-  "end": 74.51,
+  "text": "How",
+  "start": 67.05,
+  "end": 67.11,
   "id": "w137"
  },
  {
-  "text": "it",
-  "start": 74.51,
-  "end": 74.585,
+  "text": "is",
+  "start": 67.19,
+  "end": 67.31,
   "id": "w138"
  },
  {
-  "text": "on",
-  "start": 74.585,
-  "end": 74.66,
+  "text": "it",
+  "start": 67.31,
+  "end": 67.43,
   "id": "w139"
  },
  {
-  "text": "GitHub.",
-  "start": 74.66,
-  "end": 74.99,
+  "text": "built?",
+  "start": 67.43,
+  "end": 67.95,
   "id": "w140"
+ },
+ {
+  "text": "Terse AI's",
+  "start": 68.01,
+  "end": 68.54,
+  "id": "w141"
+ },
+ {
+  "text": "durable",
+  "start": 68.54,
+  "end": 68.85,
+  "id": "w142"
+ },
+ {
+  "text": "actors",
+  "start": 69.01,
+  "end": 69.44,
+  "id": "w143"
+ },
+ {
+  "text": "hold",
+  "start": 69.44,
+  "end": 69.63,
+  "id": "w144"
+ },
+ {
+  "text": "the",
+  "start": 69.63,
+  "end": 69.69,
+  "id": "w145"
+ },
+ {
+  "text": "state.",
+  "start": 69.78,
+  "end": 70.04,
+  "id": "w146"
+ },
+ {
+  "text": "Agent",
+  "start": 70.09,
+  "end": 70.35,
+  "id": "w147"
+ },
+ {
+  "text": "Relay",
+  "start": 70.35,
+  "end": 70.66,
+  "id": "w148"
+ },
+ {
+  "text": "coordinates,",
+  "start": 70.66,
+  "end": 71.48,
+  "id": "w149"
+ },
+ {
+  "text": "the",
+  "start": 71.48,
+  "end": 71.73,
+  "id": "w150"
+ },
+ {
+  "text": "UI",
+  "start": 71.78,
+  "end": 71.96,
+  "id": "w151"
+ },
+ {
+  "text": "mirrors.",
+  "start": 72.23,
+  "end": 73,
+  "id": "w152"
+ },
+ {
+  "text": "It's",
+  "start": 73.05,
+  "end": 73.24,
+  "id": "w153"
+ },
+ {
+  "text": "open",
+  "start": 73.24,
+  "end": 73.48,
+  "id": "w154"
+ },
+ {
+  "text": "source.",
+  "start": 73.48,
+  "end": 73.94,
+  "id": "w155"
+ },
+ {
+  "text": "Find",
+  "start": 74.09,
+  "end": 74.29,
+  "id": "w156"
+ },
+ {
+  "text": "it",
+  "start": 74.29,
+  "end": 74.41,
+  "id": "w157"
+ },
+ {
+  "text": "on",
+  "start": 74.41,
+  "end": 74.53,
+  "id": "w158"
+ },
+ {
+  "text": "GitHub.",
+  "start": 74.53,
+  "end": 75.14,
+  "id": "w159"
  }
 ]
