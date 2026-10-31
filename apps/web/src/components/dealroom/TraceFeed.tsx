@@ -1,30 +1,28 @@
 import * as React from "react"
 import type { ActivityActor, ActivityEvent } from "@dealrelay/shared"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Task, TaskContent, TaskTrigger } from "@/components/ai-elements/task"
+import { ChevronDown } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 
 interface TraceFeedProps {
   activity: ActivityEvent[]
 }
 
-function getActorBadgeClass(actor: ActivityActor): string {
+function getActorDotClass(actor: ActivityActor): string {
   switch (actor) {
     case "scout":
-      return "border-sky-500/30 bg-sky-500/10 text-sky-400"
+      return "bg-actor-scout"
     case "finance":
-      return "border-purple-500/30 bg-purple-500/10 text-purple-400"
+      return "bg-actor-finance"
     case "negotiator":
-      return "border-amber-500/30 bg-amber-500/10 text-amber-400"
+      return "bg-actor-negotiator"
     case "client":
-      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+      return "bg-actor-client"
     case "agency":
-      return "border-indigo-500/30 bg-indigo-500/10 text-indigo-400"
+      return "bg-actor-client"
     case "system":
     default:
-      return "border-zinc-500/30 bg-zinc-500/10 text-zinc-400"
+      return "bg-actor-system"
   }
 }
 
@@ -40,19 +38,23 @@ function formatTime(epochMs: number): string {
 
 type ActivityRun = { key: string; actor: ActivityActor; items: ActivityEvent[] }
 
-/** Contiguous events from the same actor become one Task step. */
+/** Contiguous events from the same actor become one collapsible run. */
 function groupRuns(activity: ActivityEvent[]): ActivityRun[] {
   const runs: ActivityRun[] = []
   for (const item of activity) {
     const last = runs[runs.length - 1]
-    if (last && last.actor === item.actor) last.items.push(item)
-    else runs.push({ key: item.id, actor: item.actor, items: [item] })
+    if (last && last.actor === item.actor) {
+      last.items.push(item)
+    } else {
+      runs.push({ key: item.id, actor: item.actor, items: [item] })
+    }
   }
   return runs
 }
 
 export function TraceFeed({ activity }: TraceFeedProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
+  const runs = React.useMemo(() => groupRuns(activity), [activity])
 
   React.useEffect(() => {
     if (scrollRef.current) {
@@ -61,58 +63,74 @@ export function TraceFeed({ activity }: TraceFeedProps) {
   }, [activity.length])
 
   return (
-    <Card
+    <div
       data-testid="trace-feed"
-      className="flex flex-col h-full border-border bg-card/60 backdrop-blur-sm"
+      className="bg-muted rounded-lg flex flex-col h-full overflow-hidden"
     >
-      <div className="flex items-center justify-between p-4 border-b border-border/80">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-status-met animate-pulse" />
-          <h2 className="text-sm font-semibold uppercase tracking-wider font-mono text-muted-foreground">
-            Agent Trace Feed
-          </h2>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">
-          {activity.length} events
-        </Badge>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
+        <h3 className="text-[13px] font-medium font-sans text-foreground">
+          Agent activity
+        </h3>
+        <span className="text-xs font-mono text-muted-foreground">
+          {activity.length}
+        </span>
       </div>
 
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-1.5 min-h-0">
         {activity.length === 0 ? (
-          <div className="text-center py-8 text-xs text-muted-foreground font-mono">
-            No agent activity recorded yet.
+          <div className="text-center py-8 text-xs text-muted-foreground font-sans">
+            No agent activity yet.
           </div>
         ) : (
-          <div className="space-y-3">
-            {groupRuns(activity).map((run) => (
-              <Task key={run.key} data-testid="trace-run" data-actor={run.actor}>
-                <TaskTrigger title={`${run.actor} (${run.items.length})`} />
-                <TaskContent>
+          runs.map((run, index) => {
+            const isLatest = index === runs.length - 1
+            return (
+              <Collapsible
+                key={run.key}
+                defaultOpen={isLatest}
+                data-testid="trace-run"
+                data-actor={run.actor}
+                className="space-y-1"
+              >
+                <CollapsibleTrigger className="flex items-center justify-between w-full py-1 px-2 hover:bg-black/[0.03] rounded-md transition-colors cursor-pointer group text-left">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className={cn("w-1.5 h-1.5 rounded-full shrink-0", getActorDotClass(run.actor))}
+                    />
+                    <span className="text-[13px] font-sans font-medium text-foreground capitalize">
+                      {run.actor}
+                    </span>
+                    <span className="text-xs font-mono text-muted-foreground">
+                      ({run.items.length})
+                    </span>
+                    <span className="sr-only">{run.actor.toUpperCase()}</span>
+                  </div>
+                  <ChevronDown className="size-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                </CollapsibleTrigger>
+
+                <CollapsibleContent className="pt-1 pb-1.5 pl-3.5 space-y-2 border-l border-border/60 ml-2.5">
                   {run.items.map((item) => (
                     <div
                       key={item.id}
                       data-testid="trace-item"
                       data-actor={item.actor}
-                      className="flex items-start gap-2.5 text-xs font-mono"
+                      className="space-y-0.5 text-xs"
                     >
-                      <span className="text-[11px] text-muted-foreground shrink-0 select-none">
-                        {formatTime(item.at)}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={cn("h-4 px-1.5 text-[10px] uppercase font-mono shrink-0", getActorBadgeClass(item.actor))}
-                      >
-                        {item.actor}
-                      </Badge>
-                      <span className="text-foreground/90 break-words flex-1">{item.message}</span>
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
+                        <span>{formatTime(item.at)}</span>
+                        <span className="sr-only">{item.actor.toUpperCase()}</span>
+                      </div>
+                      <p className="text-[13px] font-sans text-foreground/90 leading-snug break-words">
+                        {item.message}
+                      </p>
                     </div>
                   ))}
-                </TaskContent>
-              </Task>
-            ))}
-          </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )
+          })
         )}
-      </ScrollArea>
-    </Card>
+      </div>
+    </div>
   )
 }
