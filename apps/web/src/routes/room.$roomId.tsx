@@ -48,7 +48,7 @@ function RoomComponent() {
           </div>
 
           <div className="lg:col-span-4 lg:sticky lg:top-20">
-            <div className={state.activity.length === 0 ? "h-auto" : "lg:h-[calc(100vh-8rem)]"}>
+            <div className="lg:max-h-[calc(100vh-8rem)] flex flex-col">
               <TraceFeed activity={state.activity} />
             </div>
           </div>

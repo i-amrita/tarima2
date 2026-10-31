@@ -1,11 +1,22 @@
 import * as React from "react"
 import type { ActivityActor, ActivityEvent } from "@dealrelay/shared"
-import { ChevronDown } from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+} from "@/components/ai-elements/conversation"
 import { cn } from "@/lib/utils"
 
+export type ActivityEventWithAttribution = ActivityEvent & {
+  actedBy?: string
+  model?: string
+  latencyMs?: number
+  tokens?: number
+}
+
 interface TraceFeedProps {
-  activity: ActivityEvent[]
+  activity: ActivityEventWithAttribution[]
+  className?: string
 }
 
 function getActorDotClass(actor: ActivityActor): string {
@@ -36,76 +47,154 @@ function formatTime(epochMs: number): string {
   })
 }
 
-/**
- * Strip drafted proposal quotes from displayed text so only the short strategy phrase shows.
- * The full message remains preserved in the title attribute.
- */
-function cleanTraceMessage(message: string): string {
-  const stripped = message
-    .replace(/\.?\s*Drafted proposal:\s*["“'][^"”']*["”']?\.?/gi, "")
-    .replace(/\.?\s*Drafted proposal:.*$/gi, "")
-    .trim()
-  return stripped || message
+function TraceItemRow({ item }: { item: ActivityEventWithAttribution }) {
+  const [isExpanded, setIsExpanded] = React.useState(false)
+  const [canOverflow, setCanOverflow] = React.useState(false)
+  const textRef = React.useRef<HTMLParagraphElement>(null)
+
+  // Measure if the collapsed text overflows the 2-line clamp.
+  // Once detected as overflowing, we remember it can overflow so "less" can collapse it back.
+  React.useEffect(() => {
+    const el = textRef.current
+    if (!el || isExpanded) return
+
+    const checkOverflow = () => {
+      if (el) {
+        const overflowing = el.scrollHeight > el.clientHeight + 1
+        setCanOverflow(overflowing)
+      }
+    }
+
+    checkOverflow()
+
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(checkOverflow)
+      ro.observe(el)
+      return () => ro.disconnect()
+    }
+  }, [item.message, isExpanded])
+
+  const toggle = React.useCallback(() => {
+    if (canOverflow || isExpanded) {
+      setIsExpanded((prev) => !prev)
+    }
+  }, [canOverflow, isExpanded])
+
+  const actorLabel = item.actedBy || item.actor
+
+  return (
+    <div
+      data-testid="trace-run"
+      data-actor={item.actor}
+      className="group w-full"
+    >
+      <div
+        data-testid="trace-item"
+        data-actor={item.actor}
+        onClick={canOverflow || isExpanded ? toggle : undefined}
+        className={cn(
+          "rounded-md p-2 transition-colors text-xs space-y-1 outline-none",
+          (canOverflow || isExpanded)
+            ? "cursor-pointer hover:bg-black/[0.03]"
+            : "hover:bg-black/[0.015]"
+        )}
+      >
+        {/* Header: Timestamp, Dot, Agent Name, Attribution chips */}
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <span className="text-[11px] font-mono text-muted-foreground shrink-0">
+            {formatTime(item.at)}
+          </span>
+          <span
+            className={cn("size-1.5 rounded-full shrink-0", getActorDotClass(item.actor))}
+            aria-hidden="true"
+          />
+          <span className="text-[12px] font-sans font-medium text-foreground capitalize shrink-0">
+            {actorLabel}
+          </span>
+          {/* Upper case representation for screen-readers and smoke tests */}
+          <span className="sr-only">{actorLabel.toUpperCase()}</span>
+
+          {/* Reserved slots for optional attribution fields */}
+          {item.model && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-muted-foreground/10 text-muted-foreground border border-border/60 shrink-0">
+              {item.model}
+            </span>
+          )}
+
+          {typeof item.latencyMs === "number" && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-muted-foreground/10 text-muted-foreground border border-border/60 shrink-0">
+              {item.latencyMs}ms
+            </span>
+          )}
+
+          {typeof item.tokens === "number" && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-muted-foreground/10 text-muted-foreground border border-border/60 shrink-0">
+              {item.tokens} tok
+            </span>
+          )}
+        </div>
+
+        {/* Message body */}
+        {isExpanded ? (
+          <div className="space-y-1.5 min-w-0">
+            <pre className="text-xs font-mono text-foreground/90 leading-relaxed whitespace-pre-wrap break-words p-2 bg-background/60 rounded border border-border/50 select-text">
+              {item.message}
+            </pre>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                aria-expanded="true"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  toggle()
+                }}
+                className="text-[11px] font-mono text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors cursor-pointer"
+              >
+                less
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="min-w-0">
+            <p
+              ref={textRef}
+              title={item.message}
+              className="line-clamp-2 text-[13px] font-sans text-foreground/90 leading-snug break-words"
+            >
+              {item.message}
+            </p>
+            {canOverflow && (
+              <div className="flex justify-end mt-0.5">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggle()
+                  }}
+                  className="text-[11px] font-mono text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  more
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
-type ActivityRun = { key: string; actor: ActivityActor; items: ActivityEvent[] }
-
-/** Contiguous events from the same actor become one collapsible run. */
-function groupRuns(activity: ActivityEvent[]): ActivityRun[] {
-  const runs: ActivityRun[] = []
-  for (const item of activity) {
-    const last = runs[runs.length - 1]
-    if (last && last.actor === item.actor) {
-      last.items.push(item)
-    } else {
-      runs.push({ key: item.id, actor: item.actor, items: [item] })
-    }
-  }
-  return runs
-}
-
-export function TraceFeed({ activity }: TraceFeedProps) {
-  const scrollRef = React.useRef<HTMLDivElement>(null)
-  const runs = React.useMemo(() => groupRuns(activity), [activity])
-  // Only the latest run is open by default; a user toggle overrides that for its run.
-  const [overrides, setOverrides] = React.useState<Record<string, boolean>>({})
-
-  const scrollToBottom = React.useCallback(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
-  }, [])
-
-  // Auto-scroll when activity updates
-  React.useEffect(() => {
-    scrollToBottom()
-    const rafId = requestAnimationFrame(scrollToBottom)
-    return () => cancelAnimationFrame(rafId)
-  }, [activity.length, runs.length, overrides, scrollToBottom])
-
-  // Auto-scroll when container or content resizes (e.g. viewport change, collapsible expansion)
-  React.useEffect(() => {
-    const el = scrollRef.current
-    if (!el || typeof ResizeObserver === "undefined") return
-
-    const ro = new ResizeObserver(() => {
-      el.scrollTop = el.scrollHeight
-    })
-    ro.observe(el)
-    if (el.firstElementChild) {
-      ro.observe(el.firstElementChild)
-    }
-    return () => ro.disconnect()
-  }, [])
-
+export function TraceFeed({ activity, className }: TraceFeedProps) {
   return (
     <div
       data-testid="trace-feed"
       className={cn(
-        "bg-muted rounded-lg flex flex-col overflow-hidden relative",
-        activity.length === 0 ? "h-auto" : "h-full",
+        "bg-muted rounded-lg flex flex-col overflow-hidden relative max-h-[calc(100vh-8rem)]",
+        className
       )}
     >
+      {/* Panel header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
         <h3 className="text-[13px] font-medium font-sans text-foreground">
           Agent activity
@@ -115,81 +204,18 @@ export function TraceFeed({ activity }: TraceFeedProps) {
         </span>
       </div>
 
-      <div
-        ref={scrollRef}
-        className={cn(
-          "flex-1 overflow-y-auto p-3 space-y-1.5 min-h-0",
-          activity.length > 0 && "pb-6",
-        )}
-      >
+      {/* Chat-style scroll container */}
+      <Conversation className="flex-1 min-h-0">
         {activity.length === 0 ? (
-          <div className="text-center py-8 text-xs text-muted-foreground font-sans">
-            No agent activity yet.
-          </div>
+          <ConversationEmptyState title="No agent activity yet." />
         ) : (
-          <div className="space-y-1.5 min-w-0">
-            {runs.map((run, index) => {
-              const isLatest = index === runs.length - 1
-              return (
-                <Collapsible
-                  key={run.key}
-                  open={overrides[run.key] ?? isLatest}
-                  onOpenChange={(open) => setOverrides((prev) => ({ ...prev, [run.key]: open }))}
-                  data-testid="trace-run"
-                  data-actor={run.actor}
-                  className="space-y-1 min-w-0"
-                >
-                  <CollapsibleTrigger className="flex items-center justify-between w-full py-1 px-2 hover:bg-black/[0.03] rounded-md transition-colors cursor-pointer group text-left">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span
-                        className={cn("w-1.5 h-1.5 rounded-full shrink-0", getActorDotClass(run.actor))}
-                      />
-                      <span className="text-[13px] font-sans font-medium text-foreground capitalize">
-                        {run.actor}
-                      </span>
-                      <span className="text-xs font-mono text-muted-foreground">
-                        ({run.items.length})
-                      </span>
-                      <span className="sr-only">{run.actor.toUpperCase()}</span>
-                    </div>
-                    <ChevronDown className="size-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform shrink-0" />
-                  </CollapsibleTrigger>
-
-                  <CollapsibleContent className="pt-1 pb-1.5 pl-3.5 space-y-2 border-l border-border/60 ml-2.5 min-w-0">
-                    {run.items.map((item) => (
-                      <div
-                        key={item.id}
-                        data-testid="trace-item"
-                        data-actor={item.actor}
-                        title={item.message}
-                        className="space-y-0.5 text-xs min-w-0"
-                      >
-                        <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground">
-                          <span>{formatTime(item.at)}</span>
-                          <span className="sr-only">{item.actor.toUpperCase()}</span>
-                        </div>
-                        <p
-                          title={item.message}
-                          className="line-clamp-2 text-[13px] font-sans text-foreground/90 leading-snug"
-                        >
-                          {cleanTraceMessage(item.message)}
-                        </p>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
-                </Collapsible>
-              )
-            })}
-          </div>
+          <ConversationContent className="p-3 space-y-1">
+            {activity.map((item) => (
+              <TraceItemRow key={item.id} item={item} />
+            ))}
+          </ConversationContent>
         )}
-      </div>
-
-      {activity.length > 0 && (
-        <div
-          className="pointer-events-none absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-muted to-transparent rounded-b-lg"
-          aria-hidden="true"
-        />
-      )}
+      </Conversation>
     </div>
   )
 }
