@@ -1,5 +1,5 @@
 {
-  "name": "tarima2",
+  "name": "dealrelay",
   "private": true,
   "type": "module",
   "workspaces": ["packages/*", "apps/*"],
