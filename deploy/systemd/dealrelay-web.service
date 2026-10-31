@@ -1,0 +1,20 @@
+[Unit]
+Description=DealRelay Web Application Service (Nitro node-server)
+After=network.target dealrelay-actor.service dealrelay-relay.service
+Wants=dealrelay-actor.service dealrelay-relay.service
+
+[Service]
+Type=simple
+User=own-agents
+Group=own-agents
+WorkingDirectory=/opt/dealrelay/current
+Environment="PATH=/opt/mise/shims:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=-/opt/dealrelay/current/.env
+ExecStart=/opt/dealrelay/current/run-bundle.sh web
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

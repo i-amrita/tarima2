@@ -1,0 +1,34 @@
+# Cloudflare Tunnel Configuration for DealRelay
+#
+# Existing tunnel ID found on ovhcloud VPS:
+#   1dad9cd2-857b-421f-822c-a2bc2cf7f389
+# Credentials JSON file path:
+#   /etc/cloudflared/1dad9cd2-857b-421f-822c-a2bc2cf7f389.json
+#
+# PLACEHOLDERS TO SUBSTITUTE BEFORE STARTING:
+# 1. <TUNNEL_UUID>: Set to 1dad9cd2-857b-421f-822c-a2bc2cf7f389 (or new tunnel UUID)
+# 2. <DOMAIN>: Set to your Cloudflare zone domain (for example: illo.fyi)
+
+tunnel: 1dad9cd2-857b-421f-822c-a2bc2cf7f389
+credentials-file: /etc/cloudflared/1dad9cd2-857b-421f-822c-a2bc2cf7f389.json
+
+ingress:
+  # Option 1: Single public origin (dealrelay.<DOMAIN>)
+  # Route /v1/* to durable-actors on port 7100.
+  # The web server issues websocket grants rewritten to ACTOR_URL (wss://dealrelay.<DOMAIN>/v1/socket?key=...).
+  # Cloudflare Tunnel matches paths using regular expressions:
+  - hostname: dealrelay.<DOMAIN>
+    path: ^/v1/.*
+    service: http://127.0.0.1:7100
+
+  # Route all other web traffic to Nitro web server on port 3100:
+  - hostname: dealrelay.<DOMAIN>
+    service: http://127.0.0.1:3100
+
+  # Option 2 (Alternative): Dedicated hostname for actor websocket server.
+  # If preferred, set ACTOR_URL=https://actor.dealrelay.<DOMAIN> in .env and enable this rule:
+  # - hostname: actor.dealrelay.<DOMAIN>
+  #   service: http://127.0.0.1:7100
+
+  # Catch-all rule required by cloudflared (must be the last rule in ingress)
+  - service: http_status:404

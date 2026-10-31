@@ -1,0 +1,19 @@
+[Unit]
+Description=DealRelay Actor Service (durable-actors)
+After=network.target
+
+[Service]
+Type=simple
+User=own-agents
+Group=own-agents
+WorkingDirectory=/opt/dealrelay/current
+Environment="PATH=/opt/mise/shims:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=-/opt/dealrelay/current/.env
+ExecStart=/opt/dealrelay/current/run-bundle.sh actor
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
