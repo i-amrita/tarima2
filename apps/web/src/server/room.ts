@@ -61,13 +61,13 @@ export const triggerSimulation = createServerFn({ method: "POST" })
     }
 
     const room = actors.RoomActor.get(data.roomId)
+    const existing = await getRoomState({ data: { roomId: data.roomId } })
+    const specs = existing.specs ?? DEFAULT_SPECS
+    if (!existing.specs) await room.setSpecs(specs)
     const proposalId = await room.injectProposal(fixture)
 
     const relayUrl = process.env.RELAY_URL ?? "http://127.0.0.1:7200"
     try {
-      const roomState = await getRoomState({ data: { roomId: data.roomId } })
-      const specs = roomState.specs ?? DEFAULT_SPECS
-
       const response = await fetch(`${relayUrl}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,7 +100,14 @@ export const vendorAcceptsCounter = createServerFn({ method: "POST" })
 export const killActor = createServerFn({ method: "POST" })
   .validator((d: { roomId: string }) => d)
   .handler(async ({ data }) => {
-    // Documented no-op placeholder for now (used for demo beat to demonstrate persistence / eviction)
-    console.info(`[Demo] killActor called for room ${data.roomId} (no-op placeholder)`)
+    // Demo beat: kill and relaunch the actor server so a refresh proves durable state.
+    // Gated so a stray click cannot restart anything outside a recording session.
+    if (process.env.DEMO_ALLOW_KILL !== "1") {
+      console.info(`[Demo] killActor ignored for room ${data.roomId} (set DEMO_ALLOW_KILL=1 to enable)`)
+      return { ok: true, killed: false }
+    }
+    const { spawn } = await import("node:child_process")
+    const script = new URL("../../../../scripts/demo/restart-actor.sh", import.meta.url).pathname
+    spawn("bash", [script], { detached: true, stdio: "ignore" }).unref()
     return { ok: true, killed: true }
   })
