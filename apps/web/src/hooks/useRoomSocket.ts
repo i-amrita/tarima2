@@ -31,8 +31,19 @@ class RoomSocketManager {
   constructor(
     private roomId: string,
     private role: Role,
+    initialState?: RoomState,
   ) {
-    this.connect()
+    if (initialState) {
+      this.snapshot = {
+        status: "connecting",
+        state: initialState,
+        lastToast: null,
+      }
+    }
+    // Only connect in browser environment
+    if (typeof window !== "undefined") {
+      this.connect()
+    }
   }
 
   private notify() {
@@ -166,8 +177,8 @@ class RoomSocketManager {
   }
 }
 
-export function useRoomSocket(roomId: string, role: Role) {
-  const manager = useMemo(() => new RoomSocketManager(roomId, role), [roomId, role])
+export function useRoomSocket(roomId: string, role: Role, initialState?: RoomState) {
+  const manager = useMemo(() => new RoomSocketManager(roomId, role, initialState), [roomId, role])
 
   useEffect(() => {
     return () => {
