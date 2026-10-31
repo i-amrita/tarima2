@@ -24,3 +24,10 @@ User picks A or B. Verify the Nitro vercel build (`VERCEL=1 bun run build` in ap
 ## Decision (2026-10-31)
 
 User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a cloudflared port comes later. `scripts/demo/sandbox.ts` boots actor and relay in a sandbox and prints `ACTOR_URL` / `RELAY_URL`. It is untested: it needs Vercel auth (`vercel link`, `vercel env pull`) and the repo pushed to origin. Known risk: `durable-actors dev` has no `--host` flag and may bind localhost only, in which case the sandbox's public port will not reach it; the fallback is the cloudflared route on the VPS. The relay's `RELAY_URL` also needs to be reachable from Vercel Functions.
+
+## Deployed v1 (2026-10-31)
+
+- Project `dealrelay` (team quino-terrasas-projects). Vercel's remote `npm install` fails on the bun workspaces, so deploy prebuilt: in `apps/web` run `vercel pull --yes --environment=production`, `vercel build --prod`, `vercel deploy --prebuilt --prod`.
+- Aliases: https://dealrelay-pi.vercel.app and https://dealrelay-quino-terrasas-projects.vercel.app. Deployment Protection (SSO) is on, so the URLs redirect to a Vercel login until it is disabled in project settings. `vercel curl <path> --deployment <url>` bypasses it for checks.
+- Sandbox: `set -a; . apps/web/.env.local; set +a; bun scripts/demo/sandbox.ts` printed public ACTOR_URL (port 7100, contract endpoint answers) and RELAY_URL (port 7200, /health ok). The `durable-actors dev` server is reachable, so the localhost-bind worry did not materialize. Sandbox URLs change on every run and the sandbox expires (45 min timeout), so re-run, then update `ACTOR_URL`/`RELAY_URL` with `vercel env add ... production --force` and redeploy.
+- Not yet verified end to end: the browser WebSocket through the sandbox URL and a full simulate flow on the deployed app.
