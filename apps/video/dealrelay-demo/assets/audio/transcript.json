@@ -1,0 +1,842 @@
+[
+ {
+  "text": "Booking",
+  "start": 0.25,
+  "end": 0.44,
+  "id": "w0"
+ },
+ {
+  "text": "a",
+  "start": 0.44,
+  "end": 0.5,
+  "id": "w1"
+ },
+ {
+  "text": "venue",
+  "start": 0.5,
+  "end": 0.82,
+  "id": "w2"
+ },
+ {
+  "text": "shouldn't",
+  "start": 0.82,
+  "end": 1.39,
+  "id": "w3"
+ },
+ {
+  "text": "take",
+  "start": 1.39,
+  "end": 1.64,
+  "id": "w4"
+ },
+ {
+  "text": "a",
+  "start": 1.64,
+  "end": 1.69,
+  "id": "w5"
+ },
+ {
+  "text": "week,",
+  "start": 1.69,
+  "end": 2.03,
+  "id": "w6"
+ },
+ {
+  "text": "but",
+  "start": 2.18,
+  "end": 2.23,
+  "id": "w7"
+ },
+ {
+  "text": "quotes",
+  "start": 2.23,
+  "end": 2.5,
+  "id": "w8"
+ },
+ {
+  "text": "arrive",
+  "start": 2.56,
+  "end": 3,
+  "id": "w9"
+ },
+ {
+  "text": "as",
+  "start": 3,
+  "end": 3.07,
+  "id": "w10"
+ },
+ {
+  "text": "scattered",
+  "start": 3.24,
+  "end": 3.49,
+  "id": "w11"
+ },
+ {
+  "text": "emails,",
+  "start": 3.5,
+  "end": 4.09,
+  "id": "w12"
+ },
+ {
+  "text": "each",
+  "start": 4.17,
+  "end": 4.3,
+  "id": "w13"
+ },
+ {
+  "text": "with",
+  "start": 4.36,
+  "end": 4.46,
+  "id": "w14"
+ },
+ {
+  "text": "different",
+  "start": 4.76,
+  "end": 5.1,
+  "id": "w15"
+ },
+ {
+  "text": "terms.",
+  "start": 5.1,
+  "end": 8.36,
+  "id": "w16"
+ },
+ {
+  "text": "DealRelay.",
+  "start": 8.36,
+  "end": 9.5,
+  "id": "w17"
+ },
+ {
+  "text": "Agents",
+  "start": 9.8,
+  "end": 9.91,
+  "id": "w19"
+ },
+ {
+  "text": "and",
+  "start": 9.93,
+  "end": 10.13,
+  "id": "w20"
+ },
+ {
+  "text": "humans.",
+  "start": 10.13,
+  "end": 10.76,
+  "id": "w21"
+ },
+ {
+  "text": "One",
+  "start": 10.76,
+  "end": 11.06,
+  "id": "w22"
+ },
+ {
+  "text": "deal",
+  "start": 11.06,
+  "end": 11.25,
+  "id": "w23"
+ },
+ {
+  "text": "room.",
+  "start": 11.25,
+  "end": 11.76,
+  "id": "w24"
+ },
+ {
+  "text": "The",
+  "start": 11.76,
+  "end": 11.91,
+  "id": "w25"
+ },
+ {
+  "text": "agency",
+  "start": 12.06,
+  "end": 12.22,
+  "id": "w26"
+ },
+ {
+  "text": "sets",
+  "start": 12.22,
+  "end": 12.42,
+  "id": "w27"
+ },
+ {
+  "text": "the",
+  "start": 12.42,
+  "end": 12.57,
+  "id": "w28"
+ },
+ {
+  "text": "specs",
+  "start": 12.57,
+  "end": 12.83,
+  "id": "w29"
+ },
+ {
+  "text": "once.",
+  "start": 12.83,
+  "end": 13.19,
+  "id": "w30"
+ },
+ {
+  "text": "500",
+  "start": 13.52,
+  "end": 13.93,
+  "id": "w31"
+ },
+ {
+  "text": "guests,",
+  "start": 13.93,
+  "end": 14.55,
+  "id": "w32"
+ },
+ {
+  "text": "a",
+  "start": 14.59,
+  "end": 14.64,
+  "id": "w33"
+ },
+ {
+  "text": "$30,000",
+  "start": 14.64,
+  "end": 16.05,
+  "id": "w34"
+ },
+ {
+  "text": "budget,",
+  "start": 16.05,
+  "end": 16.68,
+  "id": "w35"
+ },
+ {
+  "text": "a",
+  "start": 16.68,
+  "end": 16.75,
+  "id": "w36"
+ },
+ {
+  "text": "2",
+  "start": 16.75,
+  "end": 16.99,
+  "id": "w37"
+ },
+ {
+  "text": "a.m.",
+  "start": 17,
+  "end": 17.7,
+  "id": "w38"
+ },
+ {
+  "text": "curfew.",
+  "start": 17.7,
+  "end": 18.82,
+  "id": "w39"
+ },
+ {
+  "text": "Two",
+  "start": 18.82,
+  "end": 19.68,
+  "id": "w40"
+ },
+ {
+  "text": "venue",
+  "start": 19.68,
+  "end": 19.89,
+  "id": "w41"
+ },
+ {
+  "text": "proposals",
+  "start": 19.89,
+  "end": 20.46,
+  "id": "w42"
+ },
+ {
+  "text": "arrive,",
+  "start": 20.46,
+  "end": 20.96,
+  "id": "w43"
+ },
+ {
+  "text": "and",
+  "start": 20.96,
+  "end": 21.12,
+  "id": "w44"
+ },
+ {
+  "text": "the",
+  "start": 21.2,
+  "end": 21.34,
+  "id": "w45"
+ },
+ {
+  "text": "agents",
+  "start": 21.57,
+  "end": 21.71,
+  "id": "w46"
+ },
+ {
+  "text": "take",
+  "start": 21.77,
+  "end": 21.95,
+  "id": "w47"
+ },
+ {
+  "text": "it",
+  "start": 21.97,
+  "end": 22.09,
+  "id": "w48"
+ },
+ {
+  "text": "from",
+  "start": 22.09,
+  "end": 22.29,
+  "id": "w49"
+ },
+ {
+  "text": "there.",
+  "start": 22.34,
+  "end": 22.92,
+  "id": "w50"
+ },
+ {
+  "text": "Scout",
+  "start": 23.22,
+  "end": 23.29,
+  "id": "w51"
+ },
+ {
+  "text": "reads",
+  "start": 23.35,
+  "end": 23.72,
+  "id": "w52"
+ },
+ {
+  "text": "each",
+  "start": 23.72,
+  "end": 24.04,
+  "id": "w53"
+ },
+ {
+  "text": "proposal.",
+  "start": 24.04,
+  "end": 24.96,
+  "id": "w54"
+ },
+ {
+  "text": "Finance",
+  "start": 25.26,
+  "end": 25.61,
+  "id": "w55"
+ },
+ {
+  "text": "checks",
+  "start": 25.61,
+  "end": 26.17,
+  "id": "w56"
+ },
+ {
+  "text": "it",
+  "start": 26.17,
+  "end": 26.35,
+  "id": "w57"
+ },
+ {
+  "text": "against",
+  "start": 26.35,
+  "end": 26.81,
+  "id": "w58"
+ },
+ {
+  "text": "budget",
+  "start": 27.15,
+  "end": 27.56,
+  "id": "w59"
+ },
+ {
+  "text": "and",
+  "start": 27.56,
+  "end": 27.84,
+  "id": "w60"
+ },
+ {
+  "text": "curfew,",
+  "start": 27.84,
+  "end": 28.58,
+  "id": "w61"
+ },
+ {
+  "text": "and",
+  "start": 28.58,
+  "end": 28.86,
+  "id": "w62"
+ },
+ {
+  "text": "flags",
+  "start": 28.86,
+  "end": 29.32,
+  "id": "w63"
+ },
+ {
+  "text": "every",
+  "start": 29.32,
+  "end": 29.78,
+  "id": "w64"
+ },
+ {
+  "text": "violation.",
+  "start": 29.78,
+  "end": 30.96,
+  "id": "w65"
+ },
+ {
+  "text": "Negotiator",
+  "start": 30.96,
+  "end": 31.57,
+  "id": "w66"
+ },
+ {
+  "text": "drafts",
+  "start": 31.57,
+  "end": 31.91,
+  "id": "w67"
+ },
+ {
+  "text": "the",
+  "start": 31.94,
+  "end": 32.12,
+  "id": "w68"
+ },
+ {
+  "text": "counter,",
+  "start": 32.12,
+  "end": 32.68,
+  "id": "w69"
+ },
+ {
+  "text": "$27,000,",
+  "start": 32.68,
+  "end": 33.87,
+  "id": "w70"
+ },
+ {
+  "text": "if",
+  "start": 33.92,
+  "end": 34.03,
+  "id": "w71"
+ },
+ {
+  "text": "the",
+  "start": 34.03,
+  "end": 34.2,
+  "id": "w72"
+ },
+ {
+  "text": "curfew",
+  "start": 34.21,
+  "end": 34.58,
+  "id": "w73"
+ },
+ {
+  "text": "moves",
+  "start": 34.58,
+  "end": 34.87,
+  "id": "w74"
+ },
+ {
+  "text": "to",
+  "start": 34.87,
+  "end": 34.99,
+  "id": "w75"
+ },
+ {
+  "text": "$130.",
+  "start": 35.07,
+  "end": 35.94,
+  "id": "w76"
+ },
+ {
+  "text": "Every",
+  "start": 36.24,
+  "end": 37.08,
+  "id": "w77"
+ },
+ {
+  "text": "step",
+  "start": 37.08,
+  "end": 37.77,
+  "id": "w78"
+ },
+ {
+  "text": "is",
+  "start": 38.13,
+  "end": 38.44,
+  "id": "w79"
+ },
+ {
+  "text": "traced,",
+  "start": 38.5,
+  "end": 40.24,
+  "id": "w80"
+ },
+ {
+  "text": "so",
+  "start": 40.29,
+  "end": 40.74,
+  "id": "w81"
+ },
+ {
+  "text": "nothing",
+  "start": 40.74,
+  "end": 41.53,
+  "id": "w82"
+ },
+ {
+  "text": "is",
+  "start": 42.34,
+  "end": 42.8,
+  "id": "w83"
+ },
+ {
+  "text": "a",
+  "start": 42.8,
+  "end": 43.03,
+  "id": "w84"
+ },
+ {
+  "text": "black",
+  "start": 43.93,
+  "end": 44.17,
+  "id": "w85"
+ },
+ {
+  "text": "box.",
+  "start": 44.34,
+  "end": 45.5,
+  "id": "w86"
+ },
+ {
+  "text": "Nothing",
+  "start": 45.9,
+  "end": 45.97,
+  "id": "w87"
+ },
+ {
+  "text": "closes",
+  "start": 46.03,
+  "end": 46.28,
+  "id": "w88"
+ },
+ {
+  "text": "without",
+  "start": 46.28,
+  "end": 46.65,
+  "id": "w89"
+ },
+ {
+  "text": "a",
+  "start": 46.65,
+  "end": 46.68,
+  "id": "w90"
+ },
+ {
+  "text": "human.",
+  "start": 46.7,
+  "end": 47.14,
+  "id": "w91"
+ },
+ {
+  "text": "The",
+  "start": 47.14,
+  "end": 47.44,
+  "id": "w92"
+ },
+ {
+  "text": "client",
+  "start": 47.44,
+  "end": 47.74,
+  "id": "w93"
+ },
+ {
+  "text": "reviews,",
+  "start": 47.74,
+  "end": 48.33,
+  "id": "w94"
+ },
+ {
+  "text": "approves,",
+  "start": 48.33,
+  "end": 48.99,
+  "id": "w95"
+ },
+ {
+  "text": "and",
+  "start": 48.99,
+  "end": 49.19,
+  "id": "w96"
+ },
+ {
+  "text": "the",
+  "start": 49.32,
+  "end": 49.39,
+  "id": "w97"
+ },
+ {
+  "text": "vendor",
+  "start": 49.46,
+  "end": 49.79,
+  "id": "w98"
+ },
+ {
+  "text": "accepts.",
+  "start": 49.79,
+  "end": 50.48,
+  "id": "w99"
+ },
+ {
+  "text": "No",
+  "start": 50.78,
+  "end": 50.99,
+  "id": "w100"
+ },
+ {
+  "text": "follow-up",
+  "start": 50.99,
+  "end": 53.26,
+  "id": "w101"
+ },
+ {
+  "text": "emails,",
+  "start": 53.26,
+  "end": 55.28,
+  "id": "w102"
+ },
+ {
+  "text": "no",
+  "start": 55.28,
+  "end": 55.78,
+  "id": "w103"
+ },
+ {
+  "text": "lost",
+  "start": 55.78,
+  "end": 56.08,
+  "id": "w104"
+ },
+ {
+  "text": "threads.",
+  "start": 58.47,
+  "end": 59.37,
+  "id": "w105"
+ },
+ {
+  "text": "Four",
+  "start": 59.37,
+  "end": 59.7,
+  "id": "w106"
+ },
+ {
+  "text": "days",
+  "start": 59.7,
+  "end": 59.94,
+  "id": "w107"
+ },
+ {
+  "text": "of",
+  "start": 59.94,
+  "end": 60.07,
+  "id": "w108"
+ },
+ {
+  "text": "email,",
+  "start": 60.07,
+  "end": 60.54,
+  "id": "w109"
+ },
+ {
+  "text": "collapsed",
+  "start": 60.54,
+  "end": 61.11,
+  "id": "w110"
+ },
+ {
+  "text": "into",
+  "start": 61.16,
+  "end": 61.43,
+  "id": "w111"
+ },
+ {
+  "text": "46",
+  "start": 61.59,
+  "end": 61.84,
+  "id": "w112"
+ },
+ {
+  "text": "seconds.",
+  "start": 61.84,
+  "end": 62.47,
+  "id": "w113"
+ },
+ {
+  "text": "Three",
+  "start": 62.9,
+  "end": 63.14,
+  "id": "w114"
+ },
+ {
+  "text": "agents,",
+  "start": 63.14,
+  "end": 63.99,
+  "id": "w115"
+ },
+ {
+  "text": "one",
+  "start": 63.99,
+  "end": 64.31,
+  "id": "w116"
+ },
+ {
+  "text": "approval,",
+  "start": 64.31,
+  "end": 65.38,
+  "id": "w117"
+ },
+ {
+  "text": "zero",
+  "start": 65.38,
+  "end": 65.66,
+  "id": "w118"
+ },
+ {
+  "text": "lost",
+  "start": 65.84,
+  "end": 66.24,
+  "id": "w119"
+ },
+ {
+  "text": "threads.",
+  "start": 66.24,
+  "end": 67.36,
+  "id": "w120"
+ },
+ {
+  "text": "Durable",
+  "start": 67.57,
+  "end": 67.85,
+  "id": "w121"
+ },
+ {
+  "text": "actors",
+  "start": 67.85,
+  "end": 68.27,
+  "id": "w122"
+ },
+ {
+  "text": "hold",
+  "start": 68.27,
+  "end": 68.55,
+  "id": "w123"
+ },
+ {
+  "text": "the",
+  "start": 68.55,
+  "end": 68.76,
+  "id": "w124"
+ },
+ {
+  "text": "state.",
+  "start": 68.76,
+  "end": 69.35,
+  "id": "w125"
+ },
+ {
+  "text": "Agent",
+  "start": 69.35,
+  "end": 69.66,
+  "id": "w126"
+ },
+ {
+  "text": "Relay",
+  "start": 69.66,
+  "end": 69.86,
+  "id": "w127"
+ },
+ {
+  "text": "coordinates.",
+  "start": 69.86,
+  "end": 70.56,
+  "id": "w128"
+ },
+ {
+  "text": "The",
+  "start": 70.86,
+  "end": 70.88,
+  "id": "w129"
+ },
+ {
+  "text": "UI",
+  "start": 70.88,
+  "end": 71.09,
+  "id": "w130"
+ },
+ {
+  "text": "just",
+  "start": 71.09,
+  "end": 71.5,
+  "id": "w131"
+ },
+ {
+  "text": "mirrors",
+  "start": 71.52,
+  "end": 72.25,
+  "id": "w132"
+ },
+ {
+  "text": "the",
+  "start": 72.26,
+  "end": 72.59,
+  "id": "w133"
+ },
+ {
+  "text": "room.",
+  "start": 72.75,
+  "end": 73.36,
+  "id": "w134"
+ },
+ {
+  "text": "Open",
+  "start": 73.36,
+  "end": 73.66,
+  "id": "w135"
+ },
+ {
+  "text": "source.",
+  "start": 73.66,
+  "end": 74.36,
+  "id": "w136"
+ },
+ {
+  "text": "Find",
+  "start": 74.36,
+  "end": 74.51,
+  "id": "w137"
+ },
+ {
+  "text": "it",
+  "start": 74.51,
+  "end": 74.585,
+  "id": "w138"
+ },
+ {
+  "text": "on",
+  "start": 74.585,
+  "end": 74.66,
+  "id": "w139"
+ },
+ {
+  "text": "GitHub.",
+  "start": 74.66,
+  "end": 74.99,
+  "id": "w140"
+ }
+]
