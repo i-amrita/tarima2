@@ -150,15 +150,23 @@ between rows; whitespace does the grouping.
 ### 3.5 Agent activity rail (4/12, muted, sticky)
 
 - Container: `--muted` bg, no border (or hairline same as muted), rounded-lg, sticky,
-  height `calc(100vh - 8rem)`, internal scroll, auto-scroll preserved (`trace-feed` testid).
+  fits content when short and caps at `calc(100vh - 8rem)` when long, internal scroll (`trace-feed` testid).
 - Header inside: "Agent activity" (sans medium 13px) + count in muted mono; no green pulse
   dot, no "FEED" caps.
-- Runs (grouped as today) render as collapsibles: trigger = pastel actor dot + actor name
-  (sans 13px) + run count in muted mono. Latest run expanded, all older runs collapsed by
-  default. Expanded content: per-event lines - mono 11px muted timestamp + sans 13px message.
-  No actor text badges (dots carry the identity), no search icon.
-- Empty state: single muted line "No agent activity yet." (`trace-run`/`trace-item` testids
-  preserved on render).
+- Chat-style flat log: flat chronological list of all messages with no collapsed per-agent groups.
+- Per-message layout:
+  - Timestamp in mono 11px (`--muted-foreground`).
+  - Pastel actor dot (6px circle: scout blue, finance purple, negotiator amber, client/system muted).
+  - Agent name in sans 12px font-medium, capitalized. Screen reader uppercase tag preserved.
+  - Attribution slots: optional model badge, latency badge (`Xms`), and token count badge (`X tok`), rendered only when present.
+  - 2-line preview in sans 13px (`line-clamp-2`, leading-snug).
+  - Progressive disclosure: keyboard-accessible "more" / "less" toggle button (`aria-expanded`) that only appears when text overflows 2 lines. Expanded state renders full text preserving line breaks in mono (`font-mono text-xs whitespace-pre-wrap break-words`) on a subtle tinted card. Clicking row or button toggles expand/collapse.
+- Scroll affordances:
+  - Pinned to newest messages by default.
+  - Up-arrow button at top edge when messages exist above the viewport.
+  - Down-arrow button at bottom edge when scrolled up away from bottom (jump to latest).
+  - New incoming messages while scrolled up do not yank scroll position.
+- Empty state: single muted line "No agent activity yet." (`trace-run` and `trace-item` testids preserved on render).
 
 ### 3.6 Mobile (<lg)
 
