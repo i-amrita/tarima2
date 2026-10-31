@@ -38,3 +38,4 @@ User chose B (Vercel Sandbox session) for the v1 deployment; ovhcloud with a clo
 - The dev server advertises `ws://127.0.0.1:7100` in socket grants. `getSocketGrant` now rewrites it to the public `ACTOR_URL` origin (`wss`, no port).
 - Verified against the live sandbox from this laptop: setSpecs, injectProposal, relay `/run` (202), proposal reaches REQUIRES_APPROVAL, and a `wss` connection receives the initial `state` message.
 - Still unchecked: a browser session on the deployed app. Deployment Protection blocks unauthenticated browsers (and Playwright) until it is disabled or a bypass secret is used.
+- Browser check (2026-10-31): `tests/e2e/smoke.sh` minus the kill step passed with a local web app (port 3101) pointed at the public sandbox over https/wss: connect, simulate, relay audit, two-window approval sync, vendor acceptance. The Vercel-hosted build itself still needs protection lifted or a bypass secret for a browser run.
