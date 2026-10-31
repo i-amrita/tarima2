@@ -45,19 +45,19 @@ describe("RelayPipeline - parsing and curfew helpers", () => {
   it("extracts facts accurately from Grand Loft raw text", () => {
     const grandLoft = VENUE_FIXTURES.find((v) => v.name === "The Grand Loft")!
     const facts = parseProposalText(grandLoft.rawText)
-    expect(facts.cost).toBe(21500)
-    expect(facts.capacity).toBe(150)
-    expect(facts.curfew).toBe("23:00")
+    expect(facts.cost).toBe(26000)
+    expect(facts.capacity).toBe(550)
+    expect(facts.curfew).toBe("00:00")
     expect(facts.avIncluded).toBe(true)
   })
 
   it("extracts facts accurately from Warehouse 9 raw text", () => {
     const warehouse9 = VENUE_FIXTURES.find((v) => v.name === "Warehouse 9")!
     const facts = parseProposalText(warehouse9.rawText)
-    expect(facts.cost).toBe(15800)
-    expect(facts.capacity).toBe(110)
-    expect(facts.curfew).toBe("02:00")
-    expect(facts.avIncluded).toBe(false)
+    expect(facts.cost).toBe(34000)
+    expect(facts.capacity).toBe(600)
+    expect(facts.curfew).toBe("03:00")
+    expect(facts.avIncluded).toBe(true)
   })
 })
 
@@ -76,20 +76,19 @@ describe("RelayPipeline - Grand Loft run", () => {
     const audit = audits[0]!.audit
     expect(audits[0]!.proposalId).toBe("p1")
 
-    // Deltas: maxBudget 18000 - quoted 21500 = -3500; cap 150 - 120 = 30
-    expect(audit.budgetDelta).toBe(-3500)
-    expect(audit.capacityDelta).toBe(30)
+    // Deltas: maxBudget 30000 - quoted 26000 = 4000; cap 550 - 500 = 50
+    expect(audit.budgetDelta).toBe(4000)
+    expect(audit.capacityDelta).toBe(50)
 
-    // Grand Loft violations: over budget and curfew
-    expect(audit.violations).toContain("over budget")
-    expect(audit.violations).toContain("curfew earlier than required")
+    // Grand Loft violations: curfew only (midnight vs 2 AM)
+    expect(audit.violations).toEqual(["curfew earlier than required"])
+    expect(audit.violations).not.toContain("over budget")
     expect(audit.violations).not.toContain("under capacity")
     expect(audit.violations).not.toContain("AV missing when required")
 
     // Counter proposal derived from violations
-    expect(audit.counterStrategy).toMatch(/budget/i)
     expect(audit.counterStrategy).toMatch(/curfew/i)
-    expect(audit.draftCounterProposal).toMatch(/18,000/i)
+    expect(audit.draftCounterProposal).toMatch(/02:00/)
 
     // Activity events order: scout -> finance -> negotiator
     const actors = activities.map((a) => a.actor)
@@ -126,15 +125,12 @@ describe("RelayPipeline - Warehouse 9 run", () => {
     const audit = audits[0]!.audit
     expect(audits[0]!.proposalId).toBe("p2")
 
-    // Deltas: maxBudget 18000 - quoted 15800 = 2200; cap 110 - 120 = -10
-    expect(audit.budgetDelta).toBe(2200)
-    expect(audit.capacityDelta).toBe(-10)
+    // Deltas: maxBudget 30000 - quoted 34000 = -4000; cap 600 - 500 = 100
+    expect(audit.budgetDelta).toBe(-4000)
+    expect(audit.capacityDelta).toBe(100)
 
-    // Warehouse 9 violations: AV missing and under capacity
-    expect(audit.violations).toContain("AV missing when required")
-    expect(audit.violations).toContain("under capacity")
-    expect(audit.violations).not.toContain("over budget")
-    expect(audit.violations).not.toContain("curfew earlier than required")
+    // Warehouse 9 violations: over budget only
+    expect(audit.violations).toEqual(["over budget"])
 
     // Activity events order: scout -> finance -> negotiator
     const actors = activities.map((a) => a.actor)
