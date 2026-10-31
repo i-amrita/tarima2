@@ -1,8 +1,11 @@
-import * as React from "react"
 import type { Role, VenueProposal } from "@dealrelay/shared"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import {
+  Confirmation,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from "@/components/ai-elements/confirmation"
 
 interface ApprovalBarProps {
   role: Role
@@ -20,49 +23,28 @@ export function ApprovalBar({ role, proposals, onApprove }: ApprovalBarProps) {
   return (
     <div data-testid="approval-bar" className="space-y-3">
       {pendingApprovals.map((proposal) => (
-        <Card
-          key={proposal.id}
-          className="p-4 border-status-pending/40 bg-status-pending/5 backdrop-blur-sm"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="border-status-pending/40 bg-status-pending/10 text-status-pending text-xs font-mono"
-                >
-                  Action Required
-                </Badge>
-                <span className="font-semibold text-sm">
-                  Counter-Proposal Ready: {proposal.name}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground font-mono">
-                {proposal.audit?.counterStrategy ?? "Negotiation counter draft prepared by agents"}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
-              {role === "client" ? (
-                <Button
-                  data-testid="approve-button"
-                  onClick={() => onApprove(proposal.id)}
-                  className="bg-primary text-primary-foreground text-xs font-mono hover:opacity-90 shadow-sm"
-                >
+        <Confirmation key={proposal.id} approval={{ id: proposal.id }} state="approval-requested">
+          <ConfirmationTitle>
+            <span className="font-semibold">Counter-Proposal Ready: {proposal.name}</span>
+            <span className="block text-xs text-muted-foreground font-mono">
+              {proposal.audit?.counterStrategy ?? "Negotiation counter draft prepared by agents"}
+            </span>
+          </ConfirmationTitle>
+          <ConfirmationRequest>
+            {role === "client" ? (
+              <ConfirmationActions>
+                <ConfirmationAction data-testid="approve-button" onClick={() => onApprove(proposal.id)}>
                   Approve Counter-Offer
-                </Button>
-              ) : (
-                <div
-                  data-testid="approval-waiting-state"
-                  className="flex items-center gap-2 text-xs font-mono text-status-pending"
-                >
-                  <span className="h-2 w-2 rounded-full bg-status-pending animate-pulse" />
-                  <span>Waiting for client approval...</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </Card>
+                </ConfirmationAction>
+              </ConfirmationActions>
+            ) : (
+              <div data-testid="approval-waiting-state" className="flex items-center gap-2 text-xs font-mono text-status-pending">
+                <span className="h-2 w-2 rounded-full bg-status-pending animate-pulse" />
+                <span>Waiting for client approval...</span>
+              </div>
+            )}
+          </ConfirmationRequest>
+        </Confirmation>
       ))}
     </div>
   )

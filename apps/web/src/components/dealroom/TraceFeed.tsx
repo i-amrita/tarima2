@@ -3,6 +3,7 @@ import type { ActivityActor, ActivityEvent } from "@dealrelay/shared"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Task, TaskContent, TaskTrigger } from "@/components/ai-elements/task"
 import { cn } from "@/lib/utils"
 
 interface TraceFeedProps {
@@ -37,6 +38,19 @@ function formatTime(epochMs: number): string {
   })
 }
 
+type ActivityRun = { key: string; actor: ActivityActor; items: ActivityEvent[] }
+
+/** Contiguous events from the same actor become one Task step. */
+function groupRuns(activity: ActivityEvent[]): ActivityRun[] {
+  const runs: ActivityRun[] = []
+  for (const item of activity) {
+    const last = runs[runs.length - 1]
+    if (last && last.actor === item.actor) last.items.push(item)
+    else runs.push({ key: item.id, actor: item.actor, items: [item] })
+  }
+  return runs
+}
+
 export function TraceFeed({ activity }: TraceFeedProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
@@ -69,27 +83,32 @@ export function TraceFeed({ activity }: TraceFeedProps) {
             No agent activity recorded yet.
           </div>
         ) : (
-          <div className="space-y-2.5">
-            {activity.map((item) => (
-              <div
-                key={item.id}
-                data-testid="trace-item"
-                data-actor={item.actor}
-                className="flex items-start gap-2.5 text-xs font-mono p-2 rounded bg-muted/20 border border-border/30 hover:border-border/60 transition-colors"
-              >
-                <span className="text-[11px] text-muted-foreground shrink-0 select-none">
-                  {formatTime(item.at)}
-                </span>
-                <Badge
-                  variant="outline"
-                  className={cn("h-4 px-1.5 text-[10px] uppercase font-mono shrink-0", getActorBadgeClass(item.actor))}
-                >
-                  {item.actor}
-                </Badge>
-                <span className="text-foreground/90 break-words flex-1">
-                  {item.message}
-                </span>
-              </div>
+          <div className="space-y-3">
+            {groupRuns(activity).map((run) => (
+              <Task key={run.key} data-testid="trace-run" data-actor={run.actor}>
+                <TaskTrigger title={`${run.actor} (${run.items.length})`} />
+                <TaskContent>
+                  {run.items.map((item) => (
+                    <div
+                      key={item.id}
+                      data-testid="trace-item"
+                      data-actor={item.actor}
+                      className="flex items-start gap-2.5 text-xs font-mono"
+                    >
+                      <span className="text-[11px] text-muted-foreground shrink-0 select-none">
+                        {formatTime(item.at)}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn("h-4 px-1.5 text-[10px] uppercase font-mono shrink-0", getActorBadgeClass(item.actor))}
+                      >
+                        {item.actor}
+                      </Badge>
+                      <span className="text-foreground/90 break-words flex-1">{item.message}</span>
+                    </div>
+                  ))}
+                </TaskContent>
+              </Task>
             ))}
           </div>
         )}
