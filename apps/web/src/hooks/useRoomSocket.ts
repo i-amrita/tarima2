@@ -19,7 +19,8 @@ const EMPTY_ROOM_STATE: RoomState = {
 class RoomSocketManager {
   private listeners = new Set<() => void>()
   private ws: WebSocket | null = null
-  private destroyed = false
+  private destroyed = true
+  private generation = 0
   private retryTimeout: ReturnType<typeof setTimeout> | null = null
 
   private snapshot: RoomSocketStoreState = {
@@ -40,10 +41,14 @@ class RoomSocketManager {
         lastToast: null,
       }
     }
-    // Only connect in browser environment
-    if (typeof window !== "undefined") {
-      this.connect()
-    }
+  }
+
+  /** Idempotent and restartable so StrictMode's mount/unmount/mount cycle works. */
+  public start() {
+    if (typeof window === "undefined") return
+    this.destroyed = false
+    this.generation++
+    void this.connect(this.generation)
   }
 
   private notify() {
@@ -60,8 +65,8 @@ class RoomSocketManager {
     this.notify()
   }
 
-  private async connect() {
-    if (this.destroyed) return
+  private async connect(generation: number) {
+    if (this.destroyed || generation !== this.generation) return
 
     this.updateSnapshot({ status: "connecting" })
 
@@ -70,7 +75,7 @@ class RoomSocketManager {
         data: { roomId: this.roomId, role: this.role },
       })
 
-      if (this.destroyed) return
+      if (this.destroyed || generation !== this.generation) return
 
       const ws = new WebSocket(grant.websocketUrl)
       this.ws = ws
@@ -127,7 +132,7 @@ class RoomSocketManager {
         if (this.destroyed) return
         this.updateSnapshot({ status: "disconnected" })
         this.retryTimeout = setTimeout(() => {
-          this.connect()
+          this.connect(generation)
         }, 2000)
       }
     } catch (err) {
@@ -135,7 +140,7 @@ class RoomSocketManager {
       console.warn("Failed to get socket grant:", err)
       this.updateSnapshot({ status: "error" })
       this.retryTimeout = setTimeout(() => {
-        this.connect()
+        this.connect(generation)
       }, 3000)
     }
   }
@@ -163,8 +168,9 @@ class RoomSocketManager {
     this.send({ type: "approve", proposalId })
   }
 
-  public destroy() {
+  public stop() {
     this.destroyed = true
+    this.generation++
     if (this.retryTimeout) {
       clearTimeout(this.retryTimeout)
       this.retryTimeout = null
@@ -173,7 +179,6 @@ class RoomSocketManager {
       this.ws.close()
       this.ws = null
     }
-    this.listeners.clear()
   }
 }
 
@@ -181,9 +186,8 @@ export function useRoomSocket(roomId: string, role: Role, initialState?: RoomSta
   const manager = useMemo(() => new RoomSocketManager(roomId, role, initialState), [roomId, role])
 
   useEffect(() => {
-    return () => {
-      manager.destroy()
-    }
+    manager.start()
+    return () => manager.stop()
   }, [manager])
 
   const store = useSyncExternalStore(manager.subscribe, manager.getSnapshot, manager.getSnapshot)
