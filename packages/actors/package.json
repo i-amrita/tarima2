@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "durable-actors dev",
-    "generate": "durable-actors generate"
+    "generate": "durable-actors generate src/actors.ts"
   },
   "dependencies": {
     "@dealrelay/shared": "workspace:*",

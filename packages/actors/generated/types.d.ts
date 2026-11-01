@@ -18,11 +18,15 @@ interface $RoomActorContract {
             attribution?: AgentAttribution,
             actedBy?: ActivityActor
         ): Promise<void>
+        getState(): Promise<RoomState>
         injectProposal(proposal: NewVenueProposal): Promise<string>
         recordApproval(proposalId: string, role: Role): Promise<void>
+        recordComment(proposalId: string, role: Role, text: string): Promise<void>
+        recordReject(proposalId: string, role: Role, reason?: string): Promise<void>
         recordVendorAcceptance(proposalId: string): Promise<void>
         setSpecs(specs: EventSpecs): Promise<void>
         submitAudit(proposalId: string, audit: AuditResult): Promise<void>
+        submitRevision(proposalId: string, audit: AuditResult): Promise<void>
     }
 }
 type ActivityActor = "scout" | "finance" | "negotiator" | "client" | "agency" | "system"
@@ -104,6 +108,11 @@ type RoomOutgoing = {
 }
 type RoomSocketMetadata = {
     role: Role
+}
+type RoomState = {
+    specs: EventSpecs | null
+    proposals: VenueProposal[]
+    activity: ActivityEvent[]
 }
 type VenueProposal = {
     id: string

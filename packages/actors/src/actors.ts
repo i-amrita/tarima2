@@ -10,9 +10,20 @@ import type {
   RoomIncoming,
   RoomOutgoing,
   RoomSocketMetadata,
+  RoomState,
   VenueProposal,
 } from "@dealrelay/shared"
-import { addProposal, applyApproval, applyAudit, applyVendorAcceptance, pushActivity } from "./transitions.js"
+import {
+  addProposal,
+  applyApproval,
+  applyAudit,
+  applyComment,
+  applyReject,
+  applyRevision,
+  applyVendorAcceptance,
+  handleIncomingMessage,
+  pushActivity,
+} from "./transitions.js"
 
 export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgoing> {
   @Persisted @Emittable specs: EventSpecs | null = null
@@ -20,6 +31,7 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
   @Persisted @Emittable activity: ActivityEvent[] = []
   @Persisted private nextId = 1
   @Persisted private nextActivityId = 1
+  @Persisted private nextFeedbackId = 1
 
   async setSpecs(specs: EventSpecs): Promise<void> {
     this.specs = specs
@@ -35,12 +47,53 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
 
   async submitAudit(proposalId: string, audit: AuditResult): Promise<void> {
     const actedBy = audit.actedBy ?? "negotiator"
+    const existing = this.proposals.find((p) => p.id === proposalId)
+    const isRevision = existing?.status === "REVISING"
     this.proposals = applyAudit(this.proposals, proposalId, audit, actedBy)
+    const updated = this.proposals.find((p) => p.id === proposalId)
+    const rev = updated?.revision ?? 0
     await this.log(
       "negotiator",
-      `Audit complete for ${proposalId}: ${audit.violations.length} violation(s)`,
-      { agent: "negotiator", verb: "audited" },
+      isRevision
+        ? `Revision ${rev} complete for ${proposalId}: ${audit.violations.length} violation(s)`
+        : `Audit complete for ${proposalId}: ${audit.violations.length} violation(s)`,
+      { agent: "negotiator", verb: isRevision ? "revised" : "audited" },
       actedBy,
+    )
+  }
+
+  async submitRevision(proposalId: string, audit: AuditResult): Promise<void> {
+    const actedBy = audit.actedBy ?? "negotiator"
+    this.proposals = applyRevision(this.proposals, proposalId, audit, actedBy)
+    const updated = this.proposals.find((p) => p.id === proposalId)
+    const rev = updated?.revision ?? 1
+    await this.log(
+      "negotiator",
+      `Revision ${rev} complete for ${proposalId}: ${audit.violations.length} violation(s)`,
+      { agent: "negotiator", verb: "revised" },
+      actedBy,
+    )
+  }
+
+  async recordComment(proposalId: string, role: Role, text: string): Promise<void> {
+    const feedbackId = `f${this.nextFeedbackId++}`
+    this.proposals = applyComment(this.proposals, proposalId, role, text, feedbackId)
+    await this.log(
+      role,
+      `Feedback on ${proposalId}: "${text}"`,
+      { agent: role, verb: "commented" },
+      role,
+    )
+  }
+
+  async recordReject(proposalId: string, role: Role, reason?: string): Promise<void> {
+    const feedbackId = reason ? `f${this.nextFeedbackId++}` : undefined
+    this.proposals = applyReject(this.proposals, proposalId, role, reason, feedbackId)
+    await this.log(
+      role,
+      `Rejected proposal ${proposalId}${reason ? `: "${reason}"` : ""}`,
+      { agent: role, verb: "rejected" },
+      role,
     )
   }
 
@@ -52,6 +105,14 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
   async recordVendorAcceptance(proposalId: string): Promise<void> {
     this.proposals = applyVendorAcceptance(this.proposals, proposalId)
     await this.log("system", `Vendor accepted counter for ${proposalId}`)
+  }
+
+  async getState(): Promise<RoomState> {
+    return {
+      specs: this.specs,
+      proposals: this.proposals,
+      activity: this.activity,
+    }
   }
 
   async appendActivity(
@@ -67,14 +128,24 @@ export class RoomActor extends Actor<RoomSocketMetadata, RoomIncoming, RoomOutgo
     socket: { metadata: RoomSocketMetadata; send(message: RoomOutgoing): void },
     message: RoomIncoming,
   ): Promise<void> {
-    if (message.type === "approve") {
-      if (socket.metadata.role !== "client") {
-        socket.send({ type: "toast", message: "Only the client can approve" })
-        return
-      }
-      await this.recordApproval(message.proposalId, "client")
-      this.broadcast({ type: "toast", message: `Client approved ${message.proposalId}` })
+    let roomId = "unknown"
+    try {
+      roomId = this.id
+    } catch {
+      // Unit tests without full runtime context
     }
+
+    await handleIncomingMessage(
+      {
+        recordApproval: (pid, role) => this.recordApproval(pid, role),
+        recordReject: (pid, role, reason) => this.recordReject(pid, role, reason),
+        recordComment: (pid, role, text) => this.recordComment(pid, role, text),
+        broadcast: (msg) => this.broadcast(msg),
+        id: roomId,
+      },
+      socket,
+      message,
+    )
   }
 
   private async log(

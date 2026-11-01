@@ -24,11 +24,15 @@ export const actors = {
                 actorId,
                 [
                     { name: "appendActivity", result: "void" },
+                    { name: "getState", result: "value" },
                     { name: "injectProposal", result: "value" },
                     { name: "recordApproval", result: "void" },
+                    { name: "recordComment", result: "void" },
+                    { name: "recordReject", result: "void" },
                     { name: "recordVendorAcceptance", result: "void" },
                     { name: "setSpecs", result: "void" },
-                    { name: "submitAudit", result: "void" }
+                    { name: "submitAudit", result: "void" },
+                    { name: "submitRevision", result: "void" }
                 ],
                 transport
             )

@@ -55,6 +55,10 @@ export declare namespace actors {
                 Args: Parameters<Stub["appendActivity"]>
                 Result: Awaited<ReturnType<Stub["appendActivity"]>>
             }
+            ["getState"]: {
+                Args: Parameters<Stub["getState"]>
+                Result: Awaited<ReturnType<Stub["getState"]>>
+            }
             ["injectProposal"]: {
                 Args: Parameters<Stub["injectProposal"]>
                 Result: Awaited<ReturnType<Stub["injectProposal"]>>
@@ -62,6 +66,14 @@ export declare namespace actors {
             ["recordApproval"]: {
                 Args: Parameters<Stub["recordApproval"]>
                 Result: Awaited<ReturnType<Stub["recordApproval"]>>
+            }
+            ["recordComment"]: {
+                Args: Parameters<Stub["recordComment"]>
+                Result: Awaited<ReturnType<Stub["recordComment"]>>
+            }
+            ["recordReject"]: {
+                Args: Parameters<Stub["recordReject"]>
+                Result: Awaited<ReturnType<Stub["recordReject"]>>
             }
             ["recordVendorAcceptance"]: {
                 Args: Parameters<Stub["recordVendorAcceptance"]>
@@ -74,6 +86,10 @@ export declare namespace actors {
             ["submitAudit"]: {
                 Args: Parameters<Stub["submitAudit"]>
                 Result: Awaited<ReturnType<Stub["submitAudit"]>>
+            }
+            ["submitRevision"]: {
+                Args: Parameters<Stub["submitRevision"]>
+                Result: Awaited<ReturnType<Stub["submitRevision"]>>
             }
         }
         interface Methods extends $MethodTypes {}
@@ -88,6 +104,10 @@ export declare namespace actors {
                 type Args = $MethodTypes["appendActivity"]["Args"]
                 type Result = $MethodTypes["appendActivity"]["Result"]
             }
+            namespace getState {
+                type Args = $MethodTypes["getState"]["Args"]
+                type Result = $MethodTypes["getState"]["Result"]
+            }
             namespace injectProposal {
                 type Args = $MethodTypes["injectProposal"]["Args"]
                 type Result = $MethodTypes["injectProposal"]["Result"]
@@ -95,6 +115,14 @@ export declare namespace actors {
             namespace recordApproval {
                 type Args = $MethodTypes["recordApproval"]["Args"]
                 type Result = $MethodTypes["recordApproval"]["Result"]
+            }
+            namespace recordComment {
+                type Args = $MethodTypes["recordComment"]["Args"]
+                type Result = $MethodTypes["recordComment"]["Result"]
+            }
+            namespace recordReject {
+                type Args = $MethodTypes["recordReject"]["Args"]
+                type Result = $MethodTypes["recordReject"]["Result"]
             }
             namespace recordVendorAcceptance {
                 type Args = $MethodTypes["recordVendorAcceptance"]["Args"]
@@ -107,6 +135,10 @@ export declare namespace actors {
             namespace submitAudit {
                 type Args = $MethodTypes["submitAudit"]["Args"]
                 type Result = $MethodTypes["submitAudit"]["Result"]
+            }
+            namespace submitRevision {
+                type Args = $MethodTypes["submitRevision"]["Args"]
+                type Result = $MethodTypes["submitRevision"]["Result"]
             }
         }
     }
