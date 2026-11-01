@@ -1,10 +1,22 @@
 import { execSync } from "node:child_process"
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible"
-import type { EventSpecs } from "@dealrelay/shared"
+import type { AuditResult, EventSpecs, ProposalFeedback } from "@dealrelay/shared"
 import { generateText } from "ai"
 import { z } from "zod"
-import { generateNegotiation, parseCurfewTo24h, parseProposalText, type ParsedFacts } from "../pipeline.js"
-import type { ModelAttribution, ModelClient, ModelCounterResult, ModelExtractionResult } from "./types.js"
+import {
+  generateNegotiation,
+  generateRevisionRules,
+  parseCurfewTo24h,
+  parseProposalText,
+  type ParsedFacts,
+} from "../pipeline.js"
+import type {
+  ModelAttribution,
+  ModelClient,
+  ModelCounterResult,
+  ModelExtractionResult,
+  ModelRevisionResult,
+} from "./types.js"
 
 const scoutSchema = z.object({
   cost: z.coerce.number().int().nonnegative(),
@@ -232,6 +244,116 @@ Generate the negotiation counter strategy and draft counter proposal.`
     return {
       counterStrategy: fallback.counterStrategy,
       draftCounterProposal: fallback.draftCounterProposal,
+      attribution: {
+        model: this.model,
+        latencyMs,
+        tokens: { prompt: 0, completion: 0, total: 0 },
+        fallbackUsed: true,
+      },
+    }
+  }
+
+  async draftRevision(
+    feedback: ProposalFeedback[],
+    specs: EventSpecs,
+    facts: ParsedFacts,
+    currentAudit?: AuditResult,
+  ): Promise<ModelRevisionResult> {
+    const t0 = performance.now()
+    // Deterministic rules determine number and constraint changes
+    const fallback = generateRevisionRules(feedback, specs, facts, currentAudit)
+    const { updatedSpecs, changedNumbers } = fallback
+
+    const latestFeedback = feedback[feedback.length - 1]
+    const feedbackText = latestFeedback?.text ?? ""
+    const feedbackRole = latestFeedback?.by ?? "client"
+
+    const systemPrompt = `You are a professional event venue negotiator.
+The client or agency has reviewed the previous counter-offer and provided feedback.
+Based on the feedback, event requirements, and quoted venue facts, formulate an updated counter strategy and revised counter-proposal text.
+You MUST reply with a single JSON object with these EXACT keys:
+- "counterStrategy": concise summary of the revised counter-offer strategy
+- "draftCounterProposal": professional revised counter proposal text addressed to the venue incorporating feedback
+Do not include any prose, markdown fences, or extra commentary. Return ONLY the raw JSON object.`
+
+    const prompt = `Event constraints:
+- Event: ${specs.eventName}
+- Guests: ${updatedSpecs.guestCount ?? specs.guestCount}
+- Max Budget: $${(updatedSpecs.maxBudget ?? specs.maxBudget).toLocaleString()}
+- Required Curfew: ${updatedSpecs.requiredCurfew ?? specs.requiredCurfew}
+- AV Required: ${updatedSpecs.avRequired ?? specs.avRequired}
+
+Quoted venue facts:
+- Cost: $${facts.cost.toLocaleString()}
+- Capacity: ${facts.capacity}
+- Curfew: ${facts.curfew}
+- AV Included: ${facts.avIncluded}
+
+Previous counter strategy:
+${currentAudit?.counterStrategy ?? "None"}
+
+Feedback from ${feedbackRole}:
+"${feedbackText}"
+
+Generate the revised counter strategy and draft counter proposal.`
+
+    let lastError: unknown = null
+    const totalAttempts = 1 + this.maxRetries
+
+    for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+      try {
+        const result = await generateText({
+          model: this.provider(this.model),
+          system: systemPrompt,
+          prompt,
+          maxOutputTokens: 1500,
+          temperature: 0.2,
+        })
+
+        const text = result.text?.trim()
+        if (!text) {
+          throw new Error(`Model returned empty content (finishReason: ${result.finishReason})`)
+        }
+
+        const cleaned = this.cleanJson(text)
+        const parsedJson = JSON.parse(cleaned)
+        const validated = negotiatorSchema.parse(parsedJson)
+        const latencyMs = Math.round(performance.now() - t0)
+        const attribution: ModelAttribution = {
+          model: this.model,
+          latencyMs,
+          tokens: {
+            prompt: result.usage?.inputTokens ?? 0,
+            completion: result.usage?.outputTokens ?? 0,
+            total: result.usage?.totalTokens ?? 0,
+          },
+          fallbackUsed: false,
+        }
+
+        return {
+          counterStrategy: validated.counterStrategy,
+          draftCounterProposal: validated.draftCounterProposal,
+          updatedSpecs,
+          changedNumbers,
+          attribution,
+        }
+      } catch (err: unknown) {
+        lastError = err
+        const msg = err instanceof Error ? err.message : String(err)
+        console.warn(`[LiveModelClient] Revision negotiator attempt ${attempt}/${totalAttempts} failed: ${msg}`)
+      }
+    }
+
+    console.warn(
+      `[LiveModelClient] LOUD FALLBACK: Revision negotiator model calls failed after ${totalAttempts} attempts. Falling back to deterministic rule redraft. Last error:`,
+      lastError,
+    )
+    const latencyMs = Math.round(performance.now() - t0)
+    return {
+      counterStrategy: fallback.counterStrategy,
+      draftCounterProposal: fallback.draftCounterProposal,
+      updatedSpecs,
+      changedNumbers,
       attribution: {
         model: this.model,
         latencyMs,

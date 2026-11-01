@@ -2,7 +2,7 @@ import { actors } from "@dealrelay/actors"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 import type { VenueProposal } from "@dealrelay/shared"
 
-const RELAY_PORT = Number(process.env.TEST_RELAY_PORT ?? 7205)
+const RELAY_PORT = Number(process.env.TEST_RELAY_PORT ?? 7250)
 const RELAY_URL = `http://127.0.0.1:${RELAY_PORT}`
 
 console.log("1. Starting relay server on port", RELAY_PORT)
@@ -91,7 +91,7 @@ async function verifyVenue(venueIndex: number) {
 
   console.log(`Venue ${venue.name} verified: status=${proposal.status}`)
   console.log(`Violations: ${JSON.stringify(proposal.audit?.violations)}`)
-  return proposal
+  return { proposal, roomId }
 }
 
 try {
@@ -119,17 +119,57 @@ try {
   console.log("Relay server is healthy.")
 
   // Test both venue fixtures end-to-end
-  const p1 = await verifyVenue(0)
+  const { proposal: p1, roomId: room1 } = await verifyVenue(0)
   if (!p1.audit?.violations.includes("curfew earlier than required")) {
     throw new Error("Grand Loft missing curfew violation")
   }
 
-  const p2 = await verifyVenue(1)
+  // Test feedback revision loop on Grand Loft
+  console.log("Testing feedback revision loop on Grand Loft...")
+  const room = actors.RoomActor.get(room1)
+  await room.recordComment(p1.id, "client", "Please extend curfew to 2am and budget $25000")
+  const feedbackRes = await fetch(`${RELAY_URL}/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ roomId: room1, proposalId: p1.id }),
+  })
+  if (feedbackRes.status !== 202) {
+    throw new Error(`Expected 202 from POST /feedback, got ${feedbackRes.status}`)
+  }
+
+  // Poll until revision 1 is reached
+  let revisedOk = false
+  for (let i = 0; i < 40; i++) {
+    const state = await room.getState()
+    const rev = state.proposals.find((p) => p.id === p1.id)
+    if (rev && rev.status === "REQUIRES_APPROVAL" && rev.revision === 1) {
+      revisedOk = true
+      console.log(`Revision 1 confirmed for ${p1.id}: counterStrategy="${rev.audit?.counterStrategy}"`)
+      break
+    }
+    await new Promise((r) => setTimeout(r, 100))
+  }
+  if (!revisedOk) {
+    throw new Error("Feedback revision loop failed to reach revision 1")
+  }
+
+  const { proposal: p2, roomId: room2 } = await verifyVenue(1)
   if (!p2.audit?.violations.includes("over budget")) {
     throw new Error("Warehouse 9 missing over budget violation")
   }
 
-  console.log("Both venues verified end-to-end successfully!")
+  // Test reject on Warehouse 9 (terminal state)
+  console.log("Testing reject on Warehouse 9...")
+  const roomB = actors.RoomActor.get(room2)
+  await roomB.recordReject(p2.id, "client", "Budget too high")
+  const stateB = await roomB.getState()
+  const rej = stateB.proposals.find((p) => p.id === p2.id)
+  if (rej?.status !== "REJECTED") {
+    throw new Error(`Expected Warehouse 9 to be REJECTED, got ${rej?.status}`)
+  }
+  console.log(`Warehouse 9 rejected confirmed: status=${rej.status}`)
+
+  console.log("Both venues and feedback loop verified end-to-end successfully!")
 } finally {
   await cleanup()
 }

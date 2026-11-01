@@ -14,7 +14,7 @@
     "validate:quick": "bun scripts/validate.ts --quick",
     "lint": "oxlint",
     "test": "vitest run",
-    "generate": "bun --cwd packages/actors run generate"
+    "generate": "bun --cwd packages/actors generate"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

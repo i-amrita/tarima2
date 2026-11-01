@@ -12,12 +12,21 @@ interface $RoomActorContract {
         activity: ActivityEvent[]
     }
     Methods: {
-        appendActivity(actor: ActivityActor, message: string): Promise<void>
+        appendActivity(
+            actor: ActivityActor,
+            message: string,
+            attribution?: AgentAttribution,
+            actedBy?: ActivityActor
+        ): Promise<void>
+        getState(): Promise<RoomState>
         injectProposal(proposal: NewVenueProposal): Promise<string>
         recordApproval(proposalId: string, role: Role): Promise<void>
+        recordComment(proposalId: string, role: Role, text: string): Promise<void>
+        recordReject(proposalId: string, role: Role, reason?: string): Promise<void>
         recordVendorAcceptance(proposalId: string): Promise<void>
         setSpecs(specs: EventSpecs): Promise<void>
         submitAudit(proposalId: string, audit: AuditResult): Promise<void>
+        submitRevision(proposalId: string, audit: AuditResult): Promise<void>
     }
 }
 type ActivityActor = "scout" | "finance" | "negotiator" | "client" | "agency" | "system"
@@ -27,6 +36,20 @@ type ActivityEvent = {
     at: number
     actor: ActivityActor
     message: string
+    attribution?: AgentAttribution
+    actedBy?: ActivityActor
+}
+type AgentAttribution = {
+    agent: ActivityActor
+    verb?: string
+    model?: string
+    latencyMs?: number
+    tokens?: {
+        prompt?: number
+        completion?: number
+        total?: number
+    }
+    viaRelay?: boolean
 }
 type AuditResult = {
     budgetDelta: number
@@ -34,6 +57,7 @@ type AuditResult = {
     violations: string[]
     counterStrategy: string
     draftCounterProposal: string
+    actedBy?: ActivityActor
 }
 type EventSpecs = {
     eventName: string
@@ -44,12 +68,36 @@ type EventSpecs = {
     requiredCurfew: string
     avRequired: boolean
 }
-type NewVenueProposal = Omit<VenueProposal, "id" | "status" | "audit" | "approvedBy">
+type FeedbackKind = "comment" | "reject"
+type NewVenueProposal = Omit<
+    VenueProposal,
+    "id" | "status" | "audit" | "approvedBy" | "actedBy" | "feedback" | "revision"
+>
+type ProposalFeedback = {
+    id: string
+    /** epoch ms */
+    at: number
+    by: Role
+    kind: FeedbackKind
+    text: string
+}
 type Role = "agency" | "client"
 type RoomIncoming =
     | {
           type: "approve"
           proposalId: string
+      }
+    /** client only; closes the venue (status REJECTED) */
+    | {
+          type: "reject"
+          proposalId: string
+          reason?: string
+      }
+    /** client or agency; steers the negotiator, which redrafts (REVISING, then REQUIRES_APPROVAL with revision+1) */
+    | {
+          type: "comment"
+          proposalId: string
+          text: string
       }
     | {
           type: "ping"
@@ -60,6 +108,11 @@ type RoomOutgoing = {
 }
 type RoomSocketMetadata = {
     role: Role
+}
+type RoomState = {
+    specs: EventSpecs | null
+    proposals: VenueProposal[]
+    activity: ActivityEvent[]
 }
 type VenueProposal = {
     id: string
@@ -72,7 +125,20 @@ type VenueProposal = {
     status: VenueStatus
     audit?: AuditResult
     approvedBy?: Role
+    actedBy?: ActivityActor
+    /** human feedback in order; the negotiator reads this to redraft */
+    feedback?: ProposalFeedback[]
+    /** 0 for the first draft, +1 per redraft after feedback */
+    revision?: number
 }
-type VenueStatus = "PENDING_AUDIT" | "REQUIRES_APPROVAL" | "COUNTER_PROPOSED" | "ACCEPTED"
+type VenueStatus =
+    | "PENDING_AUDIT"
+    | "REQUIRES_APPROVAL"
+    /** feedback received, negotiator is redrafting the counter */
+    | "REVISING"
+    | "COUNTER_PROPOSED"
+    | "ACCEPTED"
+    /** client rejected the venue; terminal */
+    | "REJECTED"
 
 export {}

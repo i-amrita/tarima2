@@ -1,4 +1,10 @@
-import type { ActivityActor, AgentAttribution, AuditResult, EventSpecs } from "@dealrelay/shared"
+import type {
+  ActivityActor,
+  AgentAttribution,
+  AuditResult,
+  EventSpecs,
+  ProposalFeedback,
+} from "@dealrelay/shared"
 import { createModelClient, type ModelClient } from "./llm/index.js"
 import type { RelayCoordinator } from "./relay.js"
 
@@ -132,6 +138,124 @@ export function generateNegotiation(
   }
 }
 
+export type GeneratedRevision = {
+  counterStrategy: string
+  draftCounterProposal: string
+  updatedSpecs: Partial<EventSpecs>
+  changedNumbers: {
+    budget?: number
+    curfew?: string
+    capacity?: number
+    avRequired?: boolean
+  }
+}
+
+export function generateRevisionRules(
+  feedback: ProposalFeedback[],
+  specs: EventSpecs,
+  facts: ParsedFacts,
+  _currentAudit?: AuditResult,
+): GeneratedRevision {
+  const latest = feedback[feedback.length - 1]?.text ?? ""
+  const text = latest.trim()
+  const strategyParts: string[] = []
+  const draftParts: string[] = []
+  const updatedSpecs: Partial<EventSpecs> = {}
+  const changedNumbers: GeneratedRevision["changedNumbers"] = {}
+
+  // 1. Budget / cheaper
+  if (/(?:budget|cheaper|lower cost|reduce price)/i.test(text)) {
+    let budget: number | undefined
+    const kMatch = text.match(/\$?(\d+)\s*k\b/i)
+    if (kMatch && kMatch[1]) {
+      budget = parseInt(kMatch[1], 10) * 1000
+    } else {
+      const dollarMatch = text.match(/\$([0-9,]+)/)
+      if (dollarMatch && dollarMatch[1]) {
+        budget = parseInt(dollarMatch[1].replace(/,/g, ""), 10)
+      } else {
+        const numMatch = text.match(/(?:budget|cost|price|max)\s*(?:of|is|to|:)?\s*([0-9,]+)/i)
+        if (numMatch && numMatch[1]) {
+          budget = parseInt(numMatch[1].replace(/,/g, ""), 10)
+        }
+      }
+    }
+
+    if (budget === undefined || isNaN(budget) || budget <= 0) {
+      budget = Math.min(specs.maxBudget, Math.round(facts.cost * 0.9))
+    }
+
+    changedNumbers.budget = budget
+    updatedSpecs.maxBudget = budget
+    strategyParts.push(`Counter at revised budget of $${budget.toLocaleString()}`)
+    draftParts.push(`revise total cost to $${budget.toLocaleString()} per budget requirements`)
+  }
+
+  // 2. Curfew / 2am
+  if (/(?:curfew|2am|1am|midnight|\b(?:until|by)\s*\d)/i.test(text)) {
+    let curfew = specs.requiredCurfew
+    if (/2am/i.test(text)) {
+      curfew = "02:00"
+    } else if (/1am/i.test(text)) {
+      curfew = "01:00"
+    } else if (/midnight/i.test(text)) {
+      curfew = "00:00"
+    } else {
+      const timeMatch = text.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i)
+      if (timeMatch && timeMatch[1]) {
+        curfew = parseCurfewTo24h(timeMatch[1])
+      }
+    }
+
+    changedNumbers.curfew = curfew
+    updatedSpecs.requiredCurfew = curfew
+    strategyParts.push(`request curfew extension to ${curfew}`)
+    draftParts.push(`extend curfew to ${curfew} as requested`)
+  }
+
+  // 3. AV
+  if (/\bav\b|audio\s*visual/i.test(text)) {
+    changedNumbers.avRequired = true
+    updatedSpecs.avRequired = true
+    strategyParts.push("bundle complimentary AV package with dedicated technician")
+    draftParts.push("include standard AV package and technical support at no additional charge")
+  }
+
+  // 4. Capacity
+  if (/(?:capacity|guests?|seats?)/i.test(text)) {
+    let count = specs.guestCount
+    const capMatch = text.match(/(?:capacity|guests?|seats?|fit)\s*(?:of|for|to|:)?\s*(\d+)/i)
+    if (capMatch && capMatch[1]) {
+      count = parseInt(capMatch[1], 10)
+    }
+    changedNumbers.capacity = count
+    updatedSpecs.guestCount = count
+    strategyParts.push(`request layout adjustment for ${count} guests`)
+    draftParts.push(`reconfigure space layout to accommodate ${count} guests comfortably`)
+  }
+
+  // 5. Fallback generic revision
+  if (strategyParts.length === 0) {
+    const cleanText = text.replace(/[\r\n]+/g, " ").trim()
+    return {
+      counterStrategy: `Request revised terms incorporating client feedback: "${cleanText}"`,
+      draftCounterProposal: `Thank you for your proposal. We kindly request a revised counter addressing our client feedback: "${cleanText}".`,
+      updatedSpecs,
+      changedNumbers,
+    }
+  }
+
+  const counterStrategy = strategyParts.join(", and ")
+  const draftCounterProposal = `We propose to proceed if you can ${draftParts.join(", and ")}.`
+
+  return {
+    counterStrategy,
+    draftCounterProposal,
+    updatedSpecs,
+    changedNumbers,
+  }
+}
+
 export class RelayPipeline {
   private room: RoomClient
   private mode: "fixtures" | "live"
@@ -255,6 +379,130 @@ export class RelayPipeline {
         model: counterResult.attribution.model,
         latencyMs: counterResult.attribution.latencyMs,
         tokens: counterResult.attribution.tokens,
+        viaRelay,
+      },
+      "negotiator",
+    )
+    await this.sleep(80)
+
+    const audit: AuditResult = {
+      budgetDelta,
+      capacityDelta,
+      violations,
+      counterStrategy,
+      draftCounterProposal,
+      actedBy: "negotiator",
+    }
+
+    await this.room.submitAudit(proposalId, audit)
+  }
+
+  async runRevision(
+    proposalId: string,
+    rawText: string,
+    specs: EventSpecs,
+    feedback: ProposalFeedback[],
+    currentAudit?: AuditResult,
+    currentRevision = 0,
+  ): Promise<void> {
+    const viaRelay = Boolean(this.coordinator?.isReady())
+    const latestFeedback = feedback[feedback.length - 1]
+    const feedbackText = latestFeedback?.text ?? "No feedback provided"
+    const feedbackBy = latestFeedback?.by ?? "client"
+
+    // 1. Negotiator acknowledges feedback and begins deliberation
+    if (this.coordinator?.isReady()) {
+      await this.coordinator.readAsNegotiator()
+    }
+    await this.emitActivity(
+      "negotiator",
+      `Reviewing ${feedbackBy} feedback for proposal ${proposalId}: "${feedbackText}"`,
+      { agent: "negotiator", verb: "reviewed", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+      "negotiator",
+    )
+    await this.sleep(80)
+
+    const facts = parseProposalText(rawText)
+    const revisionDraft = await this.modelClient.draftRevision(feedback, specs, facts, currentAudit)
+    const { counterStrategy, draftCounterProposal, updatedSpecs, changedNumbers, attribution } = revisionDraft
+
+    const hasNumberChanges = Boolean(
+      changedNumbers &&
+        (changedNumbers.budget !== undefined ||
+          changedNumbers.curfew !== undefined ||
+          changedNumbers.capacity !== undefined ||
+          changedNumbers.avRequired !== undefined),
+    )
+
+    let effectiveSpecs = specs
+    let budgetDelta = currentAudit?.budgetDelta ?? (specs.maxBudget - facts.cost)
+    let capacityDelta = currentAudit?.capacityDelta ?? (facts.capacity - specs.guestCount)
+    let violations = currentAudit?.violations ?? []
+
+    // 2. Scout & Finance re-check when numbers change
+    if (hasNumberChanges && updatedSpecs) {
+      effectiveSpecs = { ...specs, ...updatedSpecs }
+
+      // Scout step
+      const changeSummaries: string[] = []
+      if (changedNumbers?.budget !== undefined) changeSummaries.push(`budget $${changedNumbers.budget.toLocaleString()}`)
+      if (changedNumbers?.curfew !== undefined) changeSummaries.push(`curfew ${changedNumbers.curfew}`)
+      if (changedNumbers?.capacity !== undefined) changeSummaries.push(`capacity ${changedNumbers.capacity}`)
+      if (changedNumbers?.avRequired !== undefined) changeSummaries.push("AV required")
+      const changeDesc = changeSummaries.join(", ")
+
+      if (this.coordinator?.isReady()) {
+        await this.coordinator.postAsScout(`Scout re-evaluating venue specs against updated requirements for ${proposalId}: ${changeDesc}`)
+      }
+      await this.emitActivity(
+        "scout",
+        `Re-evaluating venue specifications against updated client instructions (${changeDesc})...`,
+        { agent: "scout", verb: "rechecked", model: this.mode === "fixtures" ? "fixture" : "live", latencyMs: 0, viaRelay },
+        "scout",
+      )
+      await this.sleep(80)
+
+      // Finance step
+      if (this.coordinator?.isReady()) {
+        await this.coordinator.readAsFinance()
+      }
+      budgetDelta = effectiveSpecs.maxBudget - facts.cost
+      capacityDelta = facts.capacity - effectiveSpecs.guestCount
+      violations = []
+
+      if (budgetDelta < 0) {
+        violations.push("over budget")
+      }
+      if (capacityDelta < 0) {
+        violations.push("under capacity")
+      }
+      if (isCurfewEarlier(facts.curfew, effectiveSpecs.requiredCurfew)) {
+        violations.push("curfew earlier than required")
+      }
+      if (effectiveSpecs.avRequired && !facts.avIncluded) {
+        violations.push("AV missing when required")
+      }
+
+      await this.emitActivity(
+        "finance",
+        `Finance re-audit complete: budget delta $${budgetDelta.toLocaleString()}, capacity delta ${capacityDelta}. Violations: ${violations.length > 0 ? violations.join(", ") : "none"}`,
+        { agent: "finance", verb: "audited", model: "deterministic", latencyMs: 0, viaRelay },
+        "finance",
+      )
+      await this.sleep(80)
+    }
+
+    // 3. Negotiator counter formulation
+    const newRevision = currentRevision + 1
+    await this.emitActivity(
+      "negotiator",
+      `Formulated revised counter proposal (rev ${newRevision}): ${counterStrategy}. "${draftCounterProposal}"`,
+      {
+        agent: "negotiator",
+        verb: "countered",
+        model: attribution.model,
+        latencyMs: attribution.latencyMs,
+        tokens: attribution.tokens,
         viaRelay,
       },
       "negotiator",

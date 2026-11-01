@@ -1,4 +1,4 @@
-import type { EventSpecs } from "@dealrelay/shared"
+import type { AuditResult, EventSpecs, ProposalFeedback } from "@dealrelay/shared"
 import type { ParsedFacts } from "../pipeline.js"
 
 export type ModelAttribution = {
@@ -23,6 +23,19 @@ export type ModelCounterResult = {
   attribution: ModelAttribution
 }
 
+export type ModelRevisionResult = {
+  counterStrategy: string
+  draftCounterProposal: string
+  updatedSpecs?: Partial<EventSpecs>
+  changedNumbers?: {
+    budget?: number
+    curfew?: string
+    capacity?: number
+    avRequired?: boolean
+  }
+  attribution: ModelAttribution
+}
+
 export interface ModelClient {
   extractFacts(rawText: string): Promise<ModelExtractionResult>
   draftCounter(
@@ -30,4 +43,10 @@ export interface ModelClient {
     specs: EventSpecs,
     facts: ParsedFacts,
   ): Promise<ModelCounterResult>
+  draftRevision(
+    feedback: ProposalFeedback[],
+    specs: EventSpecs,
+    facts: ParsedFacts,
+    currentAudit?: AuditResult,
+  ): Promise<ModelRevisionResult>
 }
