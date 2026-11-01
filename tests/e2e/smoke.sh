@@ -48,7 +48,7 @@ bun -e '
 
 # Feedback step 1: client comments, negotiator redrafts revision 1
 # Driven via scripts/smoke-actor.ts socket driver while UI is being built
-(cd "$repo_root" && bun scripts/smoke-actor.ts comment "$room" "p1" "curfew until 2am, budget $25000")
+(cd "$repo_root" && bun scripts/smoke-actor.ts comment "$room" "p1" 'curfew until 2am, budget $25000')
 for _ in $(seq 1 30); do
   rev=$(cd "$repo_root" && bun -e 'import { actors } from "./packages/actors/generated/index.js"; const s = await actors.RoomActor.get("'$room'").getState(); console.log(s.proposals.find(p => p.id === "p1")?.revision ?? 0);' 2>/dev/null || echo "0")
   if [ "$rev" = "1" ]; then
