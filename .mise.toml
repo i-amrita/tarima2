@@ -1,2 +1,22 @@
 [tools]
 bun = "1.4.3"
+
+[tasks."demo:up"]
+description = "Start actor, relay and web in tmux (fixtures by default; pass `live` for model mode)"
+run = "bash scripts/demo/up.sh"
+
+[tasks."demo:down"]
+description = "Stop the demo sessions"
+run = "bash scripts/demo/down.sh"
+
+[tasks."demo:status"]
+description = "Health of actor, relay and web"
+run = "bash scripts/demo/status.sh"
+
+[tasks."demo:restart-actor"]
+description = "Kill and relaunch the actor (demo beat: state restored from SQLite)"
+run = "bash scripts/demo/restart-actor.sh"
+
+[tasks."demo:smoke"]
+description = "End-to-end smoke against the running demo"
+run = "bash tests/e2e/smoke.sh"
