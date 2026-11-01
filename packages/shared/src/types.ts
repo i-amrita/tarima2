@@ -1,7 +1,27 @@
-// shared contract v2. Bumped from v1: added optional attribution and actedBy fields.
+// shared contract v3. v2: optional attribution and actedBy. v3: client/agency feedback loop (reject, comment, revisions), additive.
 export type Role = "agency" | "client"
 
-export type VenueStatus = "PENDING_AUDIT" | "REQUIRES_APPROVAL" | "COUNTER_PROPOSED" | "ACCEPTED"
+export type VenueStatus =
+  | "PENDING_AUDIT"
+  | "REQUIRES_APPROVAL"
+  /** feedback received, negotiator is redrafting the counter */
+  | "REVISING"
+  | "COUNTER_PROPOSED"
+  | "ACCEPTED"
+  /** client rejected the venue; terminal */
+  | "REJECTED"
+
+export type FeedbackKind = "comment" | "reject"
+
+/** Human feedback on a proposal. Comments steer the negotiator; a reject closes the venue. */
+export type ProposalFeedback = {
+  id: string
+  /** epoch ms */
+  at: number
+  by: Role
+  kind: FeedbackKind
+  text: string
+}
 
 export type EventSpecs = {
   eventName: string
@@ -47,9 +67,13 @@ export type VenueProposal = {
   audit?: AuditResult
   approvedBy?: Role
   actedBy?: ActivityActor
+  /** human feedback in order; the negotiator reads this to redraft */
+  feedback?: ProposalFeedback[]
+  /** 0 for the first draft, +1 per redraft after feedback */
+  revision?: number
 }
 
-export type NewVenueProposal = Omit<VenueProposal, "id" | "status" | "audit" | "approvedBy" | "actedBy">
+export type NewVenueProposal = Omit<VenueProposal, "id" | "status" | "audit" | "approvedBy" | "actedBy" | "feedback" | "revision">
 
 export type ActivityActor = "scout" | "finance" | "negotiator" | "client" | "agency" | "system"
 
@@ -70,5 +94,11 @@ export type RoomState = {
 }
 
 export type RoomSocketMetadata = { role: Role }
-export type RoomIncoming = { type: "approve"; proposalId: string } | { type: "ping" }
+export type RoomIncoming =
+  | { type: "approve"; proposalId: string }
+  /** client only; closes the venue (status REJECTED) */
+  | { type: "reject"; proposalId: string; reason?: string }
+  /** client or agency; steers the negotiator, which redrafts (REVISING, then REQUIRES_APPROVAL with revision+1) */
+  | { type: "comment"; proposalId: string; text: string }
+  | { type: "ping" }
 export type RoomOutgoing = { type: "toast"; message: string }
