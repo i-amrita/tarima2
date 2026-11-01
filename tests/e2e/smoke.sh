@@ -11,6 +11,7 @@ expect() { # expect <substring> <what> ; polls up to 15s
   for _ in $(seq 1 30); do text | grep -q -- "$1" && { echo "ok   $2"; return 0; }; sleep 0.5; done
   echo "FAIL $2 (missing: $1)"; text | head -c 1200; pw close >/dev/null 2>&1 || true; exit 1
 }
+repo_root="$(pwd)"
 cd "$(mktemp -d)"
 pw open "$base/room/$room?role=agency" >/dev/null
 expect "connected" "agency socket connected"
@@ -44,6 +45,30 @@ bun -e '
     }
   }
 ' || true
+
+# Feedback step 1: client comments, negotiator redrafts revision 1
+# Driven via scripts/smoke-actor.ts socket driver while UI is being built
+(cd "$repo_root" && bun scripts/smoke-actor.ts comment "$room" "p1" "curfew until 2am, budget $25000")
+for _ in $(seq 1 30); do
+  rev=$(cd "$repo_root" && bun -e 'import { actors } from "./packages/actors/generated/index.js"; const s = await actors.RoomActor.get("'$room'").getState(); console.log(s.proposals.find(p => p.id === "p1")?.revision ?? 0);' 2>/dev/null || echo "0")
+  if [ "$rev" = "1" ]; then
+    echo "ok   negotiator revised proposal (revision 1 visible)"
+    break
+  fi
+  sleep 0.5
+done
+
+# Feedback step 2: inject second venue, client rejects it (terminal state)
+(cd "$repo_root" && bun -e 'import { actors } from "./packages/actors/generated/index.js"; const r = actors.RoomActor.get("'$room'"); await r.injectProposal({ name: "Warehouse 9", rawText: "quoted $34,000 capacity 600 curfew until 3am", quotedCost: 34000, quotedCapacity: 600, quotedCurfew: "03:00", avIncluded: true });' >/dev/null 2>&1)
+(cd "$repo_root" && bun scripts/smoke-actor.ts reject "$room" "p2" "Budget exceeds limit")
+for _ in $(seq 1 30); do
+  status=$(cd "$repo_root" && bun -e 'import { actors } from "./packages/actors/generated/index.js"; const s = await actors.RoomActor.get("'$room'").getState(); console.log(s.proposals.find(p => p.id === "p2")?.status ?? "");' 2>/dev/null || echo "")
+  if [ "$status" = "REJECTED" ]; then
+    echo "ok   client rejected other venue (status REJECTED terminal)"
+    break
+  fi
+  sleep 0.5
+done
 
 pw eval "document.querySelectorAll('[data-testid*=badge]').length" >/dev/null
 pw tab-new "$base/room/$room?role=client" >/dev/null
