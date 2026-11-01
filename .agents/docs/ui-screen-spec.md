@@ -77,16 +77,20 @@ proposals column (8)                     | agent activity rail (4, muted, sticky
   venue cards (white, flat)
 ```
 
-### 3.1 Top bar
+### 3.1 Top bar and role banner
 
 One row, h-14, hairline bottom border, canvas bg (not white). Left: wordmark "DealRelay"
 (sans semibold, sentence case) + mono room id in `--muted-foreground`, no "Room:" label.
 Right: role switcher as a compact segmented control (Agency / Client; active = ink bg, white
 text); connection = a 6px dot only (green `--status-met` fg when connected, red when
 disconnected/error, amber pulse while connecting) with `title`/`aria-label` carrying the
-status word; no "connected" text anywhere. A quiet "Demo" disclosure (outline button, size
+status word; compact "How it works" popover (3 steps: agents read vendor emails, agents audit and counter, humans decide and steer); a quiet "Demo" disclosure (outline button, size
 icon-sm + chevron) holding "Kill actor" (destructive only inside the confirm step, env gating
-and `kill-actor` testid unchanged). No second stacked bar.
+and `kill-actor` testid unchanged).
+
+Directly under the top bar, a one-line role banner explains the current window:
+- Agency: "You are Northwind Events, the agency. Your agents scout and negotiate venues; you steer them."
+- Client: "You are the client, Northwind's launch owner. Agents bring you counter-offers; you approve, reject or push back."
 
 ### 3.2 Editorial event header
 
@@ -128,9 +132,10 @@ borders until hover), keeping all three testids. Nothing else in the toolbar.
 Venue card (white, `--border` hairline, 10px radius, no shadow or shadow < 0.05 opacity,
 no backdrop-blur):
 
-- Row 1: venue name (sans semibold 17px) left; status chip right - pill, pastel tint by
-  status (met-green for ACCEPTED, pending-yellow for REQUIRES_APPROVAL / COUNTER_PROPOSED,
-  neutral for PENDING_AUDIT), sentence case text ("Requires approval").
+- Row 1: venue name (sans semibold 17px) left; revision indicator ("rev X") if revision > 0;
+  status chip right - pill, pastel tint by status (met-green for ACCEPTED, pending-yellow for
+  REQUIRES_APPROVAL / COUNTER_PROPOSED, REVISING shows soft pending shimmer, REJECTED shows
+  muted terminal state, neutral for PENDING_AUDIT).
 - Row 2: four constraint chips, pill, each icon + mono value, color-coded by evaluated
   status: budget `wallet $26,000` green/red, capacity `users 550` green (or `--info` when
   met? no - keep green/red/amber consistent: met=green, violated=red, pending=amber),
@@ -138,14 +143,21 @@ no backdrop-blur):
   testids stay on these chips. The chip's title attribute carries the full detail sentence
   (e.g. "+$4,000 over the $30,000 cap"); the visible text is value-only. This is the
   color-coding the judge reads.
-- Row 3 (only when audit exists): one-line agent strategy in sans, muted, prefixed with a
-  tiny negotiator dot - "Counter: extend curfew to 02:00". Clamped to one line.
-- Row 4 (collapsed by default): "Vendor email" disclosure (ChevronDown, muted) wrapping the
-  rawText quote in sans italic muted. Collapsed on first view; `rawText` testid is not
-  required but keep `proposal-card-*` and `proposal-status-*`.
-
-No "AGENT STRATEGY" label, no violation-count line, no boxed sub-grids, no separators
-between rows; whitespace does the grouping.
+- Row 3: status-specific quiet row. When REVISING, shows amber dot with quiet shimmer
+  "Negotiator is revising". When audit exists, shows one-line agent strategy in sans, muted,
+  prefixed with a tiny negotiator dot - "Counter: extend curfew to 02:00". Clamped to one line.
+- Expandable disclosure button: keyboard-accessible button with `aria-expanded` ("View details" /
+  "Hide details"). Collapsed card stays quiet as today.
+- Expanded section: reveals four detailed blocks with explicit agent provenance (agent dot + name):
+  1. Vendor email: Scout dot + Scout label with raw text quote in muted container.
+  2. Audit table: Finance dot + Finance label with budget delta, capacity delta, and violations as chips.
+  3. Counter strategy and draft counter text: Negotiator dot + Negotiator label with strategy and draft text.
+  4. Feedback thread: Client/Agency dot + role name, timestamps, revision numbers, and feedback messages.
+- Feedback controls row (on proposals in REQUIRES_APPROVAL):
+  - Client role: Approve button (primary ink), Reject button (`reject-<id>`, destructive-quiet,
+    confirm inline with optional reason input), and Comment/steer composer (single textarea
+    `comment-input-<id>`, send button `comment-send-<id>`, placeholder "Tell the negotiator what to change, e.g. push the budget to 28k").
+  - Agency role: Comment/steer composer (`comment-input-<id>`, `comment-send-<id>`), no approve/reject buttons.
 
 ### 3.5 Agent activity rail (4/12, muted, sticky)
 
@@ -182,6 +194,7 @@ scroll or layout collapse at 390x844.
   `proposal-card-*`, `proposal-status-*`, `constraint-badge-*`, `trace-feed`, `trace-run`,
   `trace-item`, `simulation-drawer` (may live on the toolbar wrapper),
   `inject-grand-loft`, `inject-warehouse-9`, `vendor-accepts`, `kill-actor`.
+- Feedback UI testids added: `reject-<id>`, `comment-input-<id>`, `comment-send-<id>`, `role-banner`, `how-it-works-trigger`.
 - No behavior changes: socket flow, server functions, status transitions, env gating,
   approvals, auto-scroll stay as-is.
 - Component sourcing rules from `design-system.md` still apply (ui primitives, ai-elements,
