@@ -15,6 +15,7 @@ repo_root="$(pwd)"
 cd "$(mktemp -d)"
 pw open "$base/room/$room?role=agency" >/dev/null
 expect "connected" "agency socket connected"
+pw click "getByTestId('demo-menu')" >/dev/null
 pw click "getByTestId('inject-grand-loft')" >/dev/null 2>&1 || pw click "getByRole('button', { name: 'Inject Grand Loft' })" >/dev/null
 expect "REQUIRES APPROVAL" "proposal audited by relay"
 expect "SCOUT" "trace shows scout"
@@ -77,7 +78,8 @@ pw click "getByRole('button', { name: /approve counter/i })" >/dev/null
 expect "COUNTER PROPOSED" "client approval flips status"
 pw tab-select 0 >/dev/null
 expect "COUNTER PROPOSED" "agency window synced"
-pw click "getByRole('button', { name: /vendor accepts/i })" >/dev/null
+pw click "getByTestId('demo-menu')" >/dev/null
+pw click "getByTestId('vendor-accepts')" >/dev/null 2>&1 || pw click "getByRole('button', { name: /vendor accepts/i })" >/dev/null
 expect "ACCEPTED" "vendor acceptance"
 pw click "getByTestId('demo-menu')" >/dev/null
 pw click "getByTestId('kill-actor')" >/dev/null
