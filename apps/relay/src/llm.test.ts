@@ -35,4 +35,19 @@ describe("ModelClient - Fixture path and attribution", () => {
     expect(counter.attribution.model).toBe("fixture")
     expect(counter.attribution.latencyMs).toBe(0)
   })
+
+  it("draftRevision returns deterministic redraft and attribution in fixtures mode", async () => {
+    const client = new FixtureModelClient()
+    const facts = { cost: 26000, capacity: 550, curfew: "00:00", avIncluded: true }
+    const feedback = [
+      { id: "f1", at: Date.now(), by: "client" as const, kind: "comment" as const, text: "Curfew must be 2am and budget $25k" },
+    ]
+
+    const revision = await client.draftRevision(feedback, DEFAULT_SPECS, facts)
+    expect(revision.counterStrategy).toContain("Counter at revised budget of $25,000")
+    expect(revision.counterStrategy).toContain("request curfew extension to 02:00")
+    expect(revision.attribution.model).toBe("fixture")
+    expect(revision.attribution.latencyMs).toBe(0)
+    expect(revision.attribution.fallbackUsed).toBe(false)
+  })
 })

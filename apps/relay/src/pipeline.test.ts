@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
-import type { ActivityActor, AgentAttribution, AuditResult } from "@dealrelay/shared"
+import type { ActivityActor, AgentAttribution, AuditResult, ProposalFeedback } from "@dealrelay/shared"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
 import {
+  generateRevisionRules,
   isCurfewEarlier,
   parseCurfewTo24h,
   parseProposalText,
@@ -183,6 +184,11 @@ describe("RelayPipeline - Live mode execution", () => {
         draftCounterProposal: "Please extend curfew to 02:00",
         attribution: { model: "mock-model", latencyMs: 120, tokens: { total: 200 }, fallbackUsed: false },
       })),
+      draftRevision: vi.fn(async () => ({
+        counterStrategy: "Revised counter strategy",
+        draftCounterProposal: "Revised counter proposal",
+        attribution: { model: "mock-model", latencyMs: 120, tokens: { total: 200 }, fallbackUsed: false },
+      })),
     }
 
     const pipeline = new RelayPipeline({
@@ -230,5 +236,113 @@ describe("RelayPipeline - Live mode execution", () => {
     expect(mockCoordinator.postAsNegotiator).toHaveBeenCalled()
     expect(mockCoordinator.mirrorActivity).toHaveBeenCalled()
     expect(activities.length).toBeGreaterThan(0)
+  })
+})
+
+describe("RelayPipeline - feedback rules and revision redrafts", () => {
+  const facts = { cost: 26000, capacity: 550, curfew: "00:00", avIncluded: true }
+
+  it("handles budget / cheaper keywords with explicit numbers", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Please counter with budget of $25,000" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.budget).toBe(25000)
+    expect(rev.updatedSpecs.maxBudget).toBe(25000)
+    expect(rev.counterStrategy).toContain("Counter at revised budget of $25,000")
+    expect(rev.draftCounterProposal).toContain("revise total cost to $25,000")
+  })
+
+  it("handles cheaper keyword with percentage discount when no amount specified", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Can you make it cheaper?" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.budget).toBe(23400) // 26000 * 0.9
+    expect(rev.counterStrategy).toContain("Counter at revised budget of $23,400")
+  })
+
+  it("handles curfew and 2am keywords", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Curfew must be 2am for afterparty" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.curfew).toBe("02:00")
+    expect(rev.updatedSpecs.requiredCurfew).toBe("02:00")
+    expect(rev.counterStrategy).toContain("request curfew extension to 02:00")
+    expect(rev.draftCounterProposal).toContain("extend curfew to 02:00")
+  })
+
+  it("handles AV keyword", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Need full AV package included" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.avRequired).toBe(true)
+    expect(rev.counterStrategy).toContain("bundle complimentary AV package")
+    expect(rev.draftCounterProposal).toContain("include standard AV package")
+  })
+
+  it("handles capacity keyword with guest numbers", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Ensure capacity for 600 guests" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.capacity).toBe(600)
+    expect(rev.updatedSpecs.guestCount).toBe(600)
+    expect(rev.counterStrategy).toContain("request layout adjustment for 600 guests")
+  })
+
+  it("provides polite generic revision for arbitrary feedback", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Can we request custom catering permissions?" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers).toEqual({})
+    expect(rev.counterStrategy).toContain("Request revised terms incorporating client feedback")
+    expect(rev.draftCounterProposal).toContain("addressing our client feedback: \"Can we request custom catering permissions?\"")
+  })
+
+  it("combines multiple keywords seamlessly", () => {
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 1, by: "client", kind: "comment", text: "Budget $24k and curfew until 2am" },
+    ]
+    const rev = generateRevisionRules(feedback, DEFAULT_SPECS, facts)
+    expect(rev.changedNumbers.budget).toBe(24000)
+    expect(rev.changedNumbers.curfew).toBe("02:00")
+    expect(rev.counterStrategy).toContain("Counter at revised budget of $24,000, and request curfew extension to 02:00")
+  })
+})
+
+describe("RelayPipeline - runRevision execution", () => {
+  it("deliberates revision, triggers scout/finance re-checks on number changes, and submits revision audit", async () => {
+    const { room, activities, audits } = createFakeRoomClient()
+    const pipeline = new RelayPipeline({ room, mode: "fixtures", sleep: instantSleep })
+    const grandLoft = VENUE_FIXTURES.find((v) => v.name === "The Grand Loft")!
+
+    const feedback: ProposalFeedback[] = [
+      { id: "f1", at: 100, by: "client", kind: "comment", text: "Budget must be $25000 and 2am curfew" },
+    ]
+
+    await pipeline.runRevision("p1", grandLoft.rawText, DEFAULT_SPECS, feedback, undefined, 0)
+
+    expect(room.submitAudit).toHaveBeenCalledTimes(1)
+    expect(audits).toHaveLength(1)
+    const audit = audits[0]!.audit
+    expect(audit.actedBy).toBe("negotiator")
+    expect(audit.counterStrategy).toContain("Counter at revised budget of $25,000")
+
+    // Scout and Finance were triggered because numbers changed
+    const scoutActivities = activities.filter((a) => a.actor === "scout")
+    const financeActivities = activities.filter((a) => a.actor === "finance")
+    const negotiatorActivities = activities.filter((a) => a.actor === "negotiator")
+
+    expect(scoutActivities.length).toBeGreaterThan(0)
+    expect(financeActivities.length).toBeGreaterThan(0)
+    expect(negotiatorActivities.length).toBeGreaterThan(0)
+
+    // Finance re-calculated budget delta against new budget $25000: 25000 - 26000 = -1000 (over budget)
+    expect(audit.budgetDelta).toBe(-1000)
+    expect(audit.violations).toContain("over budget")
   })
 })
