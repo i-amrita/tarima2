@@ -163,6 +163,7 @@ export function RoomTopBar({
                   data-testid="how-it-works-trigger"
                   variant="ghost"
                   size="sm"
+                  aria-label="How it works"
                   className="h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border/60 bg-transparent shadow-none cursor-pointer"
                 >
                   <HelpCircle className="size-3.5 text-muted-foreground" />
@@ -221,6 +222,7 @@ export function RoomTopBar({
                   data-testid="demo-menu"
                   variant="outline"
                   size="sm"
+                  aria-label="Demo menu"
                   className="h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground border-border bg-transparent shadow-none cursor-pointer"
                 >
                   <span>Demo</span>

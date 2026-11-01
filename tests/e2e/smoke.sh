@@ -49,7 +49,7 @@ bun -e '
 pw eval "document.querySelectorAll('[data-testid*=badge]').length" >/dev/null
 pw tab-new "$base/room/$room?role=client" >/dev/null
 expect "Approve Counter-Offer" "client sees approval bar"
-pw click "getByRole('button', { name: /approve counter/i })" >/dev/null
+pw click "getByRole('button', { name: /approve counter/i }).first()" >/dev/null
 expect "COUNTER PROPOSED" "client approval flips status"
 pw tab-select 0 >/dev/null
 expect "COUNTER PROPOSED" "agency window synced"
