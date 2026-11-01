@@ -4,7 +4,6 @@ import { ChevronDown, Send } from "lucide-react"
 import { TextShimmer } from "@/components/ai-elements/shimmer"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { evaluateConstraints } from "@/lib/constraints"
 import { ConstraintBadge } from "./ConstraintBadge"
 import { cn } from "@/lib/utils"
@@ -68,6 +67,7 @@ export function VenueCard({
   onReject,
   onComment,
 }: VenueCardProps) {
+  const [isExpanded, setIsExpanded] = React.useState(false)
   const [isConfirmingReject, setIsConfirmingReject] = React.useState(false)
   const [rejectReason, setRejectReason] = React.useState("")
   const [commentText, setCommentText] = React.useState("")
@@ -175,18 +175,194 @@ export function VenueCard({
         </div>
       ) : null}
 
-      {/* Row 4 (collapsed by default): Vendor email disclosure */}
-      <Collapsible>
-        <CollapsibleTrigger className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-sans transition-colors cursor-pointer group">
-          <ChevronDown className="size-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
-          <span>Vendor email</span>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="pt-2">
-          <div className="text-xs font-sans italic text-muted-foreground bg-muted/40 rounded-md p-3 border border-border/40 leading-relaxed">
-            &quot;{proposal.rawText}&quot;
+      {/* Expand/Collapse toggle */}
+      <div className="pt-0.5 flex items-center justify-between">
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          aria-controls={`proposal-expanded-${proposal.id}`}
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-sans transition-colors cursor-pointer group"
+        >
+          <ChevronDown
+            className={cn(
+              "size-3.5 text-muted-foreground group-hover:text-foreground transition-transform duration-200",
+              isExpanded && "rotate-180",
+            )}
+          />
+          <span>{isExpanded ? "Hide details" : "View details"}</span>
+        </button>
+      </div>
+
+      {/* Expanded details section */}
+      {isExpanded && (
+        <div
+          id={`proposal-expanded-${proposal.id}`}
+          className="pt-2 border-t border-border/60 space-y-4"
+        >
+          {/* Part 1: Vendor email with Scout attribution */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-sans font-medium text-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-actor-scout shrink-0" />
+              <span>Scout</span>
+              <span className="text-muted-foreground font-normal">Inbound vendor offer</span>
+            </div>
+            <div className="text-xs font-sans italic text-muted-foreground bg-muted/40 rounded-md p-3 border border-border/40 leading-relaxed">
+              &quot;{proposal.rawText}&quot;
+            </div>
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+
+          {/* Part 2: Audit table with Finance attribution */}
+          {proposal.audit && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-sans font-medium text-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-actor-finance shrink-0" />
+                <span>Finance</span>
+                <span className="text-muted-foreground font-normal">Audit analysis</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-muted/30 border border-border/50 rounded-md text-xs font-sans">
+                <div>
+                  <div className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
+                    Budget Delta
+                  </div>
+                  <div
+                    className={cn(
+                      "font-mono font-medium",
+                      proposal.audit.budgetDelta > 0
+                        ? "text-status-violated-foreground"
+                        : "text-status-met-foreground",
+                    )}
+                  >
+                    {proposal.audit.budgetDelta > 0
+                      ? `+$${proposal.audit.budgetDelta.toLocaleString()}`
+                      : proposal.audit.budgetDelta < 0
+                        ? `-$${Math.abs(proposal.audit.budgetDelta).toLocaleString()}`
+                        : "$0"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
+                    Capacity Delta
+                  </div>
+                  <div
+                    className={cn(
+                      "font-mono font-medium",
+                      proposal.audit.capacityDelta < 0
+                        ? "text-status-violated-foreground"
+                        : "text-status-met-foreground",
+                    )}
+                  >
+                    {proposal.audit.capacityDelta > 0
+                      ? `+${proposal.audit.capacityDelta}`
+                      : `${proposal.audit.capacityDelta}`}
+                  </div>
+                </div>
+                <div className="sm:col-span-1">
+                  <div className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider mb-1">
+                    Violations
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {proposal.audit.violations.length > 0 ? (
+                      proposal.audit.violations.map((violation) => (
+                        <span
+                          key={violation}
+                          className="inline-flex items-center rounded-full border border-status-violated-border bg-status-violated px-2 py-0.5 text-[11px] font-sans text-status-violated-foreground"
+                        >
+                          {violation}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-status-met-border bg-status-met px-2 py-0.5 text-[11px] font-sans text-status-met-foreground">
+                        No violations
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Part 3: Counter strategy and draft counter text with Negotiator attribution */}
+          {proposal.audit && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-sans font-medium text-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-actor-negotiator shrink-0" />
+                <span>Negotiator</span>
+                <span className="text-muted-foreground font-normal">Counter strategy</span>
+              </div>
+              <div className="p-3 bg-muted/30 border border-border/50 rounded-md space-y-2 text-xs font-sans">
+                <div>
+                  <span className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider block mb-0.5">
+                    Strategy
+                  </span>
+                  <div className="text-foreground">
+                    {proposal.audit.counterStrategy}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[11px] font-mono uppercase text-muted-foreground tracking-wider block mb-0.5">
+                    Draft Counter Proposal
+                  </span>
+                  <div className="text-muted-foreground italic bg-muted/40 rounded p-2.5 border border-border/40 whitespace-pre-wrap leading-relaxed">
+                    {proposal.audit.draftCounterProposal}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Part 4: Feedback thread */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-sans font-medium text-foreground">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-actor-client shrink-0" />
+                <span>Feedback thread</span>
+              </div>
+              {typeof proposal.revision === "number" && (
+                <span className="text-[11px] font-mono text-muted-foreground">
+                  Revision {proposal.revision}
+                </span>
+              )}
+            </div>
+
+            {proposal.feedback && proposal.feedback.length > 0 ? (
+              <div className="space-y-2">
+                {proposal.feedback.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-2.5 rounded-md bg-muted/40 border border-border/40 space-y-1 text-xs font-sans"
+                  >
+                    <div className="flex items-center justify-between text-[11px]">
+                      <div className="flex items-center gap-1.5 font-medium text-foreground capitalize">
+                        <span
+                          className={cn(
+                            "w-1.5 h-1.5 rounded-full shrink-0",
+                            item.by === "client" ? "bg-actor-client" : "bg-actor-agency",
+                          )}
+                        />
+                        <span>{item.by}</span>
+                        <span className="text-muted-foreground font-normal">
+                          ({item.kind === "reject" ? "rejection" : "comment"})
+                        </span>
+                      </div>
+                      <span className="font-mono text-muted-foreground">
+                        {new Date(item.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <div className="text-foreground pl-3 leading-relaxed">
+                      {item.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-xs font-sans text-muted-foreground italic p-2 bg-muted/20 rounded border border-border/30">
+                No human feedback recorded yet.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Feedback controls row (when proposal is in REQUIRES_APPROVAL) */}
       {isPendingApproval && (
