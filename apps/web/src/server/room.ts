@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { actors } from "@dealrelay/actors"
 import type { EventSpecs, Role, RoomState } from "@dealrelay/shared"
 import { DEFAULT_SPECS, VENUE_FIXTURES } from "@dealrelay/shared/fixtures"
+import { FEEDBACK_DEMO_STATE } from "../lib/fixtures"
 
 /** The dev actor server advertises its bind address (ws://127.0.0.1:7100); browsers need the public ACTOR_URL origin. */
 function publicGrant<T extends { websocketUrl: string }>(grant: T): T {
@@ -33,6 +34,9 @@ export const getSocketGrant = createServerFn({ method: "POST" })
 export const getRoomState = createServerFn({ method: "GET" })
   .validator((d: { roomId: string }) => d)
   .handler(async ({ data }): Promise<RoomState> => {
+    if (data.roomId === "feedback-demo") {
+      return FEEDBACK_DEMO_STATE
+    }
     const actorUrl = process.env.ACTOR_URL ?? "http://127.0.0.1:7100"
     try {
       const res = await fetch(

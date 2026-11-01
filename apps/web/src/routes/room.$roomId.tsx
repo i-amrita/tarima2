@@ -31,7 +31,7 @@ function RoomComponent() {
   const initialData = Route.useLoaderData()
   const activeRole: Role = role === "client" ? "client" : "agency"
 
-  const { status, state, approve } = useRoomSocket(roomId, activeRole, initialData)
+  const { status, state, approve, reject, comment } = useRoomSocket(roomId, activeRole, initialData)
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -44,7 +44,15 @@ function RoomComponent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 space-y-6">
-            <ComparisonCanvas roomId={roomId} role={activeRole} specs={state.specs} proposals={state.proposals} />
+            <ComparisonCanvas
+              roomId={roomId}
+              role={activeRole}
+              specs={state.specs}
+              proposals={state.proposals}
+              onApprove={approve}
+              onReject={reject}
+              onComment={comment}
+            />
           </div>
 
           <div className="lg:col-span-4 lg:sticky lg:top-20">

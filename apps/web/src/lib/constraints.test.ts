@@ -99,4 +99,62 @@ describe("evaluateConstraints", () => {
     expect(budget?.status).toBe("violated")
     expect(curfew?.status).toBe("violated")
   })
+
+  it("handles REVISING status without errors", () => {
+    const proposal: VenueProposal = {
+      id: "p1",
+      name: "Grand Loft",
+      rawText: "raw",
+      quotedCost: 21500,
+      quotedCapacity: 150,
+      quotedCurfew: "23:00",
+      avIncluded: true,
+      status: "REVISING",
+      revision: 1,
+      feedback: [
+        {
+          id: "fb1",
+          at: Date.now(),
+          by: "client",
+          kind: "comment",
+          text: "Push curfew to 02:00",
+        },
+      ],
+      audit: {
+        budgetDelta: -3500,
+        capacityDelta: 30,
+        violations: ["budget", "curfew"],
+        counterStrategy: "Counter with $18,000",
+        draftCounterProposal: "Counter offer drafted",
+      },
+    }
+
+    const evaluated = evaluateConstraints(mockSpecs, proposal)
+    expect(evaluated).toHaveLength(4)
+  })
+
+  it("handles REJECTED terminal status without errors", () => {
+    const proposal: VenueProposal = {
+      id: "p1",
+      name: "Grand Loft",
+      rawText: "raw",
+      quotedCost: 21500,
+      quotedCapacity: 150,
+      quotedCurfew: "23:00",
+      avIncluded: true,
+      status: "REJECTED",
+      feedback: [
+        {
+          id: "fb2",
+          at: Date.now(),
+          by: "client",
+          kind: "reject",
+          text: "Over budget",
+        },
+      ],
+    }
+
+    const evaluated = evaluateConstraints(mockSpecs, proposal)
+    expect(evaluated).toHaveLength(4)
+  })
 })

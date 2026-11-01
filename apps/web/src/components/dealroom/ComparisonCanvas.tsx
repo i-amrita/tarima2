@@ -10,9 +10,20 @@ interface ComparisonCanvasProps {
   role: Role
   specs: EventSpecs | null
   proposals: VenueProposal[]
+  onApprove?: (proposalId: string) => void
+  onReject?: (proposalId: string, reason?: string) => void
+  onComment?: (proposalId: string, text: string) => void
 }
 
-export function ComparisonCanvas({ roomId, role, specs, proposals }: ComparisonCanvasProps) {
+export function ComparisonCanvas({
+  roomId,
+  role,
+  specs,
+  proposals,
+  onApprove,
+  onReject,
+  onComment,
+}: ComparisonCanvasProps) {
   const [loadingAction, setLoadingAction] = React.useState<string | null>(null)
 
   const handleInject = async (kind: "grand-loft" | "warehouse-9") => {
@@ -106,7 +117,15 @@ export function ComparisonCanvas({ roomId, role, specs, proposals }: ComparisonC
       ) : (
         <div className="space-y-4">
           {proposals.map((proposal) => (
-            <VenueCard key={proposal.id} proposal={proposal} specs={specs} />
+            <VenueCard
+              key={proposal.id}
+              proposal={proposal}
+              specs={specs}
+              role={role}
+              onApprove={onApprove}
+              onReject={onReject}
+              onComment={onComment}
+            />
           ))}
         </div>
       )}

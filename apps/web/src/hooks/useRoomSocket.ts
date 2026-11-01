@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useSyncExternalStore } from "react"
 import type { Role, RoomState, RoomIncoming } from "@dealrelay/shared"
 import { getSocketGrant } from "../server/room"
+import { FEEDBACK_DEMO_STATE } from "../lib/fixtures"
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error"
 
@@ -34,7 +35,13 @@ class RoomSocketManager {
     private role: Role,
     initialState?: RoomState,
   ) {
-    if (initialState) {
+    if (roomId === "feedback-demo") {
+      this.snapshot = {
+        status: "connected",
+        state: initialState ?? FEEDBACK_DEMO_STATE,
+        lastToast: null,
+      }
+    } else if (initialState) {
       this.snapshot = {
         status: "connecting",
         state: initialState,
@@ -67,6 +74,11 @@ class RoomSocketManager {
 
   private async connect(generation: number) {
     if (this.destroyed || generation !== this.generation) return
+
+    if (this.roomId === "feedback-demo") {
+      this.updateSnapshot({ status: "connected" })
+      return
+    }
 
     this.updateSnapshot({ status: "connecting" })
 
@@ -168,6 +180,55 @@ class RoomSocketManager {
     this.send({ type: "approve", proposalId })
   }
 
+  public reject(proposalId: string, reason?: string) {
+    if (this.roomId === "feedback-demo") {
+      const proposals = this.snapshot.state.proposals.map((p) => {
+        if (p.id !== proposalId) return p
+        const feedback = [
+          ...(p.feedback ?? []),
+          {
+            id: `fb-${Date.now()}`,
+            at: Date.now(),
+            by: this.role,
+            kind: "reject" as const,
+            text: reason ?? "Proposal rejected by client",
+          },
+        ]
+        return { ...p, status: "REJECTED" as const, feedback }
+      })
+      this.updateSnapshot({ state: { ...this.snapshot.state, proposals } })
+      return
+    }
+    this.send({ type: "reject", proposalId, ...(reason ? { reason } : {}) })
+  }
+
+  public comment(proposalId: string, text: string) {
+    if (this.roomId === "feedback-demo") {
+      const proposals = this.snapshot.state.proposals.map((p) => {
+        if (p.id !== proposalId) return p
+        const feedback = [
+          ...(p.feedback ?? []),
+          {
+            id: `fb-${Date.now()}`,
+            at: Date.now(),
+            by: this.role,
+            kind: "comment" as const,
+            text,
+          },
+        ]
+        return {
+          ...p,
+          status: "REVISING" as const,
+          revision: (p.revision ?? 0) + 1,
+          feedback,
+        }
+      })
+      this.updateSnapshot({ state: { ...this.snapshot.state, proposals } })
+      return
+    }
+    this.send({ type: "comment", proposalId, text })
+  }
+
   public stop() {
     this.destroyed = true
     this.generation++
@@ -196,5 +257,7 @@ export function useRoomSocket(roomId: string, role: Role, initialState?: RoomSta
     ...store,
     send: manager.send.bind(manager),
     approve: manager.approve.bind(manager),
+    reject: manager.reject.bind(manager),
+    comment: manager.comment.bind(manager),
   }
 }
