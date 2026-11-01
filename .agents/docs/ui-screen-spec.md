@@ -85,8 +85,14 @@ Right: role switcher as a compact segmented control (Agency / Client; active = i
 text); connection = a 6px dot only (green `--status-met` fg when connected, red when
 disconnected/error, amber pulse while connecting) with `title`/`aria-label` carrying the
 status word; compact "How it works" popover (3 steps: agents read vendor emails, agents audit and counter, humans decide and steer); a quiet "Demo" disclosure (outline button, size
-icon-sm + chevron) holding "Kill actor" (destructive only inside the confirm step, env gating
-and `kill-actor` testid unchanged).
+icon-sm + chevron, `demo-menu` testid).
+
+The Demo disclosure contains:
+- Agency role:
+  - An "Actions" section (`demo-actions-section` testid): "Inject Grand Loft", "Inject Warehouse 9", "Vendor accepts", and "Set demo specs" / "Reset demo specs" (`set-demo-specs-button` testid). Buttons are keyboard accessible, display in-flight loading states, and close the menu once the action completes.
+  - A "Resilience" section: "Kill actor" (`kill-actor` testid, env gating with DEMO_ALLOW_KILL=1 unchanged).
+- Client role:
+  - Keeps no demo actions; contains only the "Resilience" section with "Kill actor".
 
 Directly under the top bar, a one-line role banner explains the current window:
 - Agency: "You are Northwind Events, the agency. Your agents scout and negotiate venues; you steer them."
@@ -96,14 +102,13 @@ Directly under the top bar, a one-line role banner explains the current window:
 
 - Eyebrow pill: "PROCUREMENT DEAL ROOM" as a microscopic pill tag (10px, uppercase,
   tracking 0.2em, muted bg, mono). No status dots, no pulsing.
-- Event name: Fraunces, 44-52px desktop, sentence case, tracking -0.02em. Empty
-  state: "No event on the books yet." with the set-specs ink button beside it.
+- Event name: Fraunces, 44-52px desktop, sentence case, tracking -0.02em.
+- Empty state: "No event on the books yet." accompanied by a quiet guidance line pointing to the menu ("Open Demo, then Actions, to set demo specs." in agency role; "Waiting for the agency to start the demo." in client role).
 - Spec chips (when specs exist): one quiet row of neutral pills, icon + value in mono,
   e.g. `calendar 2026-11-20`, `users 500`, `wallet $30,000 max`, `moon 02:00`, `speaker AV`.
   Neutral bg (`--muted`) with ink text; color is NOT used here - specs are requirements, not
   results. Hairline separators or gap-2; no boxed stat cards, no labels like "DATE"/"GUESTS".
-- "Set demo specs" / "Reset demo specs": ghost button (muted text, hover ink) aligned right
-  of the chip row. `constraint-header` and `set-demo-specs-button` testids stay.
+- Specs management ("Set demo specs" / "Reset demo specs") is accessed via the top bar Demo menu rather than body buttons.
 
 ### 3.3 Approval callout (replaces the per-proposal cards)
 
@@ -125,9 +130,9 @@ The callout must be readable in one glance in both roles' screenshots.
 ### 3.4 Proposals column (8/12)
 
 Section head: "Proposals" (sans semibold 15px) + count in `--muted-foreground`
-("Proposals (2)" is fine) + the demo toolbar inline right (agency only): ghost icon+text
-buttons "Inject Grand Loft", "Inject Warehouse 9", "Vendor accepts" (size sm, muted fg, no
-borders until hover), keeping all three testids. Nothing else in the toolbar.
+("Proposals (2)" is fine). Body demo controls are removed from the canvas; all demo orchestration actions live in the top bar Demo menu.
+
+Empty state: when no proposals exist, the area displays a single quiet line pointing at the menu ("Open Demo, then Actions, to inject a proposal." for agency; "Waiting for the agency to start the demo." for client).
 
 Venue card (white, `--border` hairline, 10px radius, no shadow or shadow < 0.05 opacity,
 no backdrop-blur):
@@ -192,9 +197,9 @@ scroll or layout collapse at 390x844.
   `connection-status` (now the dot), `constraint-header`, `set-demo-specs-button`,
   `approval-bar`, `approve-button`, `approval-waiting-state`, `comparison-canvas`,
   `proposal-card-*`, `proposal-status-*`, `constraint-badge-*`, `trace-feed`, `trace-run`,
-  `trace-item`, `simulation-drawer` (may live on the toolbar wrapper),
+  `trace-item`, `simulation-drawer` (lives on the demo actions wrapper),
   `inject-grand-loft`, `inject-warehouse-9`, `vendor-accepts`, `kill-actor`.
-- Feedback UI testids added: `reject-<id>`, `comment-input-<id>`, `comment-send-<id>`, `role-banner`, `how-it-works-trigger`.
+- Feedback UI & demo menu testids added: `reject-<id>`, `comment-input-<id>`, `comment-send-<id>`, `role-banner`, `how-it-works-trigger`, `demo-actions-section`.
 - No behavior changes: socket flow, server functions, status transitions, env gating,
   approvals, auto-scroll stay as-is.
 - Component sourcing rules from `design-system.md` still apply (ui primitives, ai-elements,

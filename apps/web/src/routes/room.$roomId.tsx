@@ -35,10 +35,16 @@ function RoomComponent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <RoomTopBar roomId={roomId} activeRole={activeRole} status={status} />
+      <RoomTopBar
+        roomId={roomId}
+        activeRole={activeRole}
+        status={status}
+        specs={state.specs}
+        proposals={state.proposals}
+      />
 
       <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8 flex-1">
-        <ConstraintHeader roomId={roomId} specs={state.specs} />
+        <ConstraintHeader roomId={roomId} specs={state.specs} role={activeRole} />
 
         <ApprovalBar role={activeRole} proposals={state.proposals} onApprove={approve} />
 
